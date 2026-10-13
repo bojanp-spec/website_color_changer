@@ -3,6 +3,8 @@ Aplication that can change finished websites colour scheme
 
 Alat koji menja paletu boja gotovog sajta (pravilo 60-30-10) bez izmene njegove strukture i funkcionalnosti.
 
+👉 **Za korisnike:** [Uputstvo za početnike: ekstenzija za Chrome i Firefox](docs/UPUTSTVO-ZA-KORISNIKE.md). Gotova ekstenzija za preuzimanje je u folderu [`downloads/`](downloads/).
+
 📘 Tehnička specifikacija i plan implementacije: [docs/UPUTSTVO-ZA-KODIRANJE.md](docs/UPUTSTVO-ZA-KODIRANJE.md)
 
 ## Panel u browseru (bookmarklet)
