@@ -2,7 +2,7 @@ import { rgbToHsl, rgbToOklch, toSrgbGamut } from './convert.js';
 import type { ParsedColor } from './parse.js';
 import type { RGBA } from './types.js';
 
-/** Zaokruživanje bez repova tipa 0.30000000000000004 i bez `-0`. */
+/** Rounding without tails like 0.30000000000000004 and without `-0`. */
 function round(n: number, digits: number): number {
   const f = 10 ** digits;
   const r = Math.round(n * f) / f;
@@ -16,7 +16,7 @@ export interface HexOptions {
   upper?: boolean;
 }
 
-/** `#rrggbb`, ili `#rrggbbaa` kada je alfa < 1. Boja van sRGB se prvo gamut-mapira. */
+/** `#rrggbb`, or `#rrggbbaa` when alpha < 1. Colors outside sRGB are gamut-mapped first. */
 export function toHex(color: RGBA, opts: HexOptions = {}): string {
   const c = toSrgbGamut(color);
   let out = `#${hex2(c.r)}${hex2(c.g)}${hex2(c.b)}`;
@@ -31,7 +31,7 @@ function alphaPart(a: number, legacy: boolean): string {
 }
 
 export interface FunctionalOptions {
-  /** Stara sintaksa sa zarezima (`rgba(1, 2, 3, 0.5)`). */
+  /** Legacy comma syntax (`rgba(1, 2, 3, 0.5)`). */
   legacy?: boolean;
 }
 
@@ -55,16 +55,16 @@ export function toHslString(color: RGBA, opts: FunctionalOptions = {}): string {
   return `hsl(${H} ${S}% ${L}%${alphaPart(a, false)})`;
 }
 
-/** `oklch(L C H)` — L u procentima. Ne gamut-mapira (CSS to radi sam za oklch). */
+/** `oklch(L C H)` — L in percent. Not gamut-mapped (CSS does that itself for oklch). */
 export function toOklchString(color: RGBA): string {
   const { l, c, h, a } = rgbToOklch(color);
   return `oklch(${round(l * 100, 2)}% ${round(c, 4)} ${round(c < 1e-4 ? 0 : h, 2)}${alphaPart(a, false)})`;
 }
 
 /**
- * Zapisuje novu boju u istom sintaksnom obliku kao original, da izmenjeni CSS
- * ostane što bliži izvornom (HEX ostaje HEX, `rgba(…, …)` ostaje sa zarezima, itd.).
- * Imenovane boje postaju HEX; lab/lch/oklab/color() postaju oklch().
+ * Writes the new color in the same syntactic form as the original, so the modified CSS
+ * stays as close to the source as possible (HEX stays HEX, `rgba(…, …)` keeps commas, etc.).
+ * Named colors become HEX; lab/lch/oklab/color() become oklch().
  */
 export function formatLike(original: ParsedColor, color: RGBA): string {
   const legacy = original.legacy === true;

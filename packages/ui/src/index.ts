@@ -9,10 +9,10 @@ export type { PanelStorage, Saved } from './state.js';
 type CCWindow = Window & { __ccPanel?: PanelHandle | Promise<PanelHandle> };
 
 /**
- * Pokretanje:
- * - bookmarklet / direktno ubacivanje: panel se otvara odmah; ponovni klik ga sakriva/prikazuje;
- * - `<script src="cc-panel.js" data-cc-snippet>` na sopstvenom sajtu: panel se otvara samo uz
- *   `?cc=1` ili paletu u hash-u (`#cc=…`), pa posetioci produkcije ništa ne vide.
+ * Startup:
+ * - bookmarklet / direct injection: the panel opens immediately; clicking again hides/shows it;
+ * - `<script src="cc-panel.js" data-cc-snippet>` on your own site: the panel opens only with
+ *   `?cc=1` or a palette in the hash (`#cc=…`), so production visitors see nothing.
  */
 function boot() {
   const w = window as CCWindow;

@@ -1,5 +1,5 @@
-// Statički server za fixtures/: port 4173 = „sajt", port 4174 = „drugi domen" (cross-origin CSS).
-// Na 4174 samo putanje pod /cors/ šalju Access-Control-Allow-Origin.
+// Static server for fixtures/: port 4173 = "the site", port 4174 = "another domain" (cross-origin CSS).
+// On 4174 only paths under /cors/ send Access-Control-Allow-Origin.
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';

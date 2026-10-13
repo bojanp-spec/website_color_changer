@@ -3,24 +3,24 @@ import { parseColor } from '../color/parse.js';
 import { formatLike, toHex } from '../color/serialize.js';
 import { replaceColors } from '../color/tokenize.js';
 
-/** Boje bliže od ovoga nekoj poznatoj boji mapiraju se kao ta boja (npr. zaokruživanje u CSS-u). */
+/** Colors closer than this to a known color are mapped like that color (e.g. CSS rounding). */
 const NEAREST_DELTA = 0.02;
 
 export interface ColorMapper {
-  /** Nova boja za kanonski ključ, ili `undefined` ako se boja ne menja. */
+  /** New color for a canonical key, or `undefined` if the color does not change. */
   mapKey(key: string): string | undefined;
-  /** Vrednost CSS svojstva sa zamenjenim bojama (ostatak vrednosti netaknut). */
+  /** CSS property value with colors replaced (the rest of the value untouched). */
   mapValue(value: string): string;
-  /** Skup novih boja (ključevi) — da se već zamenjena boja ne bi menjala ponovo. */
+  /** Set of new colors (keys) — so an already replaced color is not changed again. */
   readonly targets: ReadonlySet<string>;
 }
 
 /**
- * Pravi funkciju mapiranja iz tabele „stara → nova". Boje koje nisu bile u analizi
- * (npr. stilovi učitani kasnije) mapiraju se kao najbliža poznata boja ako je praktično ista.
+ * Builds a mapping function from an "old → new" table. Colors that were not in the analysis
+ * (e.g. styles loaded later) are mapped like the nearest known color if practically identical.
  */
 export interface ColorMapperOptions {
-  /** `like` = zadrži zapis originala (podrazumevano); `hex` = uvek `#rrggbb(aa)` (čitljivije u izvezenom CSS-u). */
+  /** `like` = keep the original notation (default); `hex` = always `#rrggbb(aa)` (more readable in exported CSS). */
   format?: 'like' | 'hex';
 }
 

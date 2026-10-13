@@ -1,4 +1,4 @@
-/** Stil panela. Živi u shadow root-u: sajt ne utiče na panel, panel ne utiče na sajt. */
+/** Panel styles. They live in the shadow root: the site doesn't affect the panel, and the panel doesn't affect the site. */
 export const PANEL_CSS = `
 :host {
   all: initial;

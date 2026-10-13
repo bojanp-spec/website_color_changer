@@ -1,6 +1,6 @@
 import { BASE, bg, clickAction, expect, siteSettings, test } from './fixtures.js';
 
-test('klik na ikonicu otvara panel; paleta se čuva u ekstenziji, ne u localStorage sajta', async ({ context, sw }) => {
+test('clicking the icon opens the panel; the palette is stored in the extension, not in the site localStorage', async ({ context, sw }) => {
   const page = await context.newPage();
   await page.goto(`${BASE}/blue-gray-vars/`);
   await clickAction(sw, page);
@@ -14,7 +14,7 @@ test('klik na ikonicu otvara panel; paleta se čuva u ekstenziji, ne u localStor
     .toEqual({ dominant: '#FAFAFA', secondary: '#4B4B4F', accent: '#D32F2F' });
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
 
-  // drugi klik sakriva panel (sajt ostaje u novoj paleti), treći ga vraća
+  // a second click hides the panel (the site keeps the new palette), a third brings it back
   await clickAction(sw, page);
   await expect(panel.locator('.panel')).toBeHidden();
   expect(await bg(page, 'body')).toBe('rgb(250, 250, 250)');
@@ -22,10 +22,10 @@ test('klik na ikonicu otvara panel; paleta se čuva u ekstenziji, ne u localStor
   await expect(panel.locator('.panel')).toBeVisible();
 });
 
-test('stroga CSP: bookmarklet-način je blokiran, ekstenzija radi (i panel ima stil)', async ({ context, sw }) => {
+test('strict CSP: the bookmarklet approach is blocked, the extension works (and the panel is styled)', async ({ context, sw }) => {
   const page = await context.newPage();
   await page.goto(`${BASE}/strict-csp/`);
-  // Inline skripta (kao bookmarklet/snippet) — CSP je blokira.
+  // An inline script (like the bookmarklet/snippet) — CSP blocks it.
   await page.evaluate(() => {
     const s = document.createElement('script');
     s.textContent = 'window.__inlineRan = true';
@@ -42,7 +42,7 @@ test('stroga CSP: bookmarklet-način je blokiran, ekstenzija radi (i panel ima s
   expect(await bg(page, 'body')).toBe('rgb(250, 250, 250)');
 });
 
-test('CSS sa drugog domena bez CORS-a: ekstenzija ga preuzima, boje idu kroz CSS sloj (bez inline zakrpa)', async ({ context, sw }) => {
+test('cross-origin CSS without CORS: the extension fetches it, colors go through the CSS layer (no inline patches)', async ({ context, sw }) => {
   const page = await context.newPage();
   await page.goto(`${BASE}/cross-origin/`);
   const before = await bg(page, '.remote-nocors');
@@ -51,12 +51,12 @@ test('CSS sa drugog domena bez CORS-a: ekstenzija ga preuzima, boje idu kroz CSS
   await expect(panel.getByText('Nova paleta')).toBeVisible();
   await panel.locator('[data-preset="crveno-sivo"]').click();
   await expect.poll(() => bg(page, '.remote-nocors')).not.toBe(before);
-  // Pozadina je iz CSS sloja (stylesheet je preuzet), ne iz computed fallback-a koji piše inline.
-  // (Inline `color` može da postoji — to je lokalna korekcija kontrasta teksta.)
+  // The background comes from the CSS layer (the stylesheet was fetched), not from the computed fallback that writes inline.
+  // (An inline `color` may exist — that is a local text contrast fix.)
   expect(await page.getAttribute('.remote-nocors', 'style')).not.toContain('background');
 });
 
-test('bezbednost: stranica ne može da natera ekstenziju da preuzme nešto što nije njen stylesheet', async ({ context, sw }) => {
+test('security: a page cannot make the extension fetch anything that is not its own stylesheet', async ({ context, sw }) => {
   const page = await context.newPage();
   await page.goto(`${BASE}/cross-origin/`);
   await clickAction(sw, page);
@@ -81,7 +81,7 @@ test('bezbednost: stranica ne može da natera ekstenziju da preuzme nešto što 
   expect(await ask('http://127.0.0.1:4174/cors/theme.css?drugo')).toMatchObject({ ok: false });
 });
 
-test('automatska primena: posle osvežavanja paleta je tu bez otvaranja panela', async ({ context, sw }) => {
+test('auto-apply: after a reload the palette is there without opening the panel', async ({ context, sw }) => {
   const page = await context.newPage();
   await page.goto(`${BASE}/blue-gray-vars/`);
   await clickAction(sw, page);
@@ -96,15 +96,15 @@ test('automatska primena: posle osvežavanja paleta je tu bez otvaranja panela',
   await expect.poll(() => bg(page, '.btn-cta')).toBe('rgb(242, 183, 5)');
   await expect(page.locator('cc-panel')).toHaveCount(0);
 
-  // Klik na ikonicu sada otvara panel sa istom paletom (bez dvostrukog sloja).
+  // Clicking the icon now opens the panel with the same palette (without a duplicate layer).
   await clickAction(sw, page);
   await expect(page.locator('cc-panel').getByText('Nova paleta')).toBeVisible();
   await expect.poll(() => bg(page, '.btn-cta')).toBe('rgb(242, 183, 5)');
   await page.locator('cc-panel [data-action="toggle"]').click();
-  expect(await bg(page, '.btn-cta')).toBe('rgb(37, 99, 235)'); // original — sloj nije dupliran
+  expect(await bg(page, '.btn-cta')).toBe('rgb(37, 99, 235)'); // original — the layer is not duplicated
 });
 
-test('stranica sa podešavanjima: sačuvani sajtovi i dozvole', async ({ context, sw, extensionId }) => {
+test('options page: saved sites and permissions', async ({ context, sw, extensionId }) => {
   await sw.evaluate(() =>
     chrome.storage.local.set({
       'site:primer.rs': { palette: { dominant: '#fafafa', secondary: '#4b4b4f', accent: '#d32f2f' }, autoApply: false, updated: 1 },
@@ -122,8 +122,8 @@ test('stranica sa podešavanjima: sačuvani sajtovi i dozvole', async ({ context
   await expect(page.locator('#empty')).toBeVisible();
 });
 
-test('LIVE drmozgovich.top (samo sa LIVE=1)', async ({ context, sw }) => {
-  test.skip(!process.env.LIVE, 'zahteva mrežni pristup sajtu');
+test('LIVE drmozgovich.top (only with LIVE=1)', async ({ context, sw }) => {
+  test.skip(!process.env.LIVE, 'requires network access to the site');
   const page = await context.newPage();
   await page.goto('https://drmozgovich.top', { waitUntil: 'networkidle' });
   await clickAction(sw, page);

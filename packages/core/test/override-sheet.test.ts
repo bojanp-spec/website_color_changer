@@ -23,25 +23,25 @@ const u = (partial: Partial<Usage>): Usage => ({
 });
 
 describe('createColorMapper', () => {
-  it('mapira poznate boje, ostale ostavlja', () => {
+  it('maps known colors, leaves the rest', () => {
     expect(mapper.mapKey('#1e3a8a')).toBe('#c62828');
-    expect(mapper.mapKey('#ffffff')).toBeUndefined(); // identitet = bez promene
+    expect(mapper.mapKey('#ffffff')).toBeUndefined(); // identity = no change
     expect(mapper.mapKey('#00ff00')).toBeUndefined();
   });
 
-  it('praktično ista boja (zaokruživanje) mapira se kao poznata', () => {
+  it('a practically identical color (rounding) maps like the known one', () => {
     expect(mapper.mapKey('#1e3a8b')).toBe('#c62828');
   });
 
-  it('mapValue čuva format i ostatak vrednosti', () => {
+  it('mapValue preserves the format and the rest of the value', () => {
     expect(mapper.mapValue('1px solid rgb(30, 58, 138)')).toBe('1px solid rgb(198, 40, 40)');
     expect(mapper.mapValue('#3182CE url(a.png) no-repeat')).toBe('#D32F2F url(a.png) no-repeat');
-    expect(mapper.mapValue('rgba(30, 58, 138, 0.5)')).toBe('rgba(30, 58, 138, 0.5)'); // druga alfa = druga boja
+    expect(mapper.mapValue('rgba(30, 58, 138, 0.5)')).toBe('rgba(30, 58, 138, 0.5)'); // different alpha = different color
   });
 });
 
 describe('buildOverrideCss', () => {
-  it('isti selektor, isti omotači, ista važnost — samo boje', () => {
+  it('same selector, same wrappers, same importance — only colors', () => {
     const css = buildOverrideCss(
       [
         u({ selector: '.btn', property: 'background-color', value: 'rgb(49, 130, 206)', conditions: ['@layer components'] }),
@@ -58,7 +58,7 @@ describe('buildOverrideCss', () => {
     );
   });
 
-  it('nesting i varijable; reference na varijable se ne ponavljaju', () => {
+  it('nesting and variables; variable references are not repeated', () => {
     const css = buildOverrideCss(
       [
         u({ source: 'variable', selector: ':root', property: '--brand', value: '#1e3a8a' }),
@@ -70,7 +70,7 @@ describe('buildOverrideCss', () => {
     expect(css).toBe(':root {\n  --brand: #c62828;\n}\n.list {\n& li:hover {\n  color: rgb(198, 40, 40);\n}\n}');
   });
 
-  it('varOverrides važi samo van alternativne šeme', () => {
+  it('varOverrides applies only outside the alternate scheme', () => {
     const usages = [
       u({ source: 'variable', selector: ':root', property: '--on-accent', value: '#1e3a8a' }),
       u({ source: 'variable', selector: ':root', property: '--on-accent', value: '#1e3a8a', conditions: ['@media (prefers-color-scheme: dark)'] }),
@@ -83,7 +83,7 @@ describe('buildOverrideCss', () => {
     expect(css).toContain('@media (prefers-color-scheme: dark) {\n:root {\n  --on-accent: #c62828;');
   });
 
-  it('@keyframes se zamenjuje u celini, jednom', () => {
+  it('@keyframes is replaced as a whole, once', () => {
     const ruleText = '@keyframes pulse { 0% { background-color: rgb(49, 130, 206); opacity: 0; } 100% { opacity: 1; } }';
     const css = buildOverrideCss(
       [u({ selector: '@keyframes pulse 0%', property: 'background-color', value: 'rgb(49, 130, 206)', ruleText }), u({ selector: '@keyframes pulse 100%', ruleText, value: 'x' })],
@@ -92,7 +92,7 @@ describe('buildOverrideCss', () => {
     expect(css).toBe('@keyframes pulse { 0% { background-color: rgb(211, 47, 47); opacity: 0; } 100% { opacity: 1; } }');
   });
 
-  it('shadow root-ovi dobijaju sopstveni CSS; inline upotrebe se preskaču', () => {
+  it('shadow roots get their own CSS; inline usages are skipped', () => {
     const out = buildOverrideCss(
       [
         u({ scope: 'promo-card#0>', selector: '.box', property: 'background-color', value: '#1e3a8a' }),

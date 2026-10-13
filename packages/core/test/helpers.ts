@@ -1,7 +1,7 @@
 import { expect } from 'vitest';
 import type { RGBA } from '../src/index.js';
 
-/** Poredi boju u 0..255 skali sa tolerancijom (u jedinicama bajta). */
+/** Compares a color on the 0..255 scale with a tolerance (in byte units). */
 export function expectRgb(actual: RGBA | null | undefined, expected: [number, number, number, number?], tol = 0.6) {
   expect(actual).toBeTruthy();
   const a = actual!;

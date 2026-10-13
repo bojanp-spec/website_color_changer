@@ -3,36 +3,36 @@ import type { OKLCH } from '../color/types.js';
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
-/** Razlika nijansi u [-180, 180]. */
+/** Hue difference in [-180, 180]. */
 export function hueDelta(from: number, to: number): number {
   return ((((to - from) % 360) + 540) % 360) - 180;
 }
 
-/** Najveći dozvoljeni pomak nijanse u odnosu na bazu (hover blago ka ljubičastoj i sl.). */
+/** Maximum allowed hue shift relative to the base (hover slightly toward purple, etc.). */
 const MAX_HUE_SHIFT = 40;
 
 /**
- * Faza 3: prenosi boju iz stare palete u novu, čuvajući njen odnos prema baznoj boji uloge.
+ * Phase 3: carries a color from the old palette into the new one, preserving its relation to the role's base color.
  *
- * - Svetlina: zadržava razliku od baze; kompresuje je kad nova baza ima manje „prostora"
- *   (npr. svetla nijansa žute ne sme preći belu).
- * - Hroma: zadržava odnos prema bazi (bleda varijanta ostaje bleda). Za (skoro) neutralne baze
- *   razlika se skalira prema 0.03, pa obojene sive dobijaju nijansu nove boje, a ne preteruju.
- * - Nijansa: obojene boje zadržavaju mali pomak od baze; neutralne preuzimaju nijansu nove baze.
+ * - Lightness: keeps the difference from the base; compresses it when the new base has less "room"
+ *   (e.g. a light tint of yellow must not go past white).
+ * - Chroma: keeps the relation to the base (a pale variant stays pale). For (nearly) neutral bases
+ *   the difference is scaled relative to 0.03, so tinted grays pick up the new hue without overdoing it.
+ * - Hue: chromatic colors keep a small offset from the base; neutrals take the new base's hue.
  *
- * `mode` menja smer razlike svetline kad nova paleta ima suprotan polaritet od sajta.
+ * `mode` changes the direction of the lightness difference when the new palette has the opposite polarity to the site.
  *
- * Bazna boja se uvek preslikava tačno u novu baznu boju. Rezultat može biti van sRGB gamuta —
- * serijalizacija ga gamut-mapira.
+ * The base color always maps exactly to the new base color. The result may be outside the sRGB gamut —
+ * serialization gamut-maps it.
  */
 export type LightnessMode =
-  /** Zadrži smer razlike (podrazumevano). */
+  /** Keep the direction of the difference (default). */
   | 'keep'
-  /** Obrni smer: tekst koji je bio svetliji od baze postaje tamniji (promena svetla ↔ tamna šema). */
+  /** Invert the direction: text that was lighter than the base becomes darker (light ↔ dark scheme switch). */
   | 'invert'
-  /** Uvek svetlije od baze (površine i linije na tamnoj pozadini). */
+  /** Always lighter than the base (surfaces and lines on a dark background). */
   | 'lighter'
-  /** Uvek tamnije od baze (površine i linije na svetloj pozadini). */
+  /** Always darker than the base (surfaces and lines on a light background). */
   | 'darker';
 
 export function remap(orig: OKLCH, oldBase: OKLCH, newBase: OKLCH, mode: LightnessMode = 'keep'): OKLCH {

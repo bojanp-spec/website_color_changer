@@ -10,7 +10,7 @@ const mul = (m: Mat3, v: Vec3): Vec3 => [
 ];
 
 // ---------------------------------------------------------------------------
-// Transfer funkcije (sRGB i display-p3 dele istu krivu)
+// Transfer functions (sRGB and display-p3 share the same curve)
 // ---------------------------------------------------------------------------
 
 export function srgbToLinear(c: number): number {
@@ -26,7 +26,7 @@ export function linearToSrgb(c: number): number {
 }
 
 // ---------------------------------------------------------------------------
-// Matrice (CSS Color 4)
+// Matrices (CSS Color 4)
 // ---------------------------------------------------------------------------
 
 const LIN_SRGB_TO_XYZ_D65: Mat3 = [
@@ -51,7 +51,7 @@ const D50_TO_D65: Mat3 = [
 ];
 
 // ---------------------------------------------------------------------------
-// Ulazni prostori → sRGB
+// Input spaces → sRGB
 // ---------------------------------------------------------------------------
 
 function linearSrgbVecToRgba(v: Vec3, a: number): RGBA {
@@ -80,7 +80,7 @@ const D50_WHITE: Vec3 = [0.3457 / 0.3585, 1, (1 - 0.3457 - 0.3585) / 0.3585];
 const KAPPA = 24389 / 27;
 const EPSILON = 216 / 24389;
 
-/** CIE Lab (D50, kako ga definiše CSS). L 0..100. */
+/** CIE Lab (D50, as defined by CSS). L 0..100. */
 export function labToRgb(L: number, A: number, B: number, alpha = 1): RGBA {
   const f1 = (L + 16) / 116;
   const f0 = A / 500 + f1;
@@ -96,7 +96,7 @@ export function lchToRgb(L: number, C: number, H: number, alpha = 1): RGBA {
   return labToRgb(L, C * Math.cos(h), C * Math.sin(h), alpha);
 }
 
-/** HSL → sRGB. h u stepenima, s i l u 0..1. */
+/** HSL → sRGB. h in degrees, s and l in 0..1. */
 export function hslToRgb(h: number, s: number, l: number, a = 1): RGBA {
   h = ((h % 360) + 360) % 360;
   const f = (n: number) => {
@@ -106,7 +106,7 @@ export function hslToRgb(h: number, s: number, l: number, a = 1): RGBA {
   return { r: f(0), g: f(8), b: f(4), a };
 }
 
-/** HWB → sRGB. h u stepenima, w i bl u 0..1. */
+/** HWB → sRGB. h in degrees, w and bl in 0..1. */
 export function hwbToRgb(h: number, w: number, bl: number, a = 1): RGBA {
   if (w + bl >= 1) {
     const gray = w / (w + bl);
@@ -166,7 +166,7 @@ export function oklabToRgb({ l: L, a: A, b: B, alpha }: OKLab): RGBA {
   );
 }
 
-/** Ispod ove hrome nijansa nema smisla (ahromatska boja) i vraća se h = 0. */
+/** Below this chroma the hue is meaningless (achromatic color) and h = 0 is returned. */
 const ACHROMATIC_C = 1e-4;
 
 export function oklabToOklch({ l, a, b, alpha }: OKLab): OKLCH {
@@ -184,7 +184,7 @@ export function rgbToOklch(rgba: RGBA): OKLCH {
   return oklabToOklch(rgbToOklab(rgba));
 }
 
-/** Bez gamut mapiranja — rezultat može biti van sRGB. Za prikaz koristi {@link oklchToRgbInGamut}. */
+/** No gamut mapping — the result may be outside sRGB. For display use {@link oklchToRgbInGamut}. */
 export function oklchToRgb(lch: OKLCH): RGBA {
   return oklabToRgb(oklchToOklab(lch));
 }
@@ -205,7 +205,7 @@ export function clipRgb({ r, g, b, a }: RGBA): RGBA {
   return { r: clamp01(r), g: clamp01(g), b: clamp01(b), a: clamp01(a) };
 }
 
-/** Perceptualna razlika dve boje u OKLab prostoru (ΔE_OK). ~0.02 je prag primetnosti. */
+/** Perceptual difference of two colors in OKLab space (ΔE_OK). ~0.02 is the noticeability threshold. */
 export function deltaEOK(x: RGBA, y: RGBA): number {
   const p = rgbToOklab(x);
   const q = rgbToOklab(y);
@@ -215,8 +215,8 @@ export function deltaEOK(x: RGBA, y: RGBA): number {
 const JND = 0.02;
 
 /**
- * OKLCH → sRGB uz gamut mapiranje po CSS Color 4 algoritmu:
- * svetlina i nijansa se čuvaju, hroma se smanjuje dok boja ne uđe u sRGB.
+ * OKLCH → sRGB with gamut mapping per the CSS Color 4 algorithm:
+ * lightness and hue are preserved, chroma is reduced until the color fits in sRGB.
  */
 export function oklchToRgbInGamut(lch: OKLCH): RGBA {
   const a = clamp01(lch.a);
@@ -244,7 +244,7 @@ export function oklchToRgbInGamut(lch: OKLCH): RGBA {
   return best;
 }
 
-/** Svodi bilo koju (moguće van-gamut) boju u sRGB, čuvajući L i H. */
+/** Brings any (possibly out-of-gamut) color into sRGB, preserving L and H. */
 export function toSrgbGamut(rgba: RGBA): RGBA {
   return inSrgbGamut(rgba) ? clipRgb(rgba) : oklchToRgbInGamut(rgbToOklch(rgba));
 }

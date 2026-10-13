@@ -1,15 +1,16 @@
 #!/usr/bin/env node
-// Skenira paletu boja sajta u headless Chromium-u i ispisuje je u terminal.
+// Scans a site's color palette in headless Chromium and prints it to the terminal.
 //
 //   npm run scan -- https://example.com [--json out.json] [--width 1440] [--no-scroll] [--dark]
-//                   [--palette crveno-sivo | --palette "#FAFAFA,#4B4B4F,#D32F2F"] [--all]
+//                   [--palette red-gray | --palette "#FAFAFA,#4B4B4F,#D32F2F"] [--all] [--lang en|sr]
 //
-// --palette: klasifikuje boje (60-30-10) i prikazuje mapu stara → nova boja za izabranu paletu.
-// --all: u mapi prikaži i boje koje se ne menjaju.
-// --screenshot <dir>: snimci cele stranice pre i posle primene palete (original.png, <paleta>.png).
-// --css <fajl>: izvoz CSS sloja za trajnu primenu (uz --palette).
+// --palette: classifies colors (60-30-10) and shows the old → new color map for the chosen palette.
+// --all: also show colors that don't change in the map.
+// --screenshot <dir>: full-page screenshots before and after applying the palette (original.png, <palette>.png).
+// --css <file>: export the CSS layer for permanent use (with --palette).
+// --lang en|sr: output language (default: CC_LANG, then the system language; `sr*` → Serbian, else English).
 //
-// Lokalno je potreban Chromium za Playwright: `npx playwright install chromium`.
+// Running locally requires Chromium for Playwright: `npx playwright install chromium`.
 import { chromium } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -21,8 +22,31 @@ const opt = (name) => {
   const i = args.indexOf(name);
   return i === -1 ? undefined : args[i + 1];
 };
+const lang = (opt('--lang') || process.env.CC_LANG || process.env.LC_ALL || process.env.LANG || '').toLowerCase().startsWith('sr') ? 'sr' : 'en';
+const M = {
+  sr: {
+    usage: 'Upotreba: npm run scan -- <url> [--json out.json] [--width 1440] [--no-scroll] [--dark] [--palette <preset | "#dom,#sek,#akc">] [--lang en|sr]',
+    palette: 'Paleta:',
+    site: 'sajt:',
+    applied: (rules, patched) => `Primenjeno: ${rules} CSS pravila, ${patched} elemenata sa izmenjenim atributima`,
+    fallback: (n) => `, ${n} preko izračunatog stila`,
+    variable: (name) => `varijabla ${name}`,
+    inline: (n) => `inline na ${n} elemenata`,
+    local: (fg, bg, to, via) => `lokalni kontrast: ${fg} na ${bg} → ${to} (${via})`,
+  },
+  en: {
+    usage: 'Usage: npm run scan -- <url> [--json out.json] [--width 1440] [--no-scroll] [--dark] [--palette <preset | "#dom,#sec,#acc">] [--lang en|sr]',
+    palette: 'Palette:',
+    site: 'site:',
+    applied: (rules, patched) => `Applied: ${rules} CSS rules, ${patched} elements with modified attributes`,
+    fallback: (n) => `, ${n} via computed fallback`,
+    variable: (name) => `variable ${name}`,
+    inline: (n) => `inline on ${n} elements`,
+    local: (fg, bg, to, via) => `local contrast: ${fg} on ${bg} → ${to} (${via})`,
+  },
+}[lang];
 if (!url) {
-  console.error('Upotreba: npm run scan -- <url> [--json out.json] [--width 1440] [--no-scroll] [--dark] [--palette <preset | "#dom,#sek,#akc">]');
+  console.error(M.usage);
   process.exit(1);
 }
 
@@ -36,7 +60,7 @@ try {
   await page.goto(url, { waitUntil: 'networkidle', timeout: 60_000 });
 
   if (!args.includes('--no-scroll')) {
-    // Lazy-load sadržaj: skroluj do dna, pa nazad na vrh.
+    // Lazy-loaded content: scroll to the bottom, then back to the top.
     await page.evaluate(async () => {
       for (let y = 0; y < document.documentElement.scrollHeight; y += innerHeight * 0.8) {
         scrollTo(0, y);
@@ -49,7 +73,7 @@ try {
 
   await page.addScriptTag({ path: fileURLToPath(new URL('../dist/cc-core.iife.js', import.meta.url)) });
   const { text, json, mapText, error } = await page.evaluate(
-    async ({ palette, all }) => {
+    async ({ palette, all, lang, head: label }) => {
       const CC = window.CC;
       const result = await CC.scanDocument(document);
       const swatch = (hex) => {
@@ -59,27 +83,27 @@ try {
       const usages = result.usages.map(({ element, ...u }) => (element ? { ...u, element: element.localName } : u));
       const { pairElements: _p, scopes: _s, ...plain } = result;
       const json = { url: location.href, ...plain, usages };
-      if (!palette) return { text: CC.formatPalette(result, swatch), json };
+      if (!palette) return { text: CC.formatPalette(result, swatch, lang), json };
 
-      let chosen = CC.PRESETS[palette];
+      let chosen = CC.findPreset(palette);
       if (!chosen) {
         const [dominant, secondary, accent] = palette.split(',').map((x) => x.trim());
         chosen = { dominant, secondary, accent };
       }
       try {
-        const c = CC.classify(result);
-        const m = CC.buildColorMap(c, chosen, result.pairs);
+        const c = CC.classify(result, { lang });
+        const m = CC.buildColorMap(c, chosen, result.pairs, { lang });
         json.classification = { bases: c.bases, altBases: c.altBases, roles: [...c.roles.values()] };
         json.colorMap = m.entries;
         const shown = all ? m : { ...m, entries: m.entries.filter((e) => e.role !== 'protected') };
-        const head = `Paleta: ${chosen.dominant} / ${chosen.secondary} / ${chosen.accent}` +
-          `   (sajt: ${c.bases.dominant} / ${c.bases.secondary} / ${c.bases.accent ?? '—'})`;
-        return { text: CC.formatPalette(result, swatch), json, mapText: `${head}\n${CC.formatColorMap(shown, swatch)}` };
+        const head = `${label.palette} ${chosen.dominant} / ${chosen.secondary} / ${chosen.accent}` +
+          `   (${label.site} ${c.bases.dominant} / ${c.bases.secondary} / ${c.bases.accent ?? '—'})`;
+        return { text: CC.formatPalette(result, swatch, lang), json, mapText: `${head}\n${CC.formatColorMap(shown, swatch, lang)}` };
       } catch (e) {
-        return { text: CC.formatPalette(result, swatch), json, error: String(e?.message ?? e) };
+        return { text: CC.formatPalette(result, swatch, lang), json, error: String(e?.message ?? e) };
       }
     },
-    { palette: opt('--palette'), all: args.includes('--all') },
+    { palette: opt('--palette'), all: args.includes('--all'), lang, head: { palette: M.palette, site: M.site } },
   );
 
   console.log(`\n🎨 ${url}  (viewport ${width}px)\n`);
@@ -96,24 +120,23 @@ try {
       mkdirSync(shotDir, { recursive: true });
       await page.screenshot({ path: join(shotDir, 'original.png'), fullPage: true });
     }
-    const report = await page.evaluate(async (palette) => {
+    const report = await page.evaluate(async ({ palette, lang }) => {
       const CC = window.CC;
-      let chosen = CC.PRESETS[palette];
+      let chosen = CC.findPreset(palette);
       if (!chosen) {
         const [dominant, secondary, accent] = palette.split(',').map((x) => x.trim());
         chosen = { dominant, secondary, accent };
       }
-      const engine = CC.createEngine(document);
+      const engine = CC.createEngine(document, { lang });
       await engine.analyze();
       const r = engine.apply(chosen);
       await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
       return { css: engine.exportCss(), rules: r.rules, patched: r.patchedElements, fixes: r.localContrastFixes, fallback: r.fallbackPatched };
-    }, opt('--palette'));
-    console.log(`\n🎨 Primenjeno: ${report.rules} CSS pravila, ${report.patched} elemenata sa izmenjenim atributima` +
-      (report.fallback ? `, ${report.fallback} preko computed fallback-a` : ''));
+    }, { palette: opt('--palette'), lang });
+    console.log(`\n🎨 ${M.applied(report.rules, report.patched)}${report.fallback ? M.fallback(report.fallback) : ''}`);
     for (const f of report.fixes) {
-      const via = f.via.kind === 'variable' ? `varijabla ${f.via.name}` : `inline na ${f.via.elements} elemenata`;
-      console.log(`   ⚖ lokalni kontrast: ${f.fg} na ${f.bg} → ${f.to} (${via})`);
+      const via = f.via.kind === 'variable' ? M.variable(f.via.name) : M.inline(f.via.elements);
+      console.log(`   ⚖ ${M.local(f.fg, f.bg, f.to, via)}`);
     }
     if (shotDir) {
       const name = opt('--palette').replace(/[^\w-]+/g, '_').replace(/^_+|_+$/g, '');

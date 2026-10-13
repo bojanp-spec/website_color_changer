@@ -8,6 +8,8 @@ import { buildOverrideCss } from './apply/override-sheet.js';
 import { ensureContrast } from './color/contrast.js';
 import { parseColor } from './color/parse.js';
 import { toHex } from './color/serialize.js';
+import { coreText } from './i18n.js';
+import type { Lang } from './i18n.js';
 import { buildColorMap } from './map/color-map.js';
 import type { ColorMapOptions, ColorMapResult } from './map/color-map.js';
 import { scanStylesheets } from './scan/cssom-scanner.js';
@@ -18,11 +20,11 @@ import { colorKey } from './scan/properties.js';
 import type { ScanResult, Usage } from './scan/types.js';
 
 export interface EngineOptions extends ScanOptions, ClassifyOptions, ColorMapOptions {
-  /** Jezik komentara u izvezenom CSS-u. Podrazumevano `'sr'`. */
-  lang?: 'sr' | 'en';
-  /** Prati dinamički sadržaj (SPA, modali, lazy load, CSS-in-JS). Podrazumevano `true`. */
+  /** Language of comments in the exported CSS, contrast warnings, reasons in the color map and errors. Default `'sr'`. */
+  lang?: Lang;
+  /** Track dynamic content (SPA, modals, lazy load, CSS-in-JS). Default `true`. */
   observe?: boolean;
-  /** Isključuje CSS tranzicije tokom prebacivanja, da promena ne „animira". Podrazumevano `true`. */
+  /** Disables CSS transitions while switching so the change does not "animate". Default `true`. */
   suppressTransitions?: boolean;
 }
 
@@ -31,48 +33,48 @@ export interface LocalContrastFix {
   bg: string;
   to: string;
   /**
-   * `variable` = promenjena samo ta varijabla (npr. `--accent-contrast`); `inline` = boja na elementima.
-   * Za `inline`, `selector` je proveren CSS selektor koji pogađa samo te elemente (ili elemente na istoj
-   * pozadini) — da izvezeni CSS može da pokrije korekciju bez inline atributa.
+   * `variable` = only that variable was changed (e.g. `--accent-contrast`); `inline` = color set on the elements.
+   * For `inline`, `selector` is a verified CSS selector matching only those elements (or elements on the same
+   * background) — so the exported CSS can cover the fix without inline attributes.
    */
   via: { kind: 'variable'; name: string } | { kind: 'inline'; elements: number; selector?: string };
 }
 
 export interface ApplyOptions {
-  /** Gotova mapa boja (npr. zajednička za ceo sajt, iz CLI izvoza) umesto računanja za ovu stranicu. */
+  /** A ready-made color map (e.g. shared site-wide, from a CLI export) instead of computing one for this page. */
   colorMap?: ColorMapResult;
 }
 
 export interface ApplyReport {
   colorMap: ColorMapResult;
-  /** Broj CSS pravila u sloju (po svim scope-ovima). */
+  /** Number of CSS rules in the layer (across all scopes). */
   rules: number;
-  /** Broj elemenata čiji su atributi (style/fill/bgcolor) privremeno promenjeni. */
+  /** Number of elements whose attributes (style/fill/bgcolor) were temporarily changed. */
   patchedElements: number;
   localContrastFixes: LocalContrastFix[];
-  /** Elementi obojeni preko computed fallback-a (stilovi sa drugog domena bez CORS-a). */
+  /** Elements colored via the computed-style fallback (cross-origin styles without CORS). */
   fallbackPatched: number;
 }
 
 export interface ColorEngine {
   analyze(): Promise<{ scan: ScanResult; classification: Classification }>;
-  /** Ručna korekcija uloge boje; važi od sledećeg `apply`. */
+  /** Manual color role override; takes effect from the next `apply`. */
   setRoleOverride(key: string, role: Role): void;
   apply(palette: Palette, options?: ApplyOptions): ApplyReport;
-  /** Vraća sajt u original (bez reload-a). Paleta ostaje zapamćena za `toggle()`. */
+  /** Restores the site to its original (no reload). The palette stays remembered for `toggle()`. */
   disable(): void;
-  /** A/B: original ↔ poslednja paleta. Vraća da li je paleta sada primenjena. */
+  /** A/B: original ↔ last palette. Returns whether the palette is now applied. */
   toggle(): boolean;
-  /** CSS za trajnu primenu (dokument). */
+  /** CSS for permanent use (document). */
   exportCss(): string;
   destroy(): void;
   readonly applied: boolean;
   readonly palette: Palette | null;
-  /** Trenutna klasifikacija (sa ručnim korekcijama), posle `analyze()`. */
+  /** Current classification (with manual overrides), after `analyze()`. */
   readonly classification: Classification | null;
 }
 
-/** Komentari u CSS-u koji izvozi `exportCss()`. */
+/** Comments in the CSS exported by `exportCss()`. */
 const EXPORT_TEXT = {
   sr: {
     palette: 'paleta',
@@ -119,7 +121,7 @@ function markedSheet(doc: Document, css: string): MarkedSheet {
 }
 
 /**
- * Javni API: skeniranje → klasifikacija → primena palete kao nedestruktivnog sloja.
+ * Public API: scan → classify → apply the palette as a non-destructive layer.
  *
  * ```js
  * const engine = createEngine(document);
@@ -136,7 +138,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
   let palette: Palette | null = null;
   let applied = false;
 
-  // Stanje jedne primene
+  // State of a single apply
   let mapper: ColorMapper | null = null;
   let varOverrides = new Map<string, string>();
   let lastLocalFixes: LocalContrastFix[] = [];
@@ -172,7 +174,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     if (opts.suppressTransitions === false) return;
     const sheet = markedSheet(doc, '*, *::before, *::after { transition: none !important; }');
     doc.adoptedStyleSheets = [...doc.adoptedStyleSheets, sheet];
-    // Dva frame-a: stil se primeni bez tranzicije, pa se tranzicije vrate.
+    // Two frames: the style is applied without transitions, then transitions are restored.
     view.requestAnimationFrame(() =>
       view.requestAnimationFrame(() => {
         doc.adoptedStyleSheets = doc.adoptedStyleSheets.filter((s) => s !== sheet);
@@ -180,7 +182,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     );
   }
 
-  /** Inline `style`, SVG i HTML atributi boja. */
+  /** Inline `style`, SVG and HTML color attributes. */
   function patchInline(usages: Usage[]) {
     if (!mapper) return;
     for (const u of usages) {
@@ -196,7 +198,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     }
   }
 
-  /** Stilovi koje ne možemo da pročitamo (CORS): boje iz computed stila, inline. */
+  /** Styles we cannot read (CORS): colors from the computed style, applied inline. */
   function patchComputedFallback(): number {
     if (!mapper || !scan?.sheets.some((s) => s.status === 'blocked')) return 0;
     let count = 0;
@@ -234,8 +236,8 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
   }
 
   /**
-   * Varijabla iz koje element (ili najbliži predak sa pravilom) uzima boju teksta — samo ako to
-   * zaista važi u kaskadi (pravilo može biti pobeđeno, npr. `a { color: inherit }` van slojeva).
+   * The variable from which the element (or the nearest ancestor with a rule) takes its text color — only if
+   * that actually holds in the cascade (the rule may be overridden, e.g. `a { color: inherit }` outside layers).
    */
   function colorVariableFor(el: Element): string | null {
     const found = colorRuleFor(el);
@@ -243,9 +245,9 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
   }
 
   /**
-   * Proba: postavi varijablu na element i proveri da li se boja teksta menja; odmah vrati original.
-   * Ide preko privremenog atributa i sloja, ne preko `el.style` — Chrome posle CSSOM izmene
-   * inline stila ume da ostavi prazan `style=""`, pa DOM ne bi bio identičan originalu.
+   * Probe: set the variable on the element and check whether the text color changes; restore the original right away.
+   * Uses a temporary attribute and layer, not `el.style` — after a CSSOM change to the inline style
+   * Chrome may leave an empty `style=""`, so the DOM would not be identical to the original.
    */
   function variableControlsColor(node: Element, name: string): boolean {
     const probe = markedSheet(doc, `[data-cc-probe] { ${name}: #010203 !important; }`);
@@ -271,7 +273,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
         try {
           if (node.matches(u.selector!)) match = u;
         } catch {
-          /* selektor koji browser ne podržava u matches() */
+          /* selector the browser does not support in matches() */
         }
       }
       if (match?.varRefs[0]) return { node, name: match.varRefs[0] };
@@ -280,9 +282,9 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
   }
 
   /**
-   * Parovi koji ne mogu da se poprave globalno (npr. tekst na CTA dugmetu deli boju sa glavnim
-   * tekstom): popravka samo tamo gde se par javlja — preko zasebne varijable ako je bezbedno,
-   * inače inline na tim elementima. Ovde je dozvoljen i obrnut smer (taman → beo tekst na dugmetu).
+   * Pairs that cannot be fixed globally (e.g. text on a CTA button shares its color with the main
+   * text): fix only where the pair occurs — via a separate variable if safe,
+   * otherwise inline on those elements. The reverse direction is allowed here too (dark → white text on a button).
    */
   function planLocalContrast(map: ColorMapResult): { fixes: LocalContrastFix[]; inline: [Element, string][] } {
     const fixes: LocalContrastFix[] = [];
@@ -311,7 +313,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     return { fixes, inline };
   }
 
-  /** Element je „u istom kontekstu" kao problematični: jedan od njih, sadrži ih, na istoj pozadini ili nevidljiv. */
+  /** The element is "in the same context" as the problematic ones: one of them, contains them, on the same background, or invisible. */
   function sameContext(m: Element, elements: Element[], bgKey: string): boolean {
     return (
       elements.some((el) => m === el || m.contains(el)) ||
@@ -320,12 +322,12 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     );
   }
 
-  /** `tag.klasa.klasa` zajednički za elemente, ako ne pogađa ništa van njihovog konteksta. */
+  /** A `tag.class.class` selector shared by the elements, if it matches nothing outside their context. */
   function suggestSelector(elements: Element[], bgKey: string): string | undefined {
     const esc = (s: string) => (view.CSS?.escape ? view.CSS.escape(s) : s.replace(/[^\w-]/g, (c) => `\\${c}`));
     const parts = new Set(
       elements.map((el) => {
-        // Klase sa `:`/`[`/`/` (Tailwind varijante) su nestabilne za selektor — preskaču se.
+        // Classes with `:`/`[`/`/` (Tailwind variants) are unstable for a selector — skipped.
         const classes = Array.from(el.classList).filter((c) => !/[:[\]/]/.test(c));
         return `${el.localName}${classes.map((c) => `.${esc(c)}`).join('')}`;
       }),
@@ -340,8 +342,8 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
   }
 
   /**
-   * Varijablu smemo da promenimo samo ako nosi tu boju i ako je svaki element koji je koristi
-   * za boju teksta ili jedan od problematičnih, ili na istoj pozadini, ili nevidljiv.
+   * The variable may be changed only if it carries that color and every element using it
+   * for text color is either one of the problematic ones, on the same background, or invisible.
    */
   function variableIsLocal(name: string, elements: Element[], fgKey: string, bgKey: string): boolean {
     if (!scan) return false;
@@ -370,7 +372,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
         const target = r.target as Element;
         if (r.type === 'attributes') {
           if (target.closest?.('[data-cc]')) continue;
-          // Sajt je sam promenio atribut: nova vrednost je novi original, pa je ponovo mapiramo.
+          // The site changed the attribute itself: the new value is the new original, so remap it.
           patcher.forget(target, r.attributeName!);
           added.push(target);
         } else {
@@ -388,13 +390,13 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
         }
       }
       for (const el of added) patchInline(scanInline(el));
-      observer?.takeRecords(); // sopstvene izmene ne obrađujemo ponovo
+      observer?.takeRecords(); // don't reprocess our own changes
       if (sheetsChanged) scheduleRescan();
     });
     observer.observe(doc.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: OBSERVED_ATTRS });
   }
 
-  /** Novi stilovi (CSS-in-JS, lazy CSS): ponovo pročitaj pravila, zadrži istu mapu boja. */
+  /** New styles (CSS-in-JS, lazy CSS): re-read the rules, keep the same color map. */
   function scheduleRescan() {
     if (rescanTimer) clearTimeout(rescanTimer);
     rescanTimer = setTimeout(async () => {
@@ -436,7 +438,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     },
 
     async analyze() {
-      if (applied) disableInternal(); // analiza mora da vidi originalne boje
+      if (applied) disableInternal(); // analysis must see the original colors
       scan = await scanDocument(doc, opts);
       classification = classify(scan, { ...opts, overrides });
       return { scan, classification };
@@ -448,7 +450,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     },
 
     apply(next, applyOptions = {}) {
-      if (!scan || !classification) throw new Error('Pozovi analyze() pre apply().');
+      if (!scan || !classification) throw new Error(coreText(opts.lang).analyzeFirst);
       if (applied) disableInternal();
       palette = next;
 
@@ -490,7 +492,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     },
 
     exportCss() {
-      if (!scan || !classification || !palette) throw new Error('Nema primenjene palete za izvoz.');
+      if (!scan || !classification || !palette) throw new Error(coreText(opts.lang).nothingToExport);
       const colorMap = lastColorMap ?? buildColorMap(classification, palette, scan.pairs, opts);
       const css = buildOverrideCss(scan.usages, createColorMapper(colorMap.map), { varOverrides, isAlt }).get('') ?? '';
       const localRules = lastLocalFixes

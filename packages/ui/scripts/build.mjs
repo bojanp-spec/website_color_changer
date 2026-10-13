@@ -1,8 +1,8 @@
-// Gradi panel kao jedan samostalan fajl (core je uključen), na srpskom i engleskom:
-//   dist/cc-panel.js, dist/cc-panel_en.js          — čitljiv, za <script data-cc-snippet> i testove
-//   dist/cc-panel.min.js, dist/cc-panel_en.min.js  — minifikovan
-//   dist/bookmarklet.txt, dist/bookmarklet_en.txt  — javascript: URL (ceo kod u linku, radi bez hostinga)
-//   dist/install.html, dist/install_en.html        — stranica sa linkom za prevlačenje u bookmarks bar
+// Builds the panel as a single self-contained file (core included), in Serbian and English:
+//   dist/cc-panel.js, dist/cc-panel_en.js          — readable, for <script data-cc-snippet> and tests
+//   dist/cc-panel.min.js, dist/cc-panel_en.min.js  — minified
+//   dist/bookmarklet.txt, dist/bookmarklet_en.txt  — javascript: URL (all code in the link, works without hosting)
+//   dist/install.html, dist/install_en.html        — page with a link to drag to the bookmarks bar
 import { build } from 'esbuild';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 

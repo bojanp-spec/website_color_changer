@@ -1,4 +1,4 @@
-// Svet stranice (MAIN): engine i panel. Sa ekstenzijom razgovara preko bridge-a (postMessage).
+// Page world (MAIN): engine and panel. Talks to the extension via the bridge (postMessage).
 import { createEngine } from '@cc/core';
 import type { ColorEngine } from '@cc/core';
 import { mountPanel } from '@cc/ui/src/panel.js';
@@ -31,7 +31,7 @@ type ExtWindow = Window & { __ccExt?: { run(mode: 'toggle' | 'auto'): void } };
     });
 
   const engineOptions = {
-    // Stilovi sa drugih domena bez CORS-a: preuzima ih ekstenzija (uz proveru u bridge/background).
+    // Cross-origin styles without CORS: the extension fetches them (with checks in bridge/background).
     fetchCss: (href: string) => call<string>('fetch-css', href).catch(() => null),
   };
   const storage = {
@@ -59,7 +59,7 @@ type ExtWindow = Window & { __ccExt?: { run(mode: 'toggle' | 'auto'): void } };
         return;
       }
     }
-    // Automatski primenjena paleta: vrati original pa otvori panel sa istom paletom.
+    // Auto-applied palette: restore the original, then open the panel with the same palette.
     let initial = null;
     if (autoEngine) {
       initial = autoEngine.palette;

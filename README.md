@@ -79,7 +79,7 @@ Once you have chosen a palette, the tool is no longer needed in production. One 
 
 ```bash
 npm run build -w @cc/cli
-node packages/cli/dist/cli.mjs https://drmozgovich.top --palette crveno-sivo \
+node packages/cli/dist/cli.mjs https://drmozgovich.top --palette red-gray \
   --crawl 10 --out theme-override.css --map palette.map.json --report report.json --screenshots shots/
 ```
 
@@ -89,7 +89,7 @@ node packages/cli/dist/cli.mjs https://drmozgovich.top --palette crveno-sivo \
 4. Writes one `theme-override.css` (HEX colors, the same selectors, `@layer`, `@media` and dark mode as the site).
 5. **Verification:** the CSS is added to every page as a plain stylesheet, without the tool, and the contrast of every visible text is measured. Elements that kept an old color (e.g. because of inline styles) are reported too. If any text loses contrast, the command exits with code 2, so it can be used in CI.
 
-Other options: `--override "#e7f2fa=dominant"`, `--all-colors` (also changes semantic and chart colors), `--no-verify`, `--wait <ms>`. Colors in multicolor SVG graphics (e.g. the Google logo) are never changed. Palette names on the command line are the Serbian slugs: `crveno-sivo` (red/gray), `zuto-zeleno` (yellow/green), `zeleno-krem` (green/cream), `narandzasto-tamno` (orange/dark), `ljubicasto-roze` (purple/pink), `tirkiz-okean` (teal/ocean), `terakota-pesak` (terracotta/sand), `grafit-plavo` (graphite/electric blue), `ponoc-zlatno` (midnight/gold). Messages and the comments in the generated CSS follow `--lang en|sr` (default: the system language).
+Other options: `--override "#e7f2fa=dominant"`, `--all-colors` (also changes semantic and chart colors), `--no-verify`, `--wait <ms>`. Colors in multicolor SVG graphics (e.g. the Google logo) are never changed. Palette names on the command line: `red-gray`, `yellow-green`, `green-cream`, `orange-dark`, `purple-pink`, `teal-ocean`, `terracotta-sand`, `graphite-blue`, `midnight-gold` (the Serbian names such as `crveno-sivo` work too). Messages and the comments in the generated CSS follow `--lang en|sr` (default: the system language).
 
 #### Directly in the source files (PostCSS)
 
@@ -119,10 +119,10 @@ npm run typecheck
 In the browser console (no install): inject `packages/core/dist/cc-core.iife.js` (`npm run build -w @cc/core`), then:
 
 ```js
-CC.printPalette(await CC.scanDocument(document));    // just the palette
-const engine = CC.createEngine(document);
+CC.printPalette(await CC.scanDocument(document), console, 'en'); // just the palette
+const engine = CC.createEngine(document, { lang: 'en' });
 await engine.analyze();
-engine.apply(CC.PRESETS['crveno-sivo']);             // or { dominant, secondary, accent }
+engine.apply(CC.findPreset('red-gray'));             // or { dominant, secondary, accent }
 engine.toggle();                                     // A/B: original ↔ new palette
 console.log(engine.exportCss());                     // CSS for permanent use
 ```
@@ -250,7 +250,7 @@ npx playwright install chromium   # jednom, lokalno
 npm run scan -- https://moj-sajt.rs --json paleta.json
 ```
 
-Sa `--palette crveno-sivo` (ili `--palette "#FAFAFA,#4B4B4F,#D32F2F"`) dodatno prikazuje klasifikaciju 60-30-10 i mapu stara → nova boja, sa korekcijama kontrasta. Preseti: `crveno-sivo`, `zuto-zeleno`, `zeleno-krem`, `narandzasto-tamno`, `ljubicasto-roze`, `tirkiz-okean`, `terakota-pesak`, `grafit-plavo`, `ponoc-zlatno`.
+Sa `--palette crveno-sivo` (ili `--palette "#FAFAFA,#4B4B4F,#D32F2F"`) dodatno prikazuje klasifikaciju 60-30-10 i mapu stara → nova boja, sa korekcijama kontrasta. Preseti: `crveno-sivo`, `zuto-zeleno`, `zeleno-krem`, `narandzasto-tamno`, `ljubicasto-roze`, `tirkiz-okean`, `terakota-pesak`, `grafit-plavo`, `ponoc-zlatno`. Jezik ispisa: `--lang sr|en` (podrazumevano jezik sistema).
 
 Dodaj `--screenshot snimci/` za snimke cele stranice pre i posle, i `--css paleta.css` za izvoz CSS sloja koji se trajno dodaje posle stilova sajta.
 

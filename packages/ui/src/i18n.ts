@@ -3,7 +3,7 @@ import type { ReasonCode, Role } from '@cc/core';
 
 export type Lang = 'sr' | 'en';
 
-// Jezik se bira pri build-u (esbuild `define`); bez njega (testovi, tsc) — srpski.
+// The language is chosen at build time (esbuild `define`); without it (tests, tsc) — Serbian.
 declare const __CC_LANG__: Lang | undefined;
 export const LANG: Lang = typeof __CC_LANG__ !== 'undefined' && __CC_LANG__ === 'en' ? 'en' : 'sr';
 
@@ -100,7 +100,7 @@ const STRINGS = {
 
 export type StringKey = keyof (typeof STRINGS)['sr'];
 
-/** Prevod sa zamenom `{0}`, `{1}`… */
+/** Translation with `{0}`, `{1}`… substitution */
 export function t(key: StringKey, ...args: (string | number)[]): string {
   return STRINGS[LANG][key].replace(/\{(\d)\}/g, (_, i: string) => String(args[Number(i)] ?? ''));
 }

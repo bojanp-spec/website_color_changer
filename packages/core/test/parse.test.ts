@@ -15,24 +15,24 @@ describe('parseColor — hex', () => {
     expectRgb(rgbOf(input), [...expected] as [number, number, number, number?], 0.01);
   });
 
-  it('pamti format i velika slova', () => {
+  it('remembers format and uppercase', () => {
     expect(parseColor('#1E3A8A')).toMatchObject({ format: 'hex', upper: true });
     expect(parseColor('#1e3a8a')).toMatchObject({ format: 'hex', upper: false });
     expect(parseColor('#123')).toMatchObject({ upper: false });
   });
 
-  it.each(['#ff', '#fffff', '#ggg', '#', '#1234567'])('odbija %s', (input) => {
+  it.each(['#ff', '#fffff', '#ggg', '#', '#1234567'])('rejects %s', (input) => {
     expect(parseColor(input)).toBeNull();
   });
 });
 
-describe('parseColor — imenovane i ključne reči', () => {
-  it('imenovane boje, bez obzira na velika slova', () => {
+describe('parseColor — named colors and keywords', () => {
+  it('named colors, case-insensitive', () => {
     expectRgb(rgbOf('SteelBlue'), [70, 130, 180], 0.01);
     expect(parseColor('red')?.format).toBe('named');
   });
 
-  it.each(['transparent', 'currentColor', 'inherit', 'Canvas', 'solid', 'none'])('vraća null za %s', (s) => {
+  it.each(['transparent', 'currentColor', 'inherit', 'Canvas', 'solid', 'none'])('returns null for %s', (s) => {
     expect(parseColor(s)).toBeNull();
   });
 });
@@ -52,14 +52,14 @@ describe('parseColor — rgb()', () => {
     expectRgb(rgbOf(input), [...expected] as [number, number, number, number?], 0.01);
   });
 
-  it('beleži staru sintaksu sa zarezima', () => {
+  it('records legacy comma syntax', () => {
     expect(parseColor('rgb(1, 2, 3)')?.legacy).toBe(true);
     expect(parseColor('rgb(1 2 3)')?.legacy).toBeUndefined();
   });
 
   it.each([
     'rgb(1, 2)',
-    'rgb(1, 2%, 3)', // mešanje broja i procenta u staroj sintaksi
+    'rgb(1, 2%, 3)', // mixing numbers and percentages in legacy syntax
     'rgb(1, 2, 3 / 0.5)',
     'rgb(1 2 3 4)',
     'rgb(var(--r) 0 0)',
@@ -68,12 +68,12 @@ describe('parseColor — rgb()', () => {
     'rgb(none, 0, 0)',
     'rgb()',
     'rgb(1 2 3 /)',
-  ])('odbija %s', (input) => {
+  ])('rejects %s', (input) => {
     expect(parseColor(input)).toBeNull();
   });
 });
 
-describe('parseColor — hsl() i hwb()', () => {
+describe('parseColor — hsl() and hwb()', () => {
   it.each([
     ['hsl(120, 100%, 25%)', [0, 127.5, 0]],
     ['hsl(120deg 100% 25%)', [0, 127.5, 0]],
@@ -88,7 +88,7 @@ describe('parseColor — hsl() i hwb()', () => {
     expectRgb(rgbOf(input), [...expected] as [number, number, number, number?]);
   });
 
-  it('odbija stari hsl bez procenata', () => {
+  it('rejects legacy hsl without percentages', () => {
     expect(parseColor('hsl(120, 100, 25)')).toBeNull();
   });
 });
@@ -110,13 +110,13 @@ describe('parseColor — lab/lch/oklab/oklch/color()', () => {
     expectRgb(rgbOf(input), [...expected] as [number, number, number, number?], 1);
   });
 
-  it('display-p3 crvena je van sRGB gamuta', () => {
+  it('display-p3 red is outside the sRGB gamut', () => {
     const c = rgbOf('color(display-p3 1 0 0)')!;
     expect(c.r).toBeGreaterThan(1);
     expect(c.g).toBeLessThan(0);
   });
 
-  it.each(['lab(50, 0, 0)', 'color(rec2020 1 0 0)', 'color(srgb 1 0)', 'oklch(0.5 0.1)'])('odbija %s', (s) => {
+  it.each(['lab(50, 0, 0)', 'color(rec2020 1 0 0)', 'color(srgb 1 0)', 'oklch(0.5 0.1)'])('rejects %s', (s) => {
     expect(parseColor(s)).toBeNull();
   });
 });

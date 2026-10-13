@@ -22,17 +22,17 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => localStorage.clear());
 });
 
-test('prikazuje detektovane boje po ulogama i bazne boje u izbornicima', async ({ page }) => {
+test('shows detected colors by role and base colors in the pickers', async ({ page }) => {
   const panel = await openPanel(page);
   await expect(panel.locator('[data-role-group="dominant"] .chip.base')).toHaveAttribute('data-color', '#f8fafc');
   await expect(panel.locator('[data-role-group="secondary"] .chip.base')).toHaveAttribute('data-color', '#1e293b');
   await expect(panel.locator('[data-role-group="accent"] .chip.base')).toHaveAttribute('data-color', '#2563eb');
   await expect(panel.locator('input[type="text"][data-role="accent"]')).toHaveValue('#2563eb');
-  // Panel ne menja sajt dok se ne izabere paleta
+  // The panel does not change the site until a palette is chosen
   expect(await bg(page, 'body')).toBe('rgb(248, 250, 252)');
 });
 
-test('gotova paleta, Original, A/B dugme i Alt+C', async ({ page }) => {
+test('ready-made palette, Original, A/B button and Alt+C', async ({ page }) => {
   const panel = await openPanel(page);
   await panel.locator('[data-preset="crveno-sivo"]').click();
   expect(await bg(page, 'body')).toBe('rgb(250, 250, 250)');
@@ -48,7 +48,7 @@ test('gotova paleta, Original, A/B dugme i Alt+C', async ({ page }) => {
   expect(await bg(page, '.btn-cta')).toBe('rgb(37, 99, 235)');
 });
 
-test('sopstvena boja: HEX polje i color picker, živi pregled', async ({ page }) => {
+test('custom color: HEX field and color picker, live preview', async ({ page }) => {
   const panel = await openPanel(page);
   await panel.locator('input[type="text"][data-role="accent"]').fill('#00a86b');
   await expect.poll(() => bg(page, '.btn-cta')).toBe('rgb(0, 168, 107)');
@@ -56,13 +56,13 @@ test('sopstvena boja: HEX polje i color picker, živi pregled', async ({ page })
 
   await panel.locator('input[type="text"][data-role="accent"]').fill('nije boja');
   await expect(panel.locator('input[type="text"][data-role="accent"]')).toHaveAttribute('aria-invalid', 'true');
-  expect(await bg(page, '.btn-cta')).toBe('rgb(0, 168, 107)'); // nevalidan unos se ignoriše
+  expect(await bg(page, '.btn-cta')).toBe('rgb(0, 168, 107)'); // invalid input is ignored
 
   await panel.locator('input[type="color"][data-role="dominant"]').fill('#fff8e7');
   await expect.poll(() => bg(page, 'body')).toBe('rgb(255, 248, 231)');
 });
 
-test('ručna promena uloge boje (header u akcenat)', async ({ page }) => {
+test('manual color role change (header to accent)', async ({ page }) => {
   const panel = await openPanel(page);
   await panel.locator('[data-preset="crveno-sivo"]').click();
   const headerBefore = await bg(page, 'header');
@@ -70,46 +70,46 @@ test('ručna promena uloge boje (header u akcenat)', async ({ page }) => {
   await panel.getByRole('combobox', { name: 'Uloga boje #1e3a8a' }).selectOption('accent');
   await expect(panel.locator('[data-role-group="accent"] .chip[data-color="#1e3a8a"]')).toBeVisible();
   await expect.poll(() => bg(page, 'header')).not.toBe(headerBefore);
-  // korekcija se pamti za domen
+  // the override is remembered per domain
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('cc:127.0.0.1')!).overrides)).toEqual({ '#1e3a8a': 'accent' });
 });
 
-test('meni uloge radi pravim klikovima: klik na listu ne zatvara meni; Esc i drugi klik ga zatvaraju', async ({ page }) => {
+test('role menu works with real clicks: clicking the list does not close the menu; Esc and a second click close it', async ({ page }) => {
   const panel = await openPanel(page);
   const chip = panel.locator('.chip[data-color="#1e3a8a"]');
   await chip.click();
   const select = panel.getByRole('combobox', { name: 'Uloga boje #1e3a8a' });
-  // Regresija: meni je bio unutar dugmeta (kvadratića), pa ga je klik na listu zamenjivao novim.
+  // Regression: the menu used to live inside the button (the swatch), so clicking the list replaced it with a new one.
   expect(await select.evaluate((el) => !!el.closest('button'))).toBe(false);
   await select.evaluate((el) => (el.dataset.mark = 'isti'));
   await select.click();
   expect(await select.evaluate((el) => el.dataset.mark)).toBe('isti');
-  await page.keyboard.press('Escape'); // zatvara sistemsku listu
+  await page.keyboard.press('Escape'); // closes the native dropdown
   await select.selectOption('accent');
   await expect(panel.locator('[data-role-group="accent"] .chip[data-color="#1e3a8a"]')).toBeVisible();
   await expect(panel.locator('.status')).toContainText('Videćeš razliku kad primeniš novu paletu');
 
-  // drugi klik na istu boju zatvara meni
+  // a second click on the same color closes the menu
   await panel.locator('.chip[data-color="#64748b"]').click();
   await expect(panel.locator('.menu')).toHaveCount(1);
   await panel.locator('.chip[data-color="#64748b"]').click();
   await expect(panel.locator('.menu')).toHaveCount(0);
-  // Esc u meniju ga zatvara
+  // Esc inside the menu closes it
   await panel.locator('.chip[data-color="#64748b"]').click();
   await panel.getByRole('combobox', { name: 'Uloga boje #64748b' }).press('Escape');
   await expect(panel.locator('.menu')).toHaveCount(0);
 });
 
-test('panel je izolovan: paleta sajta ga ne menja, skener ga ne vidi', async ({ page }) => {
+test('panel is isolated: the site palette does not affect it, the scanner does not see it', async ({ page }) => {
   const panel = await openPanel(page);
   const panelBg = () => panel.locator('.panel').evaluate((el) => getComputedStyle(el).backgroundColor);
   const before = await panelBg();
   await panel.locator('[data-preset="narandzasto-tamno"]').click();
   expect(await panelBg()).toBe(before);
-  await expect(panel.locator('.chip[data-color="#ffffff"]')).toHaveCount(1); // samo boja sajta, ne panela
+  await expect(panel.locator('.chip[data-color="#ffffff"]')).toHaveCount(1); // only the site's color, not the panel's
 });
 
-test('izvoz: kopiraj CSS, preuzmi .css, kopiraj link', async ({ page }) => {
+test('export: copy CSS, download .css, copy link', async ({ page }) => {
   const panel = await openPanel(page);
   await expect(panel.locator('[data-action="copy-css"]')).toBeDisabled();
   await panel.locator('[data-preset="crveno-sivo"]').click();
@@ -127,13 +127,13 @@ test('izvoz: kopiraj CSS, preuzmi .css, kopiraj link', async ({ page }) => {
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('http://127.0.0.1:4173/blue-gray-vars/#cc=fafafa,4b4b4f,d32f2f');
 });
 
-test('link sa paletom se primenjuje odmah', async ({ page }) => {
+test('a palette link is applied immediately', async ({ page }) => {
   await page.goto('/blue-gray-vars/#cc=fafafa,4b4b4f,d32f2f');
   await openPanel(page);
   expect(await bg(page, '.btn-cta')).toBe('rgb(211, 47, 47)');
 });
 
-test('poslednja paleta se pamti po domenu (popuni izbornike, ne primenjuje sama)', async ({ page }) => {
+test('the last palette is remembered per domain (fills the pickers, does not apply itself)', async ({ page }) => {
   const panel = await openPanel(page);
   await panel.locator('[data-preset="zuto-zeleno"]').click();
   await page.reload();
@@ -142,10 +142,10 @@ test('poslednja paleta se pamti po domenu (popuni izbornike, ne primenjuje sama)
   expect(await bg(page, '.btn-cta')).toBe('rgb(37, 99, 235)');
 });
 
-test('zatvaranje (×) vraća original i uklanja panel; ponovni klik bookmarkleta ga sakriva/prikazuje', async ({ page }) => {
+test('closing (×) restores the original and removes the panel; clicking the bookmarklet again hides/shows it', async ({ page }) => {
   const panel = await openPanel(page);
   await panel.locator('[data-preset="crveno-sivo"]').click();
-  await page.addScriptTag({ path: PANEL }); // „drugi klik"
+  await page.addScriptTag({ path: PANEL }); // "second click"
   await expect(panel.locator('.panel')).toBeHidden();
   await page.addScriptTag({ path: PANEL });
   await expect(panel.locator('.panel')).toBeVisible();
@@ -154,7 +154,7 @@ test('zatvaranje (×) vraća original i uklanja panel; ponovni klik bookmarkleta
   expect(await bg(page, 'body')).toBe('rgb(248, 250, 252)');
 });
 
-test('snippet režim: bez ?cc=1 se ne prikazuje, sa ?cc=1 da', async ({ page }) => {
+test('snippet mode: hidden without ?cc=1, shown with ?cc=1', async ({ page }) => {
   const addSnippet = () =>
     page.evaluate((src) => {
       const s = document.createElement('script');
@@ -172,7 +172,7 @@ test('snippet režim: bez ?cc=1 se ne prikazuje, sa ?cc=1 da', async ({ page }) 
   await expect(page.locator('cc-panel').getByText('Nova paleta')).toBeVisible();
 });
 
-test('bookmarklet (ceo kod u linku) radi', async ({ page }) => {
+test('bookmarklet (all code inside the link) works', async ({ page }) => {
   const url = readFileSync(BOOKMARKLET, 'utf8');
   expect(url.startsWith('javascript:')).toBe(true);
   const code = decodeURIComponent(url.slice('javascript:'.length));
@@ -180,7 +180,7 @@ test('bookmarklet (ceo kod u linku) radi', async ({ page }) => {
   await expect(page.locator('cc-panel').getByText('Nova paleta')).toBeVisible();
 });
 
-test('drmozgovich.top (snimak): panel prepoznaje paletu i primenjuje preset', async ({ page }) => {
+test('drmozgovich.top (snapshot): panel detects the palette and applies a preset', async ({ page }) => {
   await page.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => r.abort());
   await page.goto('/drmozgovich/');
   const panel = await openPanel(page);
@@ -190,12 +190,12 @@ test('drmozgovich.top (snimak): panel prepoznaje paletu i primenjuje preset', as
   expect(await bg(page, 'a.btn-primary.btn-sm', 'color')).toBe('rgb(243, 243, 248)');
 });
 
-test.describe('engleska verzija (_en)', () => {
-  test('panel je na engleskom: naslovi, palete, uloge i razlozi', async ({ page }) => {
+test.describe('English version (_en)', () => {
+  test('panel is in English: headings, palettes, roles and reasons', async ({ page }) => {
     await page.addScriptTag({ path: PANEL_EN });
     const panel = page.locator('cc-panel');
     await expect(panel.getByText('New palette')).toBeVisible();
-    await expect(panel.getByRole('heading', { name: 'Site colors' })).toHaveCount(2); // naslov panela + sekcija
+    await expect(panel.getByRole('heading', { name: 'Site colors' })).toHaveCount(2); // panel title + section
     await expect(panel.locator('[data-preset="crveno-sivo"]')).toContainText('Red / gray');
     await expect(panel.locator('[data-preset="ponoc-zlatno"]')).toContainText('Midnight / gold');
     await expect(panel.locator('[data-role-group="dominant"]').locator('xpath=preceding-sibling::div[1]')).toContainText('Dominant (60%)');
@@ -220,7 +220,7 @@ test.describe('engleska verzija (_en)', () => {
     expect(css).not.toContain('Dodati POSLE');
   });
 
-  test('bookmarklet_en radi i nema srpskog teksta', async ({ page }) => {
+  test('bookmarklet_en works and contains no Serbian text', async ({ page }) => {
     const code = decodeURIComponent(readFileSync(BOOKMARKLET_EN, 'utf8').slice('javascript:'.length));
     await page.evaluate(code);
     const panel = page.locator('cc-panel');

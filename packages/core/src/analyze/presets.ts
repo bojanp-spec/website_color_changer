@@ -1,6 +1,6 @@
 import type { Palette } from './types.js';
 
-/** Gotove kombinacije (dominantna 60% / sekundarna 30% / akcentna 10%). */
+/** Ready-made combinations (dominant 60% / secondary 30% / accent 10%). */
 export const PRESETS: Record<string, Palette> = {
   'crveno-sivo': { dominant: '#FAFAFA', secondary: '#4B4B4F', accent: '#D32F2F' },
   'zuto-zeleno': { dominant: '#FFFDF5', secondary: '#2E5E3E', accent: '#F2B705' },
@@ -13,7 +13,7 @@ export const PRESETS: Record<string, Palette> = {
   'ponoc-zlatno': { dominant: '#0E1525', secondary: '#DCE3EE', accent: '#F2B33D' },
 };
 
-/** Nazivi za prikaz (panel, uputstvo). */
+/** Display names (panel, guide). */
 export const PRESET_LABELS: Record<string, string> = {
   'crveno-sivo': 'Crveno / sivo',
   'zuto-zeleno': 'Žuto / zeleno',
@@ -26,7 +26,7 @@ export const PRESET_LABELS: Record<string, string> = {
   'ponoc-zlatno': 'Ponoć / zlatno',
 };
 
-/** Nazivi za prikaz na engleskom. */
+/** Display names in English. */
 export const PRESET_LABELS_EN: Record<string, string> = {
   'crveno-sivo': 'Red / gray',
   'zuto-zeleno': 'Yellow / green',
@@ -38,3 +38,19 @@ export const PRESET_LABELS_EN: Record<string, string> = {
   'grafit-plavo': 'Graphite / electric blue',
   'ponoc-zlatno': 'Midnight / gold',
 };
+
+/** English ids for the presets (`--palette red-gray` in the CLI) → canonical id. */
+export const PRESET_IDS_EN: Record<string, string> = {
+  'red-gray': 'crveno-sivo',
+  'yellow-green': 'zuto-zeleno',
+  'green-cream': 'zeleno-krem',
+  'orange-dark': 'narandzasto-tamno',
+  'purple-pink': 'ljubicasto-roze',
+  'teal-ocean': 'tirkiz-okean',
+  'terracotta-sand': 'terakota-pesak',
+  'graphite-blue': 'grafit-plavo',
+  'midnight-gold': 'ponoc-zlatno',
+};
+
+/** Preset by canonical or English id. */
+export const findPreset = (id: string): Palette | undefined => PRESETS[id] ?? PRESETS[PRESET_IDS_EN[id] ?? ''];

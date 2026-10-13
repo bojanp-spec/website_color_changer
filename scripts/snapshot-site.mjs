@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Pravi statički snimak sajta za testove: renderovan HTML bez <script>-ova + lokalne kopije CSS-a.
+// Makes a static snapshot of a site for tests: rendered HTML without <script>s + local copies of the CSS.
 //
 //   node scripts/snapshot-site.mjs https://drmozgovich.top fixtures/drmozgovich
 import { chromium } from '@playwright/test';
@@ -8,7 +8,7 @@ import { join } from 'node:path';
 
 const [url, outDir] = process.argv.slice(2);
 if (!url || !outDir) {
-  console.error('Upotreba: node scripts/snapshot-site.mjs <url> <izlazni-direktorijum>');
+  console.error('Usage: node scripts/snapshot-site.mjs <url> <output-dir>');
   process.exit(1);
 }
 
@@ -26,7 +26,7 @@ try {
       link.removeAttribute('integrity');
       link.removeAttribute('crossorigin');
     });
-    // Bez JS-a: snimak je statičan i deterministički (struktura i boje ostaju).
+    // No JS: the snapshot is static and deterministic (structure and colors are preserved).
     document.querySelectorAll('script, link[rel="preload"][as="script"], link[rel="modulepreload"], noscript').forEach((n) => n.remove());
     document.querySelectorAll('[src^="/"], [href^="/"], [srcset]').forEach((el) => {
       for (const attr of ['src', 'href']) {
@@ -40,14 +40,14 @@ try {
 
   await mkdir(outDir, { recursive: true });
   for (const s of sheets) {
-    // Preuzimanje iz browsera (isti mrežni put/proxy kao stranica).
+    // Fetch from the browser (same network path/proxy as the page).
     const text = await page.evaluate((href) => fetch(href).then((r) => r.text()), s.href);
-    // Relativni url()-ovi u CSS-u (fontovi) → apsolutni, da snimak ne zavisi od putanje.
+    // Relative url()s in the CSS (fonts) → absolute, so the snapshot doesn't depend on its path.
     const css = text.replace(/url\((['"]?)(\/(?!\/)[^)'"]*)\1\)/g, (_, q, p) => `url(${q}${new URL(p, s.href).href}${q})`);
     await writeFile(join(outDir, s.name), css);
   }
-  await writeFile(join(outDir, 'index.html'), `<!-- Snimak ${url} (${new Date().toISOString().slice(0, 10)}), bez JS-a. -->\n${html}`);
-  console.log(`Snimljeno: ${outDir} (${sheets.length} CSS)`);
+  await writeFile(join(outDir, 'index.html'), `<!-- Snapshot of ${url} (${new Date().toISOString().slice(0, 10)}), without JS. -->\n${html}`);
+  console.log(`Saved: ${outDir} (${sheets.length} CSS)`);
 } finally {
   await browser.close();
 }

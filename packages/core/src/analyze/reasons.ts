@@ -1,4 +1,4 @@
-/** Zašto je boja dobila ulogu — šifra (za prevod u UI) i tekst na srpskom/engleskom. */
+/** Why a color got its role — a code (for translation in the UI) and Serbian/English text. */
 export type ReasonCode =
   | 'manual'
   | 'largest-background'
@@ -24,7 +24,7 @@ export type ReasonCode =
 
 export type ReasonLang = 'sr' | 'en';
 
-/** `{arg}` se zamenjuje dodatnim podatkom (ime varijable, boja…). */
+/** `{arg}` is replaced with extra data (variable name, color…). */
 export const REASONS: Record<ReasonLang, Record<ReasonCode, string>> = {
   sr: {
     manual: 'ručno podešeno',

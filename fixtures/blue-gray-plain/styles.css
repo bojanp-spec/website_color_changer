@@ -26,5 +26,5 @@
        border: none; padding: 10px 20px; font-size: 15px; }
 .cta:hover { background-color: #2B6CB0; animation: pulse 1s; }
 
-/* Tailwind-ov obrazac: gradijent iz providnog u boju */
+/* Tailwind pattern: gradient from transparent to a color */
 .fade { height: 40px; background-image: linear-gradient(to bottom, transparent, #2D3748); }

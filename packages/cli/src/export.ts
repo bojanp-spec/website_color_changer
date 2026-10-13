@@ -8,30 +8,30 @@ import { crawlable, mergeScans } from './merge.js';
 import type { ExportReport, PageScan } from './types.js';
 
 export interface ExportOptions {
-  /** Prva stranica; `pages` su putanje u odnosu na nju. */
+  /** First page; `pages` are paths relative to it. */
   url: string;
   palette: Palette;
   pages?: string[];
-  /** Ukupan broj stranica koje se obilaze praćenjem linkova (0 = samo zadate). */
+  /** Total number of pages to visit by following links (0 = only the given ones). */
   crawl?: number;
   viewports?: number[];
   overrides?: Record<string, Role>;
-  /** Uključi i semantičke boje/grafikone u remapiranje. */
+  /** Also include semantic/chart colors in the remapping. */
   allColors?: boolean;
   verify?: boolean;
   screenshots?: string;
   scroll?: boolean;
   wait?: number;
-  /** Putanja do core IIFE bundle-a. */
+  /** Path to the core IIFE bundle. */
   bundle: string;
-  /** Jezik poruka i komentara u CSS-u. Podrazumevano `'en'`. */
+  /** Language of messages and CSS comments. Defaults to `'en'`. */
   lang?: Lang;
   log?: (line: string) => void;
 }
 
 export interface ExportResult {
   css: string;
-  /** Lokalne korekcije kontrasta kao CSS pravila: selektor → boja teksta. */
+  /** Local contrast fixes as CSS rules: selector → text color. */
   localRules: Record<string, string>;
   colorMap: ColorMapResult;
   classification: Classification;
@@ -39,11 +39,11 @@ export interface ExportResult {
 }
 
 /**
- * Faza 7: izvoz za produkciju.
- * 1. Skenira sve stranice u svim prikazima (desktop/mobilni).
- * 2. Spaja nalaze i klasifikuje/mapira boje JEDNOM — ista mapa važi za ceo sajt.
- * 3. Na svakoj stranici primenjuje tu mapu da pokupi lokalne korekcije kontrasta (traže DOM).
- * 4. Pravi jedan CSS fajl, pa ga proverava na svakoj stranici bez engine-a.
+ * Phase 7: production export.
+ * 1. Scans every page in every viewport (desktop/mobile).
+ * 2. Merges the findings and classifies/maps colors ONCE — the same map applies to the whole site.
+ * 3. Applies that map on each page to collect local contrast fixes (they require the DOM).
+ * 4. Builds a single CSS file, then verifies it on each page without the engine.
  */
 export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
   const log = opts.log ?? (() => {});
@@ -57,10 +57,10 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
   const load = { scroll: opts.scroll !== false, wait: opts.wait ?? 0 };
 
   const browser = await chromium.launch();
-  // bypassCSP: core se ubacuje kao <script>, što bi stroga CSP sajta blokirala.
+  // bypassCSP: core is injected as a <script>, which a strict site CSP would block.
   const context = await browser.newContext({ bypassCSP: true, colorScheme: 'light' });
   try {
-    // --- 1. Skeniranje
+    // --- 1. Scanning
     const scans: PageScan[] = [];
     for (let i = 0; i < urls.length; i++) {
       for (const vp of viewports) {
@@ -78,16 +78,18 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
       }
     }
 
-    // --- 2. Zajednička klasifikacija i mapa
+    // --- 2. Shared classification and map
     const merged = mergeScans(scans);
+    const lang = opts.lang ?? 'en';
     const classification = classify(merged, {
       ...(opts.overrides ? { overrides: opts.overrides } : {}),
       ...(opts.allColors ? { protectVariables: null } : {}),
+      lang,
     });
-    const colorMap = buildColorMap(classification, opts.palette, merged.pairs);
+    const colorMap = buildColorMap(classification, opts.palette, merged.pairs, { lang });
     log(M.classified(classification.bases.dominant, classification.bases.secondary, classification.bases.accent ?? '—'));
 
-    // --- 3. Lokalne korekcije (samo ako postoje parovi koje mapa ne rešava globalno)
+    // --- 3. Local fixes (only if there are pairs the map doesn't solve globally)
     const fixes: LocalContrastFix[] = [];
     if (colorMap.failures.length) {
       for (const url of urls) {
@@ -101,7 +103,7 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
         }
       }
     }
-    // Upozorenja o kontrastu samo za parove koje ni lokalna korekcija nije rešila.
+    // Contrast warnings only for pairs that even a local fix didn't solve.
     const fixed = new Set(fixes.map((f) => `${f.fg}|${f.bg}`));
     const rgba = (hex: string) => parseColor(hex)!.rgba;
     const warnings = colorMap.failures
@@ -112,7 +114,7 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
         return M.contrast(f.fg, f.bg, contrastRatio(rgba(toFg), rgba(toBg)).toFixed(2), f.target.toFixed(2), toFg, toBg);
       });
     const varOverrides = new Map<string, string>();
-    /** Boja → selektori; ista korekcija sa više stranica postaje jedno pravilo. */
+    /** Color → selectors; the same fix across multiple pages becomes one rule. */
     const localRules = new Map<string, Set<string>>();
     for (const f of fixes) {
       if (f.via.kind === 'variable') varOverrides.set(f.via.name, f.to);
@@ -131,7 +133,7 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
     });
     const shadowScopes = [...byScope.keys()].filter((k) => k);
     if (shadowScopes.length) warnings.push(M.shadow(shadowScopes.join(', ')));
-    // Inline boje koje bi trebalo promeniti (zaštićene, npr. logo, se ne broje).
+    // Inline colors that should be changed (protected ones, e.g. a logo, don't count).
     const inlineCount = merged.usages.filter((u) => u.inline && u.colors.some((c) => mapper.mapKey(c))).length;
     if (inlineCount) warnings.push(M.inline(inlineCount));
 
@@ -153,7 +155,7 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
       .concat('\n');
     const rules = (body.match(/\{\n {2}/g)?.length ?? 0) + localRules.size;
 
-    // --- 5. Provera
+    // --- 5. Verification
     const verification = [];
     if (opts.verify !== false) {
       for (const url of urls) {

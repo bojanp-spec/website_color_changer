@@ -5,7 +5,7 @@ import type { SiteSettings } from './shared.js';
 document.documentElement.lang = LANG;
 document.title = t('pageTitle');
 for (const el of Array.from(document.querySelectorAll<HTMLElement>('[data-i18n]'))) el.textContent = t(el.dataset.i18n as OptionsKey);
-// Tekst sa <kbd>…</kbd> oznakama: delovi se prave kao DOM čvorovi (bez innerHTML).
+// Text with <kbd>…</kbd> tags: the parts are built as DOM nodes (no innerHTML).
 for (const el of Array.from(document.querySelectorAll<HTMLElement>('[data-i18n-html]'))) {
   el.replaceChildren(
     ...t(el.dataset.i18nHtml as OptionsKey)
@@ -83,7 +83,7 @@ async function renderSites() {
 }
 
 $('perm-grant').addEventListener('click', async () => {
-  // Mora direktno iz klika (user gesture).
+  // Must be called directly from the click (user gesture).
   await chrome.permissions.request(ALL_URLS);
   await chrome.runtime.sendMessage({ type: 'permissions-changed' });
   void renderPermission();

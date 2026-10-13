@@ -45,3 +45,5 @@ export type { OverrideOptions } from './apply/override-sheet.js';
 export { DomPatcher } from './apply/dom-patcher.js';
 export { createEngine } from './engine.js';
 export type { ApplyOptions, ApplyReport, ColorEngine, EngineOptions, LocalContrastFix } from './engine.js';
+export { CORE_TEXT } from './i18n.js';
+export type { Lang } from './i18n.js';

@@ -1,4 +1,4 @@
-/** CSS Color Level 4 imenovane boje (bez `transparent`, koja se tretira posebno). */
+/** CSS Color Level 4 named colors (without `transparent`, which is handled separately). */
 export const NAMED_COLORS: ReadonlyMap<string, string> = new Map([
   ['aliceblue', 'f0f8ff'], ['antiquewhite', 'faebd7'], ['aqua', '00ffff'],
   ['aquamarine', '7fffd4'], ['azure', 'f0ffff'], ['beige', 'f5f5dc'],

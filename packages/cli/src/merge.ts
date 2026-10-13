@@ -1,7 +1,7 @@
 import type { ColorWeight, ContrastPair, PaletteEntry, ScanSummary } from '@cc/core';
 import type { PageScan, PlainUsage } from './types.js';
 
-/** Ključ deklaracije: ista deklaracija iz istog stylesheet-a na više stranica se računa jednom. */
+/** Declaration key: the same declaration from the same stylesheet on multiple pages counts once. */
 function usageKey(u: PlainUsage): string {
   if (u.inline || u.selector === undefined) return JSON.stringify(['inline', u.source, u.property, u.value]);
   return JSON.stringify([u.scope ?? '', u.sheet ?? '', u.conditions, u.nesting ?? [], u.selector, u.property, u.value, u.important, u.ruleText ?? '']);
@@ -16,18 +16,18 @@ export interface MergedScan extends ScanSummary {
 }
 
 /**
- * Spaja skeniranja više stranica/prikaza u jedno, kao da je ceo sajt jedna stranica:
- * - deklaracije: unija, bez duplikata, redosledom prvog pojavljivanja (čuva kaskadu);
- * - površine: svaka stranica/prikaz se normalizuje na 1, pa svaka ima istu težinu
- *   (duga početna strana ne „preglasa" ostale);
- * - parovi tekst/pozadina: unija, najmanji font i „mali tekst" se čuvaju.
+ * Merges scans of multiple pages/viewports into one, as if the whole site were a single page:
+ * - declarations: union, no duplicates, in order of first appearance (preserves the cascade);
+ * - areas: each page/viewport is normalized to 1, so each has the same weight
+ *   (a long home page doesn't "outvote" the others);
+ * - text/background pairs: union, keeping the smallest font size and the "small text" flag.
  */
 export function mergeScans(scans: PageScan[]): MergedScan {
   const usages: PlainUsage[] = [];
   const seen = new Set<string>();
   const palette = new Map<string, PaletteEntry>();
   const pairs = new Map<string, ContrastPair>();
-  /** Boja je „implicitna" (podrazumevana bela browsera) samo ako nijedna stranica nije deklariše. */
+  /** A color is "implicit" (the browser's default white) only if no page declares it. */
   const explicit = new Set<string>();
 
   for (const scan of scans) {
@@ -82,7 +82,7 @@ export function mergeScans(scans: PageScan[]): MergedScan {
   return { usages, palette: list, pairs: [...pairs.values()].sort((a, b) => b.weight - a.weight) };
 }
 
-/** Linkovi za --crawl: ista domena, http(s), bez fajlova (pdf, slike…), bez #fragmenta. */
+/** Links for --crawl: same domain, http(s), no files (pdf, images…), no #fragment. */
 export function crawlable(href: string, origin: string): string | null {
   let url: URL;
   try {

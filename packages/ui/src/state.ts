@@ -7,7 +7,7 @@ export interface Saved {
   position?: { x: number; y: number };
 }
 
-/** Gde panel čuva podešavanja. Podrazumevano localStorage sajta; ekstenzija daje svoju memoriju. */
+/** Where the panel stores its settings. Defaults to the site's localStorage; the extension provides its own storage. */
 export interface PanelStorage {
   load(): Promise<Saved>;
   save(patch: Partial<Saved>): Promise<void>;
@@ -20,7 +20,7 @@ export const localStorageAdapter: PanelStorage = {
 
 const key = () => `cc:${location.hostname || 'local'}`;
 
-/** Per-domen podešavanja. localStorage može biti nedostupan (privatni prozor, blokiran) — tada radimo bez njega. */
+/** Per-domain settings. localStorage may be unavailable (private window, blocked) — then we work without it. */
 export function loadSaved(): Saved {
   try {
     return JSON.parse(localStorage.getItem(key()) ?? '{}') as Saved;
@@ -33,19 +33,19 @@ export function save(patch: Partial<Saved>): void {
   try {
     localStorage.setItem(key(), JSON.stringify({ ...loadSaved(), ...patch }));
   } catch {
-    /* bez trajnog čuvanja */
+    /* no persistent storage */
   }
 }
 
 const HASH_RE = /(^#|&)cc=([0-9a-f]{6}),([0-9a-f]{6}),([0-9a-f]{6})/i;
 
-/** Paleta iz URL hash-a: `#cc=fafafa,4b4b4f,d32f2f` (može i uz postojeći hash: `#sekcija&cc=…`). */
+/** Palette from the URL hash: `#cc=fafafa,4b4b4f,d32f2f` (also works alongside an existing hash: `#section&cc=…`). */
 export function paletteFromHash(hash: string = location.hash): Palette | null {
   const m = HASH_RE.exec(hash);
   return m ? { dominant: `#${m[2]}`, secondary: `#${m[3]}`, accent: `#${m[4]}` } : null;
 }
 
-/** Link ka trenutnoj stranici sa paletom u hash-u (postojeći hash sajta se čuva). */
+/** Link to the current page with the palette in the hash (the site's existing hash is preserved). */
 export function shareUrl(p: Palette, href: string = location.href): string {
   const url = new URL(href);
   const hex = (c: string) => c.replace('#', '').toLowerCase();

@@ -16,15 +16,15 @@ import type { ColorFormat, RGBA } from './types.js';
 export interface ParsedColor {
   rgba: RGBA;
   format: ColorFormat;
-  /** rgb()/hsl() napisan starom sintaksom sa zarezima: `rgb(1, 2, 3)`. */
+  /** rgb()/hsl() written in the legacy comma syntax: `rgb(1, 2, 3)`. */
   legacy?: boolean;
-  /** HEX napisan velikim slovima: `#1E3A8A`. */
+  /** HEX written in uppercase: `#1E3A8A`. */
   upper?: boolean;
-  /** Originalni tekst, bajt-identičan. */
+  /** Original text, byte-identical. */
   source: string;
 }
 
-/** Ključne reči koje jesu „boje", ali se nikad ne remapiraju (prilagođavaju se same). */
+/** Keywords that are "colors" but are never remapped (they adapt on their own). */
 export const PASSTHROUGH_KEYWORDS: ReadonlySet<string> = new Set(['transparent', 'currentcolor']);
 
 const COLOR_FUNCTIONS: ReadonlySet<string> = new Set([
@@ -40,9 +40,9 @@ export function isNamedColor(name: string): boolean {
 }
 
 /**
- * Parsira jednu CSS boju. Vraća `null` za sve što nije konkretna boja koju možemo
- * izračunati: `transparent`, `currentColor`, `var(...)`, `calc(...)`, relativne boje
- * (`rgb(from ...)`), sistemske boje, nevalidan unos.
+ * Parses a single CSS color. Returns `null` for anything that is not a concrete color we can
+ * compute: `transparent`, `currentColor`, `var(...)`, `calc(...)`, relative colors
+ * (`rgb(from ...)`), system colors, invalid input.
  */
 export function parseColor(input: string): ParsedColor | null {
   const source = input;
@@ -63,7 +63,7 @@ export function parseColor(input: string): ParsedColor | null {
   const fn = lower.slice(0, open);
   if (!COLOR_FUNCTIONS.has(fn)) return null;
   const body = str.slice(open + 1, -1);
-  // Ugnježdene funkcije (var, calc, env, attr...) ne možemo statički da izračunamo.
+  // Nested functions (var, calc, env, attr...) cannot be computed statically.
   if (body.includes('(')) return null;
 
   const args = splitArgs(body);
@@ -114,11 +114,11 @@ function parseHex(str: string, source: string): ParsedColor | null {
 }
 
 // ---------------------------------------------------------------------------
-// Argumenti
+// Arguments
 // ---------------------------------------------------------------------------
 
 interface Args {
-  /** Tri (ili za color() četiri — prostor + 3) glavne komponente. */
+  /** Three (or for color() four — space + 3) main components. */
   parts: string[];
   alpha: string | undefined;
   legacy: boolean;
@@ -143,7 +143,7 @@ function splitArgs(body: string): Args | null {
 
 const NUM = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i;
 
-/** Broj ili procenat. `percentScale` je vrednost koju predstavlja 100%. */
+/** Number or percentage. `percentScale` is the value that 100% represents. */
 function num(token: string | undefined, percentScale: number, allowNone = true): number | null {
   if (token === undefined) return null;
   const t = token.toLowerCase();
@@ -155,7 +155,7 @@ function num(token: string | undefined, percentScale: number, allowNone = true):
   return NUM.test(t) ? parseFloat(t) : null;
 }
 
-/** Samo procenat (stara hsl sintaksa); vraća vrednost u 0..100. */
+/** Percentage only (legacy hsl syntax); returns a value in 0..100. */
 function percentOnly(token: string | undefined): number | null {
   if (token === undefined || !token.endsWith('%')) return null;
   return num(token, 100, false);
@@ -188,14 +188,14 @@ function allNumbers(values: (number | null)[]): values is number[] {
 }
 
 // ---------------------------------------------------------------------------
-// Pojedinačne funkcije
+// Individual functions
 // ---------------------------------------------------------------------------
 
 function parseRgb({ parts, alpha, legacy }: Args): RGBA | null {
   if (parts.length !== 3) return null;
   let channels: (number | null)[];
   if (legacy) {
-    // Stara sintaksa: sve tri komponente su ili brojevi ili procenti, bez `none`.
+    // Legacy syntax: all three components are either numbers or percentages, no `none`.
     const pct = parts.every((p) => p.endsWith('%'));
     const nums = parts.every((p) => !p.endsWith('%'));
     if (!pct && !nums) return null;

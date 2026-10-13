@@ -4,19 +4,19 @@ import type { PluginCreator } from 'postcss';
 
 export interface CcRemapOptions {
   /**
-   * Mapa „stara boja → nova boja", ili putanja do JSON-a koji pravi `cc-export --map`
+   * An "old color → new color" map, or a path to the JSON produced by `cc-export --map`
    * (`{ "palette": {…}, "map": { "#1e3a8a": "#c62828", … } }`).
    */
   map: Record<string, string> | string;
-  /** `like` (podrazumevano) zadržava zapis originala (HEX ostaje HEX…); `hex` uvek piše HEX. */
+  /** `like` (default) keeps the original notation (HEX stays HEX…); `hex` always writes HEX. */
   format?: 'like' | 'hex';
   /**
-   * Lokalne korekcije kontrasta iz mape (npr. tekst na CTA dugmetu: `a.btn-primary { color: … }`).
-   * `append` ih dodaje na kraj fajla — uključiti za jedan, glavni stylesheet. Podrazumevano `ignore`
-   * (uz upozorenje ako ih mapa ima).
+   * Local contrast fixes from the map (e.g. text on a CTA button: `a.btn-primary { color: … }`).
+   * `append` adds them at the end of the file — enable it for one main stylesheet. Defaults to `ignore`
+   * (with a warning if the map has any).
    */
   localRules?: 'append' | 'ignore';
-  /** Jezik poruka: `en` ili `sr`. Podrazumevano iz `CC_LANG`/`LC_ALL`/`LANG` (`sr*` → srpski, inače engleski). */
+  /** Message language: `en` or `sr`. Defaults from `CC_LANG`/`LC_ALL`/`LANG` (`sr*` → Serbian, otherwise English). */
   lang?: 'sr' | 'en';
 }
 
@@ -42,11 +42,11 @@ function envLang(): 'sr' | 'en' {
   return (env.CC_LANG || env.LC_ALL || env.LANG || '').toLowerCase().startsWith('sr') ? 'sr' : 'en';
 }
 
-/** Shorthand-ovi u izvornom CSS-u koji mogu da sadrže boju (CSSOM ih razbija, izvorni fajlovi ne). */
+/** Shorthands in source CSS that can contain a color (CSSOM expands them, source files don't). */
 const COLOR_SHORTHANDS =
   /^(background|border(-(top|right|bottom|left|block|inline)(-(start|end))?)?|border-color|border-image|outline|text-decoration|text-emphasis|column-rule|list-style|mask)$/i;
 
-/** Varijable: CSS (`--brand`), SCSS (`$brand`), Less (`@brand`). */
+/** Variables: CSS (`--brand`), SCSS (`$brand`), Less (`@brand`). */
 const isVariable = (prop: string) => /^(--|\$|@)/.test(prop);
 
 export function canHoldColor(prop: string): boolean {
@@ -69,9 +69,9 @@ function loadMap(map: CcRemapOptions['map'], T: (typeof TEXT)['en' | 'sr']): { c
 }
 
 /**
- * Faza 7: menja boje DIREKTNO u izvornim CSS/SCSS fajlovima prema mapi iz `cc-export`.
- * Menjaju se samo vrednosti deklaracija koje nose boju; `url()`, stringovi, `var()`
- * reference, selektori i ostala svojstva ostaju bajt-identični.
+ * Phase 7: changes colors DIRECTLY in source CSS/SCSS files using the map from `cc-export`.
+ * Only values of color-bearing declarations change; `url()`, strings, `var()`
+ * references, selectors and other properties stay byte-identical.
  *
  * ```js
  * // postcss.config.js

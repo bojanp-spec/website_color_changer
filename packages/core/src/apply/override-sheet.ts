@@ -3,11 +3,11 @@ import type { ColorMapper } from './mapper.js';
 
 export interface OverrideOptions {
   /**
-   * Lokalne korekcije varijabli (npr. `--accent-contrast` → `#ffffff` za tekst na CTA dugmetu).
-   * Primenjuju se na definicije varijable koje nisu u alternativnoj šemi.
+   * Local variable overrides (e.g. `--accent-contrast` → `#ffffff` for text on a CTA button).
+   * Applied to variable definitions that are not in the alternate scheme.
    */
   varOverrides?: ReadonlyMap<string, string>;
-  /** Da li je deklaracija u alternativnoj šemi (dark mode) — tamo se `varOverrides` ne primenjuje. */
+  /** Whether the declaration is in the alternate scheme (dark mode) — `varOverrides` is not applied there. */
   isAlt?: (u: Usage) => boolean;
 }
 
@@ -28,13 +28,13 @@ const sameContext = (g: Group, u: Usage, scope: string) =>
 const wrap = (inner: string, headers: string[]) => headers.reduceRight((acc, h) => `${h} {\n${acc}\n}`, inner);
 
 /**
- * Faza 4: pravi CSS sloj koji preslikava SAMO boje. Za svaku originalnu deklaraciju boje
- * nastaje deklaracija sa istim selektorom, istim omotačima (`@layer`, `@media`, `@supports`,
- * nesting) i istom važnošću (`!important` samo ako ga ima i original). Pošto se sloj dodaje
- * posle svih stilova sajta (adoptedStyleSheets), pobeđuje original pri istoj specifičnosti,
- * a međusobni odnos pravila (hover, media, slojevi) ostaje isti kao na sajtu.
+ * Phase 4: builds a CSS layer that remaps ONLY colors. Every original color declaration
+ * yields a declaration with the same selector, the same wrappers (`@layer`, `@media`, `@supports`,
+ * nesting) and the same importance (`!important` only if the original has it). Since the layer is
+ * added after all site styles (adoptedStyleSheets), it beats the original at equal specificity,
+ * while the relationships between rules (hover, media, layers) stay the same as on the site.
  *
- * Vraća CSS po scope-u (`''` = dokument, inače prefiks shadow root-a).
+ * Returns CSS per scope (`''` = document, otherwise a shadow root prefix).
  */
 export function buildOverrideCss(usages: readonly Usage[], mapper: ColorMapper, opts: OverrideOptions = {}): Map<string, string> {
   const groups: Group[] = [];

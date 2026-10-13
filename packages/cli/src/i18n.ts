@@ -1,10 +1,10 @@
-import { PRESET_LABELS_EN, PRESETS } from '@cc/core';
+import { PRESET_IDS_EN, PRESET_LABELS_EN, PRESETS } from '@cc/core';
 
 export type Lang = 'sr' | 'en';
 
 /**
- * Jezik izlaza: `--lang en|sr`, pa promenljiva `CC_LANG`, pa jezik sistema (`LC_ALL`/`LANG`):
- * `sr*` → srpski, sve ostalo → engleski.
+ * Output language: `--lang en|sr`, then the `CC_LANG` variable, then the system language (`LC_ALL`/`LANG`):
+ * `sr*` → Serbian, anything else → English.
  */
 export function detectLang(argv: string[], env: NodeJS.ProcessEnv = process.env): Lang {
   const i = argv.findIndex((a) => a === '--lang' || a.startsWith('--lang='));
@@ -14,9 +14,11 @@ export function detectLang(argv: string[], env: NodeJS.ProcessEnv = process.env)
 }
 
 const presetList = (lang: Lang) =>
-  Object.keys(PRESETS)
-    .map((id) => (lang === 'en' ? `${id} (${PRESET_LABELS_EN[id]})` : id))
-    .join(lang === 'en' ? '\n  ' : ', ');
+  lang === 'en'
+    ? Object.entries(PRESET_IDS_EN)
+        .map(([en, id]) => `${en.padEnd(16)} ${PRESET_LABELS_EN[id]} (= ${id})`)
+        .join('\n  ')
+    : Object.keys(PRESETS).join(', ');
 
 const MESSAGES = {
   sr: {
