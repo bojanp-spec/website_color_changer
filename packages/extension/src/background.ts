@@ -1,3 +1,4 @@
+import { text as T } from './i18n.js';
 import { cssFetchAllowed, MAX_CSS_BYTES } from './shared.js';
 import type { BackgroundMessage } from './shared.js';
 
@@ -22,7 +23,7 @@ async function toggle(tabId: number) {
     await inject(tabId, 'toggle');
   } catch (e) {
     // chrome://, the extension store, PDFs… — extensions are not allowed to run there.
-    console.warn('Website Color Changer: ne mogu da pokrenem panel na ovoj stranici.', e);
+    console.warn(T.cannotOpen, e);
   }
 }
 
@@ -45,11 +46,11 @@ async function fetchCss(href: string, pageUrl: string): Promise<string> {
   const res = await fetch(href, { credentials: 'omit', redirect: 'follow', cache: 'force-cache' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const after = cssFetchAllowed(res.url, pageUrl);
-  if (after) throw new Error(`preusmerenje: ${after}`);
+  if (after) throw new Error(T.redirected(after));
   const type = res.headers.get('content-type') ?? '';
-  if (!/\btext\/css\b/i.test(type)) throw new Error(`nije CSS (${type || 'bez content-type'})`);
+  if (!/\btext\/css\b/i.test(type)) throw new Error(T.notCss(type));
   const text = await res.text();
-  if (text.length > MAX_CSS_BYTES) throw new Error('CSS je prevelik');
+  if (text.length > MAX_CSS_BYTES) throw new Error(T.tooLarge);
   return text;
 }
 
@@ -61,7 +62,7 @@ chrome.runtime.onMessage.addListener((msg: BackgroundMessage, sender, sendRespon
   const tabId = sender.tab?.id;
   if (msg.type === 'fetch-css') {
     if (!sender.tab?.url) {
-      sendResponse({ ok: false, error: 'samo sa stranice' });
+      sendResponse({ ok: false, error: T.pageOnly });
       return false;
     }
     fetchCss(msg.href, sender.tab.url).then(
@@ -71,7 +72,7 @@ chrome.runtime.onMessage.addListener((msg: BackgroundMessage, sender, sendRespon
     return true; // asynchronous response
   }
   if (msg.type === 'inject-auto' && tabId !== undefined) {
-    inject(tabId, 'auto').catch((e: unknown) => console.warn('Website Color Changer: automatska primena nije uspela.', e));
+    inject(tabId, 'auto').catch((e: unknown) => console.warn(T.autoFailed, e));
     return false;
   }
   if (msg.type === 'permissions-changed') void syncAutoScript();

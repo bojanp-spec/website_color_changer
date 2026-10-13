@@ -110,7 +110,7 @@ test('clear errors for invalid arguments', async () => {
 
 test('English output and CSS comments; language from the environment', async () => {
   const o = outDir();
-  const r = await cli([`${BASE}/multi/`, '--palette', 'tirkiz-okean', '--viewports', '1440', '--out', o.css, '--lang', 'en']);
+  const r = await cli([`${BASE}/multi/`, '--palette', 'teal-ocean', '--viewports', '1440', '--out', o.css, '--lang', 'en']);
   expect(r.code, r.stderr || r.stdout).toBe(0);
   expect(r.stdout).toContain('scanned http://127.0.0.1:4173/multi/ @1440px');
   expect(r.stdout).toContain('verification: contrast of all texts OK');
@@ -125,5 +125,5 @@ test('English output and CSS comments; language from the environment', async () 
   expect(sr.stdout).toContain('Upotreba:');
   const en = await cli([], { LANG: 'de_DE.UTF-8' });
   expect(en.stdout).toContain('Usage:');
-  expect(en.stdout).toContain('tirkiz-okean (Teal / ocean)');
+  expect(en.stdout).toMatch(/teal-ocean +Teal \/ ocean \(= tirkiz-okean\)/);
 });

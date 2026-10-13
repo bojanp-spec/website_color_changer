@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseColor, PRESETS, toHex } from '@cc/core';
+import { findPreset, parseColor, toHex } from '@cc/core';
 import type { Palette, Role } from '@cc/core';
 import { exportSite } from './export.js';
 import { detectLang, messages } from './i18n.js';
@@ -29,7 +29,7 @@ function parseArgs(argv: string[]) {
 }
 
 function parsePalette(input: string): Palette {
-  const preset = PRESETS[input];
+  const preset = findPreset(input);
   if (preset) return preset;
   const parts = input.split(',').map((x) => x.trim());
   const hex = parts.map((p) => {

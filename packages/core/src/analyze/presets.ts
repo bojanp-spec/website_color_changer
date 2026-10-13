@@ -38,3 +38,19 @@ export const PRESET_LABELS_EN: Record<string, string> = {
   'grafit-plavo': 'Graphite / electric blue',
   'ponoc-zlatno': 'Midnight / gold',
 };
+
+/** English ids for the presets (`--palette red-gray` in the CLI) → canonical id. */
+export const PRESET_IDS_EN: Record<string, string> = {
+  'red-gray': 'crveno-sivo',
+  'yellow-green': 'zuto-zeleno',
+  'green-cream': 'zeleno-krem',
+  'orange-dark': 'narandzasto-tamno',
+  'purple-pink': 'ljubicasto-roze',
+  'teal-ocean': 'tirkiz-okean',
+  'terracotta-sand': 'terakota-pesak',
+  'graphite-blue': 'grafit-plavo',
+  'midnight-gold': 'ponoc-zlatno',
+};
+
+/** Preset by canonical or English id. */
+export const findPreset = (id: string): Palette | undefined => PRESETS[id] ?? PRESETS[PRESET_IDS_EN[id] ?? ''];

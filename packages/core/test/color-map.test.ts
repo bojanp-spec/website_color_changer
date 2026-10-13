@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { buildColorMap, classify, contrastRatio, formatColorMap, parseColor, PRESETS, rgbToOklch } from '../src/index.js';
+import { buildColorMap, classify, contrastRatio, findPreset, formatColorMap, parseColor, PRESET_IDS_EN, PRESETS, rgbToOklch } from '../src/index.js';
 import type { ScanSummary } from '../src/index.js';
 
 const site = JSON.parse(readFileSync(new URL('./fixtures/drmozgovich.scan.json', import.meta.url), 'utf8')) as ScanSummary;
@@ -120,5 +120,35 @@ describe('buildColorMap — drmozgovich.top', () => {
     const text = formatColorMap(buildColorMap(c, PRESETS['crveno-sivo']!, site.pairs));
     expect(text).toContain('DOMINANTNA (60%)');
     expect(text).toContain('#3e9fd9    → #d32f2f');
+  });
+});
+
+describe('English output (lang: en)', () => {
+  const m = buildColorMap(c, PRESETS['crveno-sivo']!, site.pairs, { lang: 'en' });
+
+  it('reasons, warnings and formatColorMap are in English', () => {
+    expect(m.warnings.some((w) => w.startsWith('#10233f on #3e9fd9: contrast'))).toBe(true);
+    const text = formatColorMap(m, undefined, 'en');
+    expect(text).toContain('DOMINANT (60%)');
+    expect(text).toContain('⚠ Contrast:');
+    expect(text).not.toMatch(/[čćžšđ]|DOMINANTNA| na #/);
+  });
+
+  it('the same colors as in Serbian', () => {
+    expect([...m.map]).toEqual([...buildColorMap(c, PRESETS['crveno-sivo']!, site.pairs).map]);
+  });
+
+  it('errors in English', () => {
+    expect(() => buildColorMap(c, { dominant: '#fff', secondary: 'not-a-color', accent: '#f00' }, [], { lang: 'en' })).toThrow(
+      'Invalid secondary color: "not-a-color"',
+    );
+    expect(() => classify({ ...site, palette: [] }, { lang: 'en' })).toThrow(/palette is empty/);
+  });
+
+  it('English preset ids point to the same palettes', () => {
+    expect(Object.values(PRESET_IDS_EN).sort()).toEqual(Object.keys(PRESETS).sort());
+    expect(findPreset('red-gray')).toBe(PRESETS['crveno-sivo']);
+    expect(findPreset('crveno-sivo')).toBe(PRESETS['crveno-sivo']);
+    expect(findPreset('nope')).toBeUndefined();
   });
 });

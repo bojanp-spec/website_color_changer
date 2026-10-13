@@ -536,5 +536,6 @@ All seven milestones (M1–M7) are implemented. Where the code differs from this
 | axe-core for contrast | own audit of every visible text against `min(AA, original contrast)` | also checks the exported CSS without the tool |
 | fixtures `tailwind/`, `bootstrap-cdn/`, `spa-react/` | `blue-gray-vars`, `blue-gray-plain`, `cross-origin`, `shadow-dom`, `strict-csp`, `multi` and a static snapshot of drmozgovich.top | covers the same cases; drmozgovich.top is the main test site |
 | — | text on CTA buttons that shares the body text color is fixed locally (a dedicated variable if a probe proves it controls the color, otherwise only on those elements) | it can't be fixed globally without darkening all text |
+| Serbian only | every text is in Serbian and English: panel, extension and bookmarklet as separate builds (`_en`); CLI, `npm run scan` and the PostCSS plugin via `--lang`/the system language; core reports, contrast warnings and errors via the `lang` option; English palette names (`red-gray`…) next to the Serbian ones | the tool is meant for English-speaking users too |
 
 The current architecture and usage are described in the [README](../README.md).

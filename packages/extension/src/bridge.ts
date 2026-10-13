@@ -1,5 +1,6 @@
 // Isolated world (content script): the only part that sees the chrome.* API. The page (MAIN world)
 // talks to it via window.postMessage; it only answers messages from the same page.
+import { text as T } from './i18n.js';
 import { siteKey } from './shared.js';
 import type { PageRequest, PageResponse, SiteSettings } from './shared.js';
 
@@ -32,13 +33,13 @@ type BridgeWindow = Window & { __ccBridge?: boolean };
         const href = String(req.payload);
         // Only stylesheets the page actually loads.
         const known = Array.from(document.styleSheets).some((s) => s.href === href);
-        if (!known) throw new Error('nije stylesheet ove stranice');
+        if (!known) throw new Error(T.notPageSheet);
         const res = (await chrome.runtime.sendMessage({ type: 'fetch-css', href })) as { ok: boolean; value?: string; error?: string };
-        if (!res?.ok) throw new Error(res?.error ?? 'preuzimanje nije uspelo');
+        if (!res?.ok) throw new Error(res?.error ?? T.fetchFailed);
         return res.value;
       }
     }
-    throw new Error('nepoznata operacija');
+    throw new Error(T.unknownOp);
   }
 
   window.addEventListener('message', (e: MessageEvent) => {

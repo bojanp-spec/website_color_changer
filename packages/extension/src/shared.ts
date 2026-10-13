@@ -1,4 +1,5 @@
 import type { Palette, Role } from '@cc/core';
+import { text as T } from './i18n.js';
 
 /** Settings for a single site in the extension's storage (chrome.storage.local). */
 export interface SiteSettings {
@@ -57,9 +58,9 @@ export function cssFetchAllowed(href: string, pageUrl: string): string | null {
     target = new URL(href);
     page = new URL(pageUrl);
   } catch {
-    return 'nevalidan URL';
+    return T.badUrl;
   }
-  if (target.protocol !== 'https:' && target.protocol !== 'http:') return 'dozvoljeni su samo http(s) URL-ovi';
-  if (isPrivateHost(target.hostname) && target.hostname !== page.hostname) return 'lokalna adresa sa druge stranice';
+  if (target.protocol !== 'https:' && target.protocol !== 'http:') return T.httpOnly;
+  if (isPrivateHost(target.hostname) && target.hostname !== page.hostname) return T.privateHost;
   return null;
 }

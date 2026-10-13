@@ -39,3 +39,37 @@ const STRINGS = {
 
 export type OptionsKey = keyof (typeof STRINGS)['sr'];
 export const t = (key: OptionsKey): string => STRINGS[LANG][key];
+
+/** Errors and warnings from the background worker and the bridge (console, responses to the page). */
+const MESSAGES = {
+  sr: {
+    cannotOpen: 'Website Color Changer: ne mogu da pokrenem panel na ovoj stranici.',
+    autoFailed: 'Website Color Changer: automatska primena nije uspela.',
+    redirected: (url: string) => `preusmerenje: ${url}`,
+    notCss: (type: string) => `nije CSS (${type || 'bez content-type'})`,
+    tooLarge: 'CSS je prevelik',
+    pageOnly: 'samo sa stranice',
+    notPageSheet: 'nije stylesheet ove stranice',
+    fetchFailed: 'preuzimanje nije uspelo',
+    unknownOp: 'nepoznata operacija',
+    badUrl: 'nevalidan URL',
+    httpOnly: 'dozvoljeni su samo http(s) URL-ovi',
+    privateHost: 'lokalna adresa sa druge stranice',
+  },
+  en: {
+    cannotOpen: "Website Color Changer: can't open the panel on this page.",
+    autoFailed: 'Website Color Changer: automatic apply failed.',
+    redirected: (url: string) => `redirected: ${url}`,
+    notCss: (type: string) => `not CSS (${type || 'no content-type'})`,
+    tooLarge: 'CSS is too large',
+    pageOnly: 'only from a page',
+    notPageSheet: 'not a stylesheet of this page',
+    fetchFailed: 'download failed',
+    unknownOp: 'unknown operation',
+    badUrl: 'invalid URL',
+    httpOnly: 'only http(s) URLs are allowed',
+    privateHost: 'local address from another page',
+  },
+};
+
+export const text = MESSAGES[LANG];

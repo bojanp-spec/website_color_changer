@@ -192,7 +192,7 @@ test.describe('shadow DOM and our own UI', () => {
   });
 });
 
-test('printPalette prints the palette to the console',async ({ page }) => {
+test('printPalette prints the palette to the console', async ({ page }) => {
   await page.goto('/blue-gray-vars/');
   const logs: string[] = [];
   page.on('console', (m) => logs.push(m.text()));
@@ -203,4 +203,19 @@ test('printPalette prints the palette to the console',async ({ page }) => {
   });
   expect(logs.some((l) => l.includes('🎨'))).toBe(true);
   expect(logs.some((l) => l.includes('#2563eb'))).toBe(true);
+});
+
+test('formatPalette in Serbian and English', async ({ page }) => {
+  await page.goto('/blue-gray-vars/');
+  await page.addScriptTag({ path: BUNDLE });
+  const [sr, en] = await page.evaluate(async () => {
+    const CC = (window as unknown as { CC: typeof import('../src/index.js') }).CC;
+    const r = await CC.scanDocument(document);
+    return [CC.formatPalette(r), CC.formatPalette(r, undefined, 'en')];
+  });
+  expect(sr).toContain('Elemenata:');
+  expect(sr).toMatch(/pozadina \d+%/);
+  expect(en).toContain('Elements:');
+  expect(en).toMatch(/background \d+%/);
+  expect(en).not.toMatch(/Elemenata|pozadina|tekst|deklarisano/);
 });

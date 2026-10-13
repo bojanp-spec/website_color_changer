@@ -1,6 +1,8 @@
 import { rgbToOklch } from '../color/convert.js';
 import { parseColor } from '../color/parse.js';
 import type { OKLCH } from '../color/types.js';
+import { coreText } from '../i18n.js';
+import type { Lang } from '../i18n.js';
 import { reasonText } from './reasons.js';
 import type { ReasonCode } from './reasons.js';
 import type { Classification, Role, RoleAssignment, ScanSummary } from './types.js';
@@ -13,6 +15,8 @@ export interface ClassifyOptions {
   protectVariables?: RegExp | null;
   /** Manual overrides: color key → role. They take precedence over the heuristic. */
   overrides?: Record<string, Role>;
+  /** Language of error messages. Default `'sr'`. */
+  lang?: Lang;
 }
 
 export const DEFAULT_PROTECTED_VARIABLES =
@@ -78,7 +82,7 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
     .filter((x): x is { e: Entry; o: OKLCH } => x.o !== null && x.o.a >= MIN_ALPHA);
   const byKey = new Map(entries.map((x) => [x.e.key, x]));
   const opaque = entries.filter((x) => x.o.a >= 0.99);
-  if (!opaque.length) throw new Error('Paleta je prazna — nema boja za klasifikaciju.');
+  if (!opaque.length) throw new Error(coreText(opts.lang).emptyPalette);
 
   const argmax = <T>(list: T[], score: (x: T) => number): T | undefined =>
     list.reduce<T | undefined>((best, x) => (best === undefined || score(x) > score(best) ? x : best), undefined);

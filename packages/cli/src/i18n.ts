@@ -1,4 +1,4 @@
-import { PRESET_LABELS_EN, PRESETS } from '@cc/core';
+import { PRESET_IDS_EN, PRESET_LABELS_EN, PRESETS } from '@cc/core';
 
 export type Lang = 'sr' | 'en';
 
@@ -14,9 +14,11 @@ export function detectLang(argv: string[], env: NodeJS.ProcessEnv = process.env)
 }
 
 const presetList = (lang: Lang) =>
-  Object.keys(PRESETS)
-    .map((id) => (lang === 'en' ? `${id} (${PRESET_LABELS_EN[id]})` : id))
-    .join(lang === 'en' ? '\n  ' : ', ');
+  lang === 'en'
+    ? Object.entries(PRESET_IDS_EN)
+        .map(([en, id]) => `${en.padEnd(16)} ${PRESET_LABELS_EN[id]} (= ${id})`)
+        .join('\n  ')
+    : Object.keys(PRESETS).join(', ');
 
 const MESSAGES = {
   sr: {

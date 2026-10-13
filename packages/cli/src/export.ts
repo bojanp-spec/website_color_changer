@@ -80,11 +80,13 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
 
     // --- 2. Shared classification and map
     const merged = mergeScans(scans);
+    const lang = opts.lang ?? 'en';
     const classification = classify(merged, {
       ...(opts.overrides ? { overrides: opts.overrides } : {}),
       ...(opts.allColors ? { protectVariables: null } : {}),
+      lang,
     });
-    const colorMap = buildColorMap(classification, opts.palette, merged.pairs);
+    const colorMap = buildColorMap(classification, opts.palette, merged.pairs, { lang });
     log(M.classified(classification.bases.dominant, classification.bases.secondary, classification.bases.accent ?? '—'));
 
     // --- 3. Local fixes (only if there are pairs the map doesn't solve globally)

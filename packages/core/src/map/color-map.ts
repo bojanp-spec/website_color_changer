@@ -4,7 +4,10 @@ import { oklchToRgbInGamut, rgbToOklch } from '../color/convert.js';
 import { parseColor } from '../color/parse.js';
 import { toHex } from '../color/serialize.js';
 import type { RGBA } from '../color/types.js';
-import type { Classification, Palette, Role, ScanSummary } from '../analyze/types.js';
+import type { Classification, Palette, Role, RoleAssignment, ScanSummary } from '../analyze/types.js';
+import { reasonText } from '../analyze/reasons.js';
+import { coreText } from '../i18n.js';
+import type { Lang } from '../i18n.js';
 import { remap } from './remap.js';
 import type { LightnessMode } from './remap.js';
 
@@ -44,11 +47,13 @@ export interface ContrastFailure {
 export interface ColorMapOptions {
   /** WCAG contrast level to maintain. `false` disables the fix. Default `'AA'`. */
   enforceContrast?: WcagLevel | false;
+  /** Language of reasons, warnings and errors. Default `'sr'`. */
+  lang?: Lang;
 }
 
-function rgbaOf(color: string, what: string): RGBA {
+function rgbaOf(color: string, what: string, lang: Lang = 'sr'): RGBA {
   const p = parseColor(color);
-  if (!p) throw new Error(`Nevalidna boja za ${what}: "${color}"`);
+  if (!p) throw new Error(coreText(lang).badColor(what, color));
   return p.rgba;
 }
 
@@ -80,11 +85,15 @@ export function buildColorMap(
   opts: ColorMapOptions = {},
 ): ColorMapResult {
   const level = opts.enforceContrast === undefined ? 'AA' : opts.enforceContrast;
+  const lang = opts.lang ?? 'sr';
+  const T = coreText(lang);
   const newBases = {
-    dominant: rgbToOklch(rgbaOf(palette.dominant, 'dominantnu boju')),
-    secondary: rgbToOklch(rgbaOf(palette.secondary, 'sekundarnu boju')),
-    accent: rgbToOklch(rgbaOf(palette.accent, 'akcentnu boju')),
+    dominant: rgbToOklch(rgbaOf(palette.dominant, T.paletteColor.dominant, lang)),
+    secondary: rgbToOklch(rgbaOf(palette.secondary, T.paletteColor.secondary, lang)),
+    accent: rgbToOklch(rgbaOf(palette.accent, T.paletteColor.accent, lang)),
   };
+  const reasonOf = (r: RoleAssignment) =>
+    lang === 'sr' ? r.reason : reasonText(r.reasonCode, r.reasonArg, lang);
   const oldBase = (role: keyof typeof newBases) => {
     const key = classification.bases[role];
     return key ? classification.roles.get(key)?.oklch : undefined;
@@ -111,7 +120,7 @@ export function buildColorMap(
       rgba = rgbaOf(counterpart ?? r.key, r.key);
       if (counterpart) {
         newRgba.set(r.key, rgba);
-        entries.set(r.key, { from: r.key, to: toHex(rgba), role: r.role, reason: `${r.reason}; vrednost iz druge šeme sajta` });
+        entries.set(r.key, { from: r.key, to: toHex(rgba), role: r.role, reason: `${reasonOf(r)}; ${T.otherScheme}` });
         continue;
       }
     } else {
@@ -128,38 +137,34 @@ export function buildColorMap(
       }
     }
     newRgba.set(r.key, rgba);
-    entries.set(r.key, { from: r.key, to: toHex(rgba), role: r.role, reason: r.reason });
+    entries.set(r.key, { from: r.key, to: toHex(rgba), role: r.role, reason: reasonOf(r) });
   }
 
   const warnings: string[] = [];
   const failures: ContrastFailure[] = [];
-  if (level) fixContrast(classification, pairs, level, entries, newRgba, warnings, failures);
+  if (level) fixContrast(classification, pairs, level, entries, newRgba, warnings, failures, lang);
 
   const list = [...entries.values()];
   return { map: new Map(list.map((e) => [e.from, e.to])), entries: list, warnings, failures };
 }
 
 /** Text overview of the map (CLI). `swatch` renders a color sample. */
-export function formatColorMap(result: ColorMapResult, swatch: (hex: string) => string = () => ''): string {
+export function formatColorMap(result: ColorMapResult, swatch: (hex: string) => string = () => '', lang: Lang = 'sr'): string {
+  const T = coreText(lang);
   const order: Role[] = ['dominant', 'secondary', 'accent', 'protected'];
-  const label: Record<Role, string> = {
-    dominant: 'DOMINANTNA (60%)',
-    secondary: 'SEKUNDARNA (30%)',
-    accent: 'AKCENTNA (10%)',
-    protected: 'NE MENJA SE',
-  };
+  const label = T.roleHeading;
   const lines: string[] = [];
   for (const role of order) {
     const rows = result.entries.filter((e) => e.role === role);
     if (!rows.length) continue;
     lines.push('', label[role]);
     for (const e of rows) {
-      const fix = e.contrast ? `  ⚖ kontrast ${e.contrast.before.toFixed(2)}→${e.contrast.after.toFixed(2)} na ${e.contrast.against}` : '';
+      const fix = e.contrast ? `  ${T.contrastFix(e.contrast.before.toFixed(2), e.contrast.after.toFixed(2), e.contrast.against)}` : '';
       const arrow = role === 'protected' ? '' : ` → ${swatch(e.to)}${e.to.padEnd(10)}`;
       lines.push(`  ${swatch(e.from)}${e.from.padEnd(10)}${arrow} ${e.reason}${fix}`);
     }
   }
-  if (result.warnings.length) lines.push('', '⚠ Kontrast:', ...result.warnings.map((w) => `  ${w}`));
+  if (result.warnings.length) lines.push('', T.contrastHeading, ...result.warnings.map((w) => `  ${w}`));
   return lines.join('\n');
 }
 
@@ -181,6 +186,7 @@ function fixContrast(
   newRgba: Map<string, RGBA>,
   warnings: string[],
   failures: ContrastFailure[],
+  lang: Lang,
 ) {
   const checks: Check[] = [];
   for (const p of pairs) {
@@ -237,7 +243,7 @@ function fixContrast(
     if (r < c.target - 0.05) {
       failures.push({ fg: c.fg, bg: c.bg, target: c.target });
       warnings.push(
-        `${c.fg} na ${c.bg}: kontrast ${r.toFixed(2)} < ${c.target.toFixed(2)} (${entries.get(c.fg)!.to} na ${entries.get(c.bg)!.to})`,
+        coreText(lang).contrastWarning(c.fg, c.bg, r.toFixed(2), c.target.toFixed(2), entries.get(c.fg)!.to, entries.get(c.bg)!.to),
       );
     }
   }

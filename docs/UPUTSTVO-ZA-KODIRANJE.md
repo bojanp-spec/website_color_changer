@@ -536,5 +536,6 @@ Svih sedam faza (M1–M7) je urađeno. Gde se kod razlikuje od ovog plana, to je
 | axe-core za kontrast | sopstvena provera svakog vidljivog teksta prema `min(AA, originalni kontrast)` | proverava i izvezeni CSS bez alata |
 | fixtures `tailwind/`, `bootstrap-cdn/`, `spa-react/` | `blue-gray-vars`, `blue-gray-plain`, `cross-origin`, `shadow-dom`, `strict-csp`, `multi` i statički snimak drmozgovich.top | pokrivaju iste slučajeve; drmozgovich.top je glavni test sajt |
 | — | tekst na CTA dugmadi koji deli boju sa glavnim tekstom popravlja se lokalno (zasebna varijabla ako proba potvrdi da ona određuje boju, inače samo na tim elementima) | globalno ne može bez zatamnjivanja celog teksta |
+| samo srpski | svi tekstovi su na srpskom i engleskom: panel, ekstenzija i bookmarklet kao zasebni build-ovi (`_en`); CLI, `npm run scan` i PostCSS plugin preko `--lang`/jezika sistema; izveštaji, upozorenja o kontrastu i greške iz core-a preko opcije `lang`; engleski nazivi paleta (`red-gray`…) pored srpskih | alat je namenjen i korisnicima koji govore engleski |
 
 Trenutna arhitektura i korišćenje su opisani u [README-u](../README.md).

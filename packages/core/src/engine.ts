@@ -8,6 +8,8 @@ import { buildOverrideCss } from './apply/override-sheet.js';
 import { ensureContrast } from './color/contrast.js';
 import { parseColor } from './color/parse.js';
 import { toHex } from './color/serialize.js';
+import { coreText } from './i18n.js';
+import type { Lang } from './i18n.js';
 import { buildColorMap } from './map/color-map.js';
 import type { ColorMapOptions, ColorMapResult } from './map/color-map.js';
 import { scanStylesheets } from './scan/cssom-scanner.js';
@@ -18,8 +20,8 @@ import { colorKey } from './scan/properties.js';
 import type { ScanResult, Usage } from './scan/types.js';
 
 export interface EngineOptions extends ScanOptions, ClassifyOptions, ColorMapOptions {
-  /** Language of comments in the exported CSS. Default `'sr'`. */
-  lang?: 'sr' | 'en';
+  /** Language of comments in the exported CSS, contrast warnings, reasons in the color map and errors. Default `'sr'`. */
+  lang?: Lang;
   /** Track dynamic content (SPA, modals, lazy load, CSS-in-JS). Default `true`. */
   observe?: boolean;
   /** Disables CSS transitions while switching so the change does not "animate". Default `true`. */
@@ -448,7 +450,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     },
 
     apply(next, applyOptions = {}) {
-      if (!scan || !classification) throw new Error('Pozovi analyze() pre apply().');
+      if (!scan || !classification) throw new Error(coreText(opts.lang).analyzeFirst);
       if (applied) disableInternal();
       palette = next;
 
@@ -490,7 +492,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     },
 
     exportCss() {
-      if (!scan || !classification || !palette) throw new Error('Nema primenjene palete za izvoz.');
+      if (!scan || !classification || !palette) throw new Error(coreText(opts.lang).nothingToExport);
       const colorMap = lastColorMap ?? buildColorMap(classification, palette, scan.pairs, opts);
       const css = buildOverrideCss(scan.usages, createColorMapper(colorMap.map), { varOverrides, isAlt }).get('') ?? '';
       const localRules = lastLocalFixes
