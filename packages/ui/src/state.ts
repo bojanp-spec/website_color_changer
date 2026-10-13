@@ -7,6 +7,17 @@ export interface Saved {
   position?: { x: number; y: number };
 }
 
+/** Gde panel čuva podešavanja. Podrazumevano localStorage sajta; ekstenzija daje svoju memoriju. */
+export interface PanelStorage {
+  load(): Promise<Saved>;
+  save(patch: Partial<Saved>): Promise<void>;
+}
+
+export const localStorageAdapter: PanelStorage = {
+  load: async () => loadSaved(),
+  save: async (patch) => save(patch),
+};
+
 const key = () => `cc:${location.hostname || 'local'}`;
 
 /** Per-domen podešavanja. localStorage može biti nedostupan (privatni prozor, blokiran) — tada radimo bez njega. */

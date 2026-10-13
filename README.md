@@ -30,6 +30,26 @@ Na sopstvenom sajtu (dev/staging) može i kao snippet koji je nevidljiv posetioc
 
 ![Panel na drmozgovich.top](docs/screenshots/panel-light.jpg)
 
+## Ekstenzija za Chrome i Firefox
+
+```bash
+npm run build -w @cc/extension   # → packages/extension/dist/{chrome,firefox} + .zip
+```
+
+- **Chrome / Edge:** `chrome://extensions` → uključi *Developer mode* → *Load unpacked* → izaberi `packages/extension/dist/chrome`.
+- **Firefox (140+):** `about:debugging#/runtime/this-firefox` → *Load Temporary Add-on…* → izaberi `packages/extension/dist/firefox/manifest.json`. Za trajnu instalaciju zip treba potpisati na addons.mozilla.org.
+
+Klik na ikonicu otvara isti panel kao bookmarklet, uz razlike:
+
+| | Bookmarklet | Ekstenzija |
+|---|---|---|
+| Sajtovi sa strogom CSP | često blokiran | radi (kod ubacuje browser) |
+| CSS sa drugog domena bez CORS-a | computed fallback (inline) | preuzima CSS, mapira kroz CSS sloj ¹ |
+| Gde se pamte palete | `localStorage` sajta | memorija ekstenzije, pregled u podešavanjima |
+| Automatska primena pri učitavanju | — | po sajtu, prekidač u panelu ¹ |
+
+¹ Uz dozvolu „pristup svim sajtovima", koja se uključuje u podešavanjima ekstenzije. Bez nje ekstenzija radi samo na klik (`activeTab`) i ne vidi ništa drugo. Ekstenzija ne šalje nikakve podatke van browsera. CSS sa drugog domena preuzima bez kolačića, samo za stylesheet-ove koje stranica stvarno učitava, sa `Content-Type: text/css`, i nikad sa lokalne mreže za stranicu sa drugog hosta.
+
 ## Razvoj
 
 ```bash
@@ -37,6 +57,7 @@ npm install
 npm test          # unit testovi (Vitest)
 npm run e2e       # skener na test sajtovima iz fixtures/ (Playwright + Chromium)
 LIVE=1 npm run e2e   # + test nad živim drmozgovich.top
+npm run lint:firefox # web-ext lint za Firefox build
 npm run typecheck
 ```
 
@@ -73,4 +94,5 @@ console.log(engine.exportCss());                     // CSS za trajnu primenu
 | M3 — Klasifikacija 60/30/10 (`src/analyze`) + remap i korekcija kontrasta (`src/map`); glavni test sajt: snimak drmozgovich.top (`fixtures/drmozgovich`, `test/fixtures/drmozgovich.scan.json`) | ✅ |
 | M4 — Primena (`src/apply`, `src/engine.ts`): CSS sloj u `adoptedStyleSheets` (isti selektori/slojevi/media), inline/SVG atributi sa tačnim vraćanjem, lokalna korekcija kontrasta (CTA), computed fallback za CORS, MutationObserver, `toggle()`/`disable()`/`exportCss()` | ✅ |
 | M5 — UI panel (`packages/ui`): Shadow DOM panel, uloge boja, izbornici, preseti, A/B (<kbd>Alt+C</kbd>), izvoz, link sa paletom, pamćenje po domenu; bookmarklet + `install.html`, snippet režim | ✅ |
-| M6 — Browser ekstenzija | ⏳ |
+| M6 — Ekstenzija (`packages/extension`, MV3 za Chrome i Firefox): klik → panel (CSP-otporno), CSS sa drugog domena preko ekstenzije uz bezbednosne provere, palete u memoriji ekstenzije, automatska primena po sajtu, stranica sa podešavanjima | ✅ |
+| M7 — CLI izvoz (više stranica, PostCSS) | ⏳ |

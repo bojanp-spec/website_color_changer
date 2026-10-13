@@ -1,6 +1,7 @@
 import { createEngine, parseColor, PRESETS, toHex } from '@cc/core';
-import type { ApplyReport, Classification, ColorEngine, Palette, Role, ScanResult } from '@cc/core';
-import { loadSaved, paletteFromHash, save, shareUrl } from './state.js';
+import type { ApplyReport, Classification, ColorEngine, EngineOptions, Palette, Role, ScanResult } from '@cc/core';
+import { localStorageAdapter, paletteFromHash, shareUrl } from './state.js';
+import type { PanelStorage, Saved } from './state.js';
 import { PANEL_CSS } from './styles.js';
 
 export interface PanelHandle {
@@ -15,6 +16,14 @@ export interface PanelHandle {
 export interface PanelOptions {
   /** Paleta koja se odmah primenjuje (npr. iz URL hash-a). Podrazumevano: iz `#cc=…`. */
   initialPalette?: Palette | null;
+  /** Memorija za podešavanja po domenu. Podrazumevano localStorage sajta. */
+  storage?: PanelStorage;
+  /** Opcije engine-a (npr. `fetchCss` preko ekstenzije). */
+  engine?: EngineOptions;
+  /** Ekstenzija: prekidač „automatski primeni na ovom sajtu". */
+  autoApply?: { get(): Promise<boolean>; set(on: boolean): Promise<void> };
+  /** Poziva se kad korisnik zatvori panel. */
+  onClose?: () => void;
 }
 
 const ROLES: { role: keyof Palette; label: string; share: string }[] = [
@@ -62,19 +71,20 @@ function normalize(input: string): string | null {
  * `<cc-panel data-cc>` — engine ga ignoriše pri skeniranju, a stilovi sajta ne dopiru do njega.
  */
 export async function mountPanel(doc: Document = document, opts: PanelOptions = {}): Promise<PanelHandle> {
-  const saved = loadSaved();
+  const storage = opts.storage ?? localStorageAdapter;
+  const saved: Saved = await storage.load().catch(() => ({}));
+  const save = (patch: Partial<Saved>) => void storage.save(patch).catch(() => {});
   const host = doc.createElement('cc-panel');
   host.setAttribute('data-cc', '');
   // Otvoren shadow root: izolacija stilova je ista kao kod zatvorenog, a testovi mogu da ga čitaju.
   const root = host.attachShadow({ mode: 'open' });
-  const style = doc.createElement('style');
-  style.textContent = PANEL_CSS;
   const panel = h('div', { class: saved.collapsed ? 'panel collapsed' : 'panel', role: 'dialog', 'aria-label': 'Website Color Changer' });
-  root.append(style, panel);
+  attachStyles(doc, root);
+  root.append(panel);
   if (saved.position) placeAt(saved.position.x, saved.position.y);
   (doc.body ?? doc.documentElement).append(host);
 
-  const engine = createEngine(doc);
+  const engine = createEngine(doc, opts.engine);
   let scan: ScanResult;
   let classification: Classification;
   let palette: Palette;
@@ -83,6 +93,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   let applyTimer: ReturnType<typeof setTimeout> | null = null;
   let openMenu: HTMLElement | null = null;
   let onKey: ((e: KeyboardEvent) => void) | null = null;
+  let savedOverrides: Record<string, Role> = { ...(saved.overrides ?? {}) };
 
   const api: PanelHandle = {
     engine,
@@ -95,6 +106,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
       if (onKey) doc.removeEventListener('keydown', onKey);
       engine.destroy();
       host.remove();
+      opts.onClose?.();
     },
   };
 
@@ -156,6 +168,16 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   const downloadBtn = h('button', { class: 'btn', 'data-action': 'download', onclick: downloadCss }, 'Preuzmi .css') as HTMLButtonElement;
   const linkBtn = h('button', { class: 'btn', 'data-action': 'copy-link', onclick: copyLink }, 'Kopiraj link') as HTMLButtonElement;
   const exportSection = h('section', {}, h('h2', {}, 'Izvoz'), h('div', { class: 'actions' }, copyCssBtn, downloadBtn, linkBtn));
+  if (opts.autoApply) {
+    const auto = opts.autoApply;
+    const box = h('input', { type: 'checkbox', 'data-action': 'auto-apply' }) as HTMLInputElement;
+    box.checked = await auto.get().catch(() => false);
+    box.addEventListener('change', () => {
+      if (box.checked && !engine.palette) applyNow();
+      void auto.set(box.checked);
+    });
+    viewSection.append(h('label', { class: 'row check' }, box, 'Automatski primeni na ovom sajtu'));
+  }
 
   body.replaceChildren(detectedSection, pickerSection, presetSection, viewSection, exportSection);
   renderDetected();
@@ -308,8 +330,8 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     select.addEventListener('change', () => {
       const role = select.value as Role;
       engine.setRoleOverride(key, role);
-      const overrides = { ...(loadSaved().overrides ?? {}), [key]: role };
-      save({ overrides });
+      savedOverrides = { ...savedOverrides, [key]: role };
+      save({ overrides: savedOverrides });
       classification = engine.classification ?? classification;
       closeMenu();
       renderDetected();
@@ -390,5 +412,22 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     };
     doc.addEventListener('pointermove', move);
     doc.addEventListener('pointerup', up);
+  }
+}
+
+/**
+ * Stil panela preko constructable stylesheet-a: stroga CSP (`style-src` bez 'unsafe-inline')
+ * blokira <style>, a adoptedStyleSheets ne. Stariji browseri dobijaju <style>.
+ */
+function attachStyles(doc: Document, root: ShadowRoot) {
+  const view = doc.defaultView ?? window;
+  try {
+    const sheet = new view.CSSStyleSheet();
+    sheet.replaceSync(PANEL_CSS);
+    root.adoptedStyleSheets = [sheet];
+  } catch {
+    const style = doc.createElement('style');
+    style.textContent = PANEL_CSS;
+    root.append(style);
   }
 }

@@ -3,7 +3,8 @@ import type { PanelHandle } from './panel.js';
 
 export { mountPanel } from './panel.js';
 export type { PanelHandle, PanelOptions } from './panel.js';
-export { paletteFromHash, shareUrl } from './state.js';
+export { localStorageAdapter, paletteFromHash, shareUrl } from './state.js';
+export type { PanelStorage, Saved } from './state.js';
 
 type CCWindow = Window & { __ccPanel?: PanelHandle | Promise<PanelHandle> };
 

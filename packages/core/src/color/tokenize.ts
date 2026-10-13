@@ -10,8 +10,10 @@ export interface ColorMatch {
   color: ParsedColor | null;
 }
 
-const isIdentStart = (ch: string | undefined) => !!ch && /[a-zA-Z_\-\u0080-￿]/.test(ch);
-const isIdentChar = (ch: string | undefined) => !!ch && /[a-zA-Z0-9_\-\u0080-￿]/.test(ch);
+// Ne-ASCII kao negirana klasa: doslovni U+FFFF u izvoru/bundle-u Chrome odbija
+// kao content script („isn't UTF-8 encoded").
+const isIdentStart = (ch: string | undefined) => !!ch && /[a-zA-Z_\-]|[^\x00-\x7f]/.test(ch);
+const isIdentChar = (ch: string | undefined) => !!ch && /[a-zA-Z0-9_\-]|[^\x00-\x7f]/.test(ch);
 const isDigit = (ch: string | undefined) => !!ch && ch >= '0' && ch <= '9';
 
 /** Indeks odmah posle `)` koja zatvara zagradu otvorenu na `openIdx`; poštuje navodnike. */

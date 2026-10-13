@@ -112,6 +112,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .menu p { margin: 0 0 6px; font-size: 12px; }
 .menu p code { font: 11px ui-monospace, monospace; }
 .menu select { width: 100%; font: inherit; padding: 4px; border-radius: 6px; border: 1px solid var(--line); background: var(--soft); color: var(--fg); }
+.row.check { justify-content: flex-start; font-size: 12px; margin-top: 10px; cursor: pointer; }
+.row.check input { margin: 0; }
 .loading { padding: 16px 12px; color: var(--muted); }
 kbd { font: 11px ui-monospace, monospace; padding: 0 4px; border: 1px solid var(--line); border-radius: 4px; }
 `;

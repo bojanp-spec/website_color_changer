@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Website Color Changer</title>
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+<main>
+  <h1>🎨 Website Color Changer</h1>
+  <p class="muted">Klik na ikonicu ekstenzije otvara panel na trenutnom sajtu. <kbd>Alt+C</kbd> u panelu prebacuje original ↔ nova paleta.</p>
+
+  <section>
+    <h2>Pristup sajtovima</h2>
+    <p id="perm-status" class="muted">…</p>
+    <p class="muted">Bez ove dozvole ekstenzija radi samo kad klikneš ikonicu, i samo na tom tabu.
+      Sa njom: (1) čita stilove sa drugih domena (CDN) koje sajt ne deli preko CORS-a, i
+      (2) automatski primenjuje sačuvanu paletu na sajtovima gde to uključiš.</p>
+    <button id="perm-grant" type="button">Dozvoli pristup svim sajtovima</button>
+    <button id="perm-revoke" type="button" hidden>Ukloni dozvolu</button>
+  </section>
+
+  <section>
+    <h2>Sačuvane palete</h2>
+    <p id="empty" class="muted" hidden>Još nema sačuvanih paleta. Otvori panel na nekom sajtu i izaberi boje.</p>
+    <ul id="sites"></ul>
+  </section>
+</main>
+<script src="options.js"></script>
+</body>
+</html>
