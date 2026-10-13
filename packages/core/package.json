@@ -18,5 +18,9 @@
     "esbuild": "^0.25.12",
     "typescript": "5.9",
     "vitest": "^3.2.7"
+  },
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
   }
 }

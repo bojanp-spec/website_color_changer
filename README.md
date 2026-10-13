@@ -5,6 +5,31 @@ Alat koji menja paletu boja gotovog sajta (pravilo 60-30-10) bez izmene njegove 
 
 📘 Tehnička specifikacija i plan implementacije: [docs/UPUTSTVO-ZA-KODIRANJE.md](docs/UPUTSTVO-ZA-KODIRANJE.md)
 
+## Panel u browseru (bookmarklet)
+
+```bash
+npm install
+npm run build -w @cc/ui        # → packages/ui/dist/install.html
+```
+
+Otvori `packages/ui/dist/install.html` i prevuci dugme „🎨 Boje sajta" u traku sa obeleživačima. Na bilo kom sajtu klik otvara panel:
+
+- **Boje sajta** — detektovana paleta po ulogama (60 / 30 / 10 / ne menja se); klik na boju menja njenu ulogu (pamti se za domen).
+- **Nova paleta** — tri izbornika boja (color picker + HEX) sa živim pregledom.
+- **Gotove palete** — Original, Crveno/sivo, Žuto/zeleno, Zeleno/krem, Narandžasto/tamno.
+- **Prikaži original / novu paletu** — A/B poređenje, prečica <kbd>Alt+C</kbd>.
+- **Izvoz** — kopiraj ili preuzmi CSS za trajnu primenu; „Kopiraj link" daje URL sa paletom (`#cc=fafafa,4b4b4f,d32f2f`).
+
+Zatvaranje panela (×) vraća sajt u original. Ceo alat je u samom linku (~83 KB), ništa se ne učitava sa interneta.
+
+Na sopstvenom sajtu (dev/staging) može i kao snippet koji je nevidljiv posetiocima — panel se pojavljuje samo uz `?cc=1` ili `#cc=…` u URL-u:
+
+```html
+<script src="/cc-panel.min.js" data-cc-snippet defer></script>
+```
+
+![Panel na drmozgovich.top](docs/screenshots/panel-light.jpg)
+
 ## Razvoj
 
 ```bash
@@ -47,4 +72,5 @@ console.log(engine.exportCss());                     // CSS za trajnu primenu
 | M2 — Skener (`packages/core/src/scan`): CSSOM (+ `@import`, `@media`, `@layer`, nesting, `@keyframes`, cross-origin), inline stilovi, SVG/HTML atributi, CSS varijable, shadow DOM, ponder površine, parovi za kontrast | ✅ |
 | M3 — Klasifikacija 60/30/10 (`src/analyze`) + remap i korekcija kontrasta (`src/map`); glavni test sajt: snimak drmozgovich.top (`fixtures/drmozgovich`, `test/fixtures/drmozgovich.scan.json`) | ✅ |
 | M4 — Primena (`src/apply`, `src/engine.ts`): CSS sloj u `adoptedStyleSheets` (isti selektori/slojevi/media), inline/SVG atributi sa tačnim vraćanjem, lokalna korekcija kontrasta (CTA), computed fallback za CORS, MutationObserver, `toggle()`/`disable()`/`exportCss()` | ✅ |
-| M5 — UI panel + bookmarklet | ⏳ |
+| M5 — UI panel (`packages/ui`): Shadow DOM panel, uloge boja, izbornici, preseti, A/B (<kbd>Alt+C</kbd>), izvoz, link sa paletom, pamćenje po domenu; bookmarklet + `install.html`, snippet režim | ✅ |
+| M6 — Browser ekstenzija | ⏳ |

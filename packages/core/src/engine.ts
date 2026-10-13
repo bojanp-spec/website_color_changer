@@ -57,6 +57,8 @@ export interface ColorEngine {
   destroy(): void;
   readonly applied: boolean;
   readonly palette: Palette | null;
+  /** Trenutna klasifikacija (sa ručnim korekcijama), posle `analyze()`. */
+  readonly classification: Classification | null;
 }
 
 const MARK = '__cc';
@@ -371,6 +373,9 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
     },
     get palette() {
       return palette;
+    },
+    get classification() {
+      return classification;
     },
 
     async analyze() {
