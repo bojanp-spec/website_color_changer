@@ -89,7 +89,7 @@ node packages/cli/dist/cli.mjs https://drmozgovich.top --palette crveno-sivo \
 4. Writes one `theme-override.css` (HEX colors, the same selectors, `@layer`, `@media` and dark mode as the site).
 5. **Verification:** the CSS is added to every page as a plain stylesheet, without the tool, and the contrast of every visible text is measured. Elements that kept an old color (e.g. because of inline styles) are reported too. If any text loses contrast, the command exits with code 2, so it can be used in CI.
 
-Other options: `--override "#e7f2fa=dominant"`, `--all-colors` (also changes semantic and chart colors), `--no-verify`, `--wait <ms>`. Colors in multicolor SVG graphics (e.g. the Google logo) are never changed. Palette names on the command line are the Serbian slugs: `crveno-sivo` (red/gray), `zuto-zeleno` (yellow/green), `zeleno-krem` (green/cream), `narandzasto-tamno` (orange/dark), `ljubicasto-roze` (purple/pink), `tirkiz-okean` (teal/ocean), `terakota-pesak` (terracotta/sand), `grafit-plavo` (graphite/electric blue), `ponoc-zlatno` (midnight/gold). The CLI's console output is currently in Serbian.
+Other options: `--override "#e7f2fa=dominant"`, `--all-colors` (also changes semantic and chart colors), `--no-verify`, `--wait <ms>`. Colors in multicolor SVG graphics (e.g. the Google logo) are never changed. Palette names on the command line are the Serbian slugs: `crveno-sivo` (red/gray), `zuto-zeleno` (yellow/green), `zeleno-krem` (green/cream), `narandzasto-tamno` (orange/dark), `ljubicasto-roze` (purple/pink), `tirkiz-okean` (teal/ocean), `terakota-pesak` (terracotta/sand), `grafit-plavo` (graphite/electric blue), `ponoc-zlatno` (midnight/gold). Messages and the comments in the generated CSS follow `--lang en|sr` (default: the system language).
 
 #### Directly in the source files (PostCSS)
 
@@ -135,7 +135,7 @@ console.log(engine.exportCss());                     // CSS for permanent use
 | `packages/cli` | `cc-export`: multi-page production export with verification |
 | `packages/postcss-cc-remap` | PostCSS plugin that applies the color map to source CSS/SCSS |
 
-The technical specification ([docs/UPUTSTVO-ZA-KODIRANJE.md](docs/UPUTSTVO-ZA-KODIRANJE.md)) is in Serbian.
+Technical specification: [docs/TECHNICAL-SPEC.md](docs/TECHNICAL-SPEC.md) (Serbian: [UPUTSTVO-ZA-KODIRANJE.md](docs/UPUTSTVO-ZA-KODIRANJE.md)).
 
 ---
 
@@ -153,7 +153,7 @@ Alat koji menja paletu boja gotovog sajta (pravilo 60-30-10) bez izmene njegove 
 
 Verzije na engleskom imaju `_en` u imenu (vidi [English](#english)).
 
-📘 Tehnička specifikacija i plan implementacije: [docs/UPUTSTVO-ZA-KODIRANJE.md](docs/UPUTSTVO-ZA-KODIRANJE.md)
+📘 Tehnička specifikacija i plan implementacije: [docs/UPUTSTVO-ZA-KODIRANJE.md](docs/UPUTSTVO-ZA-KODIRANJE.md) (na engleskom: [TECHNICAL-SPEC.md](docs/TECHNICAL-SPEC.md))
 
 ### Panel u browseru (bookmarklet)
 
@@ -216,7 +216,7 @@ node packages/cli/dist/cli.mjs https://drmozgovich.top --palette crveno-sivo \
 4. Piše jedan `theme-override.css` (HEX boje, isti selektori, `@layer`, `@media` i dark mode kao na sajtu).
 5. **Provera:** CSS se ubacuje u svaku stranicu kao običan stylesheet, bez alata, i meri se kontrast svakog vidljivog teksta. Prijavljuju se i elementi koji su ostali u staroj boji, npr. zbog inline stilova. Ako kontrast nekog teksta padne, komanda izlazi sa kodom 2, pa može da se koristi u CI-ju.
 
-Ostale opcije: `--override "#e7f2fa=dominant"`, `--all-colors` (menja i semantičke boje i grafikone), `--no-verify`, `--wait <ms>`. Boje iz višebojnih SVG grafika (npr. Google logo) se nikad ne menjaju.
+Ostale opcije: `--override "#e7f2fa=dominant"`, `--all-colors` (menja i semantičke boje i grafikone), `--no-verify`, `--wait <ms>`, `--lang sr|en` (jezik poruka i komentara u CSS-u; podrazumevano jezik sistema). Boje iz višebojnih SVG grafika (npr. Google logo) se nikad ne menjaju.
 
 #### Direktno u izvornim fajlovima (PostCSS)
 

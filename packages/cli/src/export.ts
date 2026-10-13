@@ -1,7 +1,9 @@
 import { chromium } from '@playwright/test';
-import { buildColorMap, buildOverrideCss, classify, createColorMapper, isAltContext } from '@cc/core';
+import { buildColorMap, buildOverrideCss, classify, contrastRatio, createColorMapper, isAltContext, parseColor } from '@cc/core';
 import type { Classification, ColorMapResult, LocalContrastFix, Palette, Role, Usage } from '@cc/core';
 import { openPage, localFixes, scanPage, verifyPage } from './browser.js';
+import { messages } from './i18n.js';
+import type { Lang } from './i18n.js';
 import { crawlable, mergeScans } from './merge.js';
 import type { ExportReport, PageScan } from './types.js';
 
@@ -22,6 +24,8 @@ export interface ExportOptions {
   wait?: number;
   /** Putanja do core IIFE bundle-a. */
   bundle: string;
+  /** Jezik poruka i komentara u CSS-u. Podrazumevano `'en'`. */
+  lang?: Lang;
   log?: (line: string) => void;
 }
 
@@ -43,6 +47,7 @@ export interface ExportResult {
  */
 export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
   const log = opts.log ?? (() => {});
+  const M = messages(opts.lang ?? 'en');
   const viewports = opts.viewports?.length ? opts.viewports : [1440, 390];
   const start = new URL(opts.url);
   const queue = [start.toString(), ...(opts.pages ?? []).map((p) => new URL(p, start).toString())];
@@ -62,7 +67,7 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
         const page = await openPage(context, urls[i]!, { ...load, viewport: vp });
         const scan = await scanPage(page, opts.bundle, vp);
         scans.push(scan);
-        log(`  skenirano ${scan.url} @${vp}px — ${scan.palette.length} boja`);
+        log(M.scanned(scan.url, vp, scan.palette.length));
         if (vp === viewports[0] && urls.length < maxPages) {
           for (const href of scan.links) {
             const next = crawlable(href, start.origin);
@@ -80,7 +85,7 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
       ...(opts.allColors ? { protectVariables: null } : {}),
     });
     const colorMap = buildColorMap(classification, opts.palette, merged.pairs);
-    log(`  klasifikacija: ${classification.bases.dominant} / ${classification.bases.secondary} / ${classification.bases.accent ?? '—'}`);
+    log(M.classified(classification.bases.dominant, classification.bases.secondary, classification.bases.accent ?? '—'));
 
     // --- 3. Lokalne korekcije (samo ako postoje parovi koje mapa ne rešava globalno)
     const fixes: LocalContrastFix[] = [];
@@ -98,7 +103,14 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
     }
     // Upozorenja o kontrastu samo za parove koje ni lokalna korekcija nije rešila.
     const fixed = new Set(fixes.map((f) => `${f.fg}|${f.bg}`));
-    const warnings = colorMap.warnings.filter((_, i) => !fixed.has(`${colorMap.failures[i]!.fg}|${colorMap.failures[i]!.bg}`));
+    const rgba = (hex: string) => parseColor(hex)!.rgba;
+    const warnings = colorMap.failures
+      .filter((f) => !fixed.has(`${f.fg}|${f.bg}`))
+      .map((f) => {
+        const toFg = colorMap.map.get(f.fg) ?? f.fg;
+        const toBg = colorMap.map.get(f.bg) ?? f.bg;
+        return M.contrast(f.fg, f.bg, contrastRatio(rgba(toFg), rgba(toBg)).toFixed(2), f.target.toFixed(2), toFg, toBg);
+      });
     const varOverrides = new Map<string, string>();
     /** Boja → selektori; ista korekcija sa više stranica postaje jedno pravilo. */
     const localRules = new Map<string, Set<string>>();
@@ -108,7 +120,7 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
         const set = localRules.get(f.to) ?? new Set<string>();
         for (const sel of f.via.selector.split(',')) set.add(sel.trim());
         localRules.set(f.to, set);
-      } else warnings.push(`Lokalni kontrast ${f.fg} na ${f.bg} → ${f.to}: nema bezbednog selektora (${f.via.elements} elemenata) — dodati ručno.`);
+      } else warnings.push(M.noSelector(f.fg, f.bg, f.to, f.via.elements));
     }
 
     // --- 4. CSS
@@ -118,23 +130,23 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
       isAlt: (u) => isAltContext(u, classification.light),
     });
     const shadowScopes = [...byScope.keys()].filter((k) => k);
-    if (shadowScopes.length) warnings.push(`Stilovi u shadow DOM-u (${shadowScopes.join(', ')}) nisu u CSS fajlu — web komponente ih ne nasleđuju.`);
+    if (shadowScopes.length) warnings.push(M.shadow(shadowScopes.join(', ')));
     // Inline boje koje bi trebalo promeniti (zaštićene, npr. logo, se ne broje).
     const inlineCount = merged.usages.filter((u) => u.inline && u.colors.some((c) => mapper.mapKey(c))).length;
-    if (inlineCount) warnings.push(`${inlineCount} boja je u inline style/SVG atributima — CSS fajl ih ne pokriva (vidi „uncovered" u izveštaju).`);
+    if (inlineCount) warnings.push(M.inline(inlineCount));
 
     const body = byScope.get('') ?? '';
     const local = [...localRules].map(([color, sels]) => `${[...sels].join(',\n')} {\n  color: ${color};\n}`).join('\n');
     const css = [
       '/*',
       ' * Website Color Changer — theme-override.css',
-      ` * Paleta: ${opts.palette.dominant} (60%) / ${opts.palette.secondary} (30%) / ${opts.palette.accent} (10%)`,
-      ` * Sajt:   ${classification.bases.dominant} / ${classification.bases.secondary} / ${classification.bases.accent ?? '—'}`,
-      ` * Stranice (${urls.length}): ${urls.join(', ')}`,
-      ' * Uključiti POSLE svih postojećih stilova sajta.',
+      ` * ${M.cssPalette} ${opts.palette.dominant} (60%) / ${opts.palette.secondary} (30%) / ${opts.palette.accent} (10%)`,
+      ` * ${M.cssSite} ${classification.bases.dominant} / ${classification.bases.secondary} / ${classification.bases.accent ?? '—'}`,
+      ` * ${M.cssPages(urls.length)} ${urls.join(', ')}`,
+      ` * ${M.cssAfter}`,
       ' */',
       body,
-      local ? `\n/* Lokalna korekcija kontrasta (npr. tekst na CTA dugmadi) */\n${local}` : '',
+      local ? `\n/* ${M.cssLocal} */\n${local}` : '',
     ]
       .filter(Boolean)
       .join('\n')
@@ -150,7 +162,7 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
           const shot = opts.screenshots ? `${opts.screenshots}/${slug(url)}@${vp}.png` : undefined;
           const v = await verifyPage(page, opts.bundle, css, colorMap.map, vp, shot);
           verification.push(v);
-          log(`  provera ${v.url} @${vp}px — kontrast: ${v.contrastRegressions.length ? `⚠ ${v.contrastRegressions.length}` : 'OK'}, nepokriveno: ${v.uncovered.length}`);
+          log(M.verified(v.url, vp, v.contrastRegressions.length, v.uncovered.length));
           await page.close();
         }
       }

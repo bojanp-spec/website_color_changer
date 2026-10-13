@@ -1,6 +1,10 @@
 # Website Color Changer — uputstvo za kodiranje
 
+🇬🇧 *English version: [TECHNICAL-SPEC.md](TECHNICAL-SPEC.md)*
+
 > Tehnička specifikacija i plan implementacije alata koji menja paletu boja **već gotovog sajta**, bez izmene njegove strukture, HTML-a, JS logike i funkcionalnosti — po pravilu **60-30-10**.
+>
+> Ovaj dokument je napisan pre implementacije. Gde se kod razlikuje, vidi [Napomene o implementaciji](#14-napomene-o-implementaciji) na kraju.
 
 ---
 
@@ -512,3 +516,25 @@ Asercije:
 - Svaki DOM upis ide kroz jedan modul (`apply/`) — lako se audituje da ništa drugo ne dira sajt.
 - Prefiks za sve što ubacujemo u stranicu: `cc-` / `data-cc` (lako pronalaženje i čišćenje).
 - Bundle za bookmarklet/inject: cilj < 40 KB gzip.
+
+---
+
+## 14. Napomene o implementaciji
+
+Svih sedam faza (M1–M7) je urađeno. Gde se kod razlikuje od ovog plana, to je namerno:
+
+| Plan | Implementacija | Zašto |
+|---|---|---|
+| `culori`, Vite | sopstvene OKLCH/Lab/P3 konverzije i gamut mapping; esbuild | nula zavisnosti, mali bundle |
+| `Role` sa `'neutral-text'` | `'dominant' \| 'secondary' \| 'accent' \| 'protected'`, uz šifru razloga za svaku boju | semantičke boje, boje grafikona, maske, senke i logotipi ne smeju da se menjaju |
+| override pravila sa `!important` | važnost i omotači originala (`@layer`/`@media`/`@supports`/nesting) se preslikavaju; sloj ide u `adoptedStyleSheets` | kaskada ostaje tačno kao na sajtu; `!important` bi pregazio i inline stilove koje postavlja JS sajta |
+| SVG atributi preko `[fill=…]` CSS-a | atribut se menja i vraća bajt-identično | selektor po atributu u našem sloju mogao bi da pobedi CSS sajta koji je originalno pobeđivao atribut |
+| computed fallback preko `data-cc-id` | inline `style`, vraća se pri `disable()` | bez dodatnih atributa |
+| zatvoren Shadow DOM | otvoren Shadow DOM | ista izolacija stilova; panel može da se testira |
+| drag & drop za uloge | meni sa padajućom listom | radi i tastaturom |
+| dark mode samo kao upozorenje | pun prelaz svetlo ↔ tamno; dark mode sajta se mapira preko sopstvenih baza | tamni preseti su to zahtevali |
+| axe-core za kontrast | sopstvena provera svakog vidljivog teksta prema `min(AA, originalni kontrast)` | proverava i izvezeni CSS bez alata |
+| fixtures `tailwind/`, `bootstrap-cdn/`, `spa-react/` | `blue-gray-vars`, `blue-gray-plain`, `cross-origin`, `shadow-dom`, `strict-csp`, `multi` i statički snimak drmozgovich.top | pokrivaju iste slučajeve; drmozgovich.top je glavni test sajt |
+| — | tekst na CTA dugmadi koji deli boju sa glavnim tekstom popravlja se lokalno (zasebna varijabla ako proba potvrdi da ona određuje boju, inače samo na tim elementima) | globalno ne može bez zatamnjivanja celog teksta |
+
+Trenutna arhitektura i korišćenje su opisani u [README-u](../README.md).

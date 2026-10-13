@@ -12,9 +12,11 @@ const CLI = fileURLToPath(new URL('../dist/cli.mjs', import.meta.url));
 const FIXTURES = fileURLToPath(new URL('../../../fixtures/', import.meta.url));
 const BASE = 'http://127.0.0.1:4173';
 
-function cli(args: string[]) {
+function cli(args: string[], env: NodeJS.ProcessEnv = {}) {
   return new Promise<{ code: number; stdout: string; stderr: string }>((resolve) => {
-    execFile(process.execPath, [CLI, ...args], { timeout: 110_000 }, (err, stdout, stderr) => {
+    // Bez CC_LANG/LANG iz okruženja testa, osim ako ga test zada — jezik zavisi samo od argumenata.
+    const base = { ...process.env, CC_LANG: '', LANG: '', LC_ALL: '' };
+    execFile(process.execPath, [CLI, ...args], { timeout: 110_000, env: { ...base, ...env } }, (err, stdout, stderr) => {
       resolve({ code: err ? ((err as { code?: number }).code ?? 1) : 0, stdout, stderr });
     });
   });
@@ -29,7 +31,7 @@ const readReport = (path: string) => JSON.parse(readFileSync(path, 'utf8')) as E
 
 test('više stranica (--crawl): jedan CSS za ceo sajt, provera prolazi', async () => {
   const o = outDir();
-  const r = await cli([`${BASE}/multi/`, '--palette', 'crveno-sivo', '--crawl', '5', '--out', o.css, '--report', o.report]);
+  const r = await cli([`${BASE}/multi/`, '--palette', 'crveno-sivo', '--crawl', '5', '--out', o.css, '--report', o.report, '--lang', 'sr']);
   expect(r.code, r.stderr || r.stdout).toBe(0);
   const css = readFileSync(o.css, 'utf8');
   expect(css).toContain('body {\n  background-color: #fafafa;');
@@ -94,12 +96,34 @@ test('unakrsna provera: CSS sloj i PostCSS-prepisani izvorni CSS daju iste boje'
 });
 
 test('jasne greške za pogrešne argumente', async () => {
-  const noUrl = await cli([]);
+  const noUrl = await cli(['--lang', 'sr']);
   expect(noUrl.code).toBe(1);
   expect(noUrl.stdout).toContain('Upotreba:');
-  const bad = await cli([`${BASE}/multi/`, '--palette', '#fff,nije-boja,#000']);
+  const bad = await cli([`${BASE}/multi/`, '--palette', '#fff,nije-boja,#000', '--lang', 'sr']);
   expect(bad.code).toBe(1);
   expect(bad.stderr).toContain('Nevalidna boja u --palette: "nije-boja"');
+  const badEn = await cli([`${BASE}/multi/`, '--palette', '#fff,not-a-color,#000', '--lang', 'en']);
+  expect(badEn.stderr).toContain('Invalid color in --palette: "not-a-color"');
   const override = await cli([`${BASE}/multi/`, '--palette', 'crveno-sivo', '--override', '#fff=glavna']);
   expect(override.stderr).toContain('--override');
+});
+
+test('engleski izlaz i komentari u CSS-u; jezik iz okruženja', async () => {
+  const o = outDir();
+  const r = await cli([`${BASE}/multi/`, '--palette', 'tirkiz-okean', '--viewports', '1440', '--out', o.css, '--lang', 'en']);
+  expect(r.code, r.stderr || r.stdout).toBe(0);
+  expect(r.stdout).toContain('scanned http://127.0.0.1:4173/multi/ @1440px');
+  expect(r.stdout).toContain('verification: contrast of all texts OK');
+  expect(r.stdout).toMatch(/✔ .*theme\.css: \d+ rules for 1 pages/);
+  expect(r.stdout).not.toMatch(/skenirano|provera|pravila/);
+  const css = readFileSync(o.css, 'utf8');
+  expect(css).toContain("Include AFTER all of the site's existing styles.");
+  expect(css).toContain(' * Palette: #F1F8FA (60%)');
+
+  // bez --lang: srpski sistem → srpski, ostalo → engleski
+  const sr = await cli([], { LANG: 'sr_RS.UTF-8' });
+  expect(sr.stdout).toContain('Upotreba:');
+  const en = await cli([], { LANG: 'de_DE.UTF-8' });
+  expect(en.stdout).toContain('Usage:');
+  expect(en.stdout).toContain('tirkiz-okean (Teal / ocean)');
 });

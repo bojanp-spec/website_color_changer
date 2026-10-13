@@ -213,6 +213,11 @@ test.describe('engleska verzija (_en)', () => {
     const download = page.waitForEvent('download');
     await panel.locator('[data-action="download"]').click();
     expect((await download).suggestedFilename()).toBe('127.0.0.1-palette.css');
+    await panel.locator('[data-action="copy-css"]').click();
+    await expect(panel.locator('[data-action="copy-css"]')).toHaveText('Copied ✓');
+    const css = await page.evaluate(() => navigator.clipboard.readText());
+    expect(css).toContain("Include AFTER the site's existing styles.");
+    expect(css).not.toContain('Dodati POSLE');
   });
 
   test('bookmarklet_en radi i nema srpskog teksta', async ({ page }) => {

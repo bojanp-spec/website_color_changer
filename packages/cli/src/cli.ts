@@ -4,27 +4,10 @@ import { fileURLToPath } from 'node:url';
 import { parseColor, PRESETS, toHex } from '@cc/core';
 import type { Palette, Role } from '@cc/core';
 import { exportSite } from './export.js';
+import { detectLang, messages } from './i18n.js';
 
-const HELP = `cc-export — izvoz palete za produkciju (jedan CSS fajl za ceo sajt)
-
-Upotreba:
-  cc-export <url> --palette <preset | "#dom,#sek,#akc"> [opcije]
-
-Opcije:
-  --pages /,/kontakt,/cenovnik   dodatne stranice (putanje u odnosu na <url>)
-  --crawl <N>                    obiđi do N stranica prateći linkove sa iste domene
-  --viewports 1440,390           širine prikaza (podrazumevano desktop i mobilni)
-  --out theme-override.css       izlazni CSS (podrazumevano theme-override.css)
-  --map paleta.map.json          mapa stara → nova boja (za PostCSS plugin)
-  --report izvestaj.json         detaljan izveštaj (klasifikacija, korekcije, provera)
-  --screenshots <dir>            snimci stranica sa primenjenim CSS-om
-  --override "#e7f2fa=dominant"  ručna uloga boje (može više puta)
-  --all-colors                   menjaj i semantičke boje / boje grafikona
-  --no-verify                    preskoči proveru CSS-a na stranicama
-  --no-scroll                    ne skroluj stranice pre skeniranja
-  --wait <ms>                    dodatno čekanje posle učitavanja
-
-Preseti: ${Object.keys(PRESETS).join(', ')}`;
+const LANG = detectLang(process.argv.slice(2));
+const M = messages(LANG);
 
 function parseArgs(argv: string[]) {
   const flags = new Map<string, string[]>();
@@ -38,7 +21,7 @@ function parseArgs(argv: string[]) {
     const [name, inline] = a.slice(2).split(/=(.*)/s, 2) as [string, string | undefined];
     const boolean = ['all-colors', 'no-verify', 'no-scroll', 'help'].includes(name);
     const value = boolean ? 'true' : (inline ?? argv[++i]);
-    if (value === undefined) throw new Error(`--${name} traži vrednost`);
+    if (value === undefined) throw new Error(M.needsValue(name));
     flags.set(name, [...(flags.get(name) ?? []), value]);
   }
   const one = (n: string) => flags.get(n)?.at(-1);
@@ -51,10 +34,10 @@ function parsePalette(input: string): Palette {
   const parts = input.split(',').map((x) => x.trim());
   const hex = parts.map((p) => {
     const c = parseColor(p);
-    if (!c) throw new Error(`Nevalidna boja u --palette: "${p}"`);
+    if (!c) throw new Error(M.badColor(p));
     return toHex({ ...c.rgba, a: 1 });
   });
-  if (hex.length !== 3) throw new Error('--palette traži preset ili tačno tri boje: "#dom,#sek,#akc"');
+  if (hex.length !== 3) throw new Error(M.paletteCount);
   return { dominant: hex[0]!, secondary: hex[1]!, accent: hex[2]! };
 }
 
@@ -64,7 +47,7 @@ function parseOverrides(list: string[] = []): Record<string, Role> {
     const [color, role] = item.split('=');
     const key = color && parseColor(color);
     if (!key || !['dominant', 'secondary', 'accent', 'protected'].includes(role ?? '')) {
-      throw new Error(`--override "${item}": očekuje se "#boja=dominant|secondary|accent|protected"`);
+      throw new Error(M.badOverride(item));
     }
     out[toHex(key.rgba)] = role as Role;
   }
@@ -79,7 +62,7 @@ const write = (path: string, content: string) => {
 async function main() {
   const { positional, flags, one } = parseArgs(process.argv.slice(2));
   if (one('help') || !positional[0]) {
-    console.log(HELP);
+    console.log(M.help());
     process.exit(positional[0] ? 0 : 1);
   }
   const palette = parsePalette(one('palette') ?? '');
@@ -102,6 +85,7 @@ async function main() {
     ...(screenshots ? { screenshots } : {}),
     bundle: fileURLToPath(new URL('./cc-core.iife.js', import.meta.url)),
     log: (l) => console.log(l),
+    lang: LANG,
   });
 
   write(out, result.css);
@@ -116,14 +100,14 @@ async function main() {
   const r = result.report;
   const regressions = r.verification.reduce((n, v) => n + v.contrastRegressions.length, 0);
   const uncovered = r.verification.reduce((n, v) => n + v.uncovered.length, 0);
-  console.log(`\n✔ ${out}: ${r.rules} pravila za ${new Set(r.pages.map((p) => p.url)).size} stranica`);
+  console.log(`\n${M.wroteCss(out, r.rules, new Set(r.pages.map((p) => p.url)).size)}`);
   if (mapPath) console.log(`✔ ${mapPath}`);
   if (reportPath) console.log(`✔ ${reportPath}`);
-  if (r.localFixes.length) console.log(`  ⚖ lokalnih korekcija kontrasta: ${r.localFixes.length}`);
+  if (r.localFixes.length) console.log(M.localFixes(r.localFixes.length));
   for (const w of r.warnings) console.log(`  ⚠ ${w}`);
   if (r.verification.length) {
-    console.log(regressions ? `  ⚠ provera: ${regressions} tekstova sa lošijim kontrastom (detalji u --report)` : '  ✔ provera: kontrast svih tekstova OK');
-    if (uncovered) console.log(`  ⚠ provera: ${uncovered} elemenata zadržava staru boju (inline stilovi?) — detalji u --report`);
+    console.log(regressions ? M.verifyBad(regressions) : M.verifyOk);
+    if (uncovered) console.log(M.uncovered(uncovered));
   }
   process.exitCode = regressions ? 2 : 0;
 }

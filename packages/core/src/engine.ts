@@ -18,6 +18,8 @@ import { colorKey } from './scan/properties.js';
 import type { ScanResult, Usage } from './scan/types.js';
 
 export interface EngineOptions extends ScanOptions, ClassifyOptions, ColorMapOptions {
+  /** Jezik komentara u izvezenom CSS-u. Podrazumevano `'sr'`. */
+  lang?: 'sr' | 'en';
   /** Prati dinamički sadržaj (SPA, modali, lazy load, CSS-in-JS). Podrazumevano `true`. */
   observe?: boolean;
   /** Isključuje CSS tranzicije tokom prebacivanja, da promena ne „animira". Podrazumevano `true`. */
@@ -69,6 +71,26 @@ export interface ColorEngine {
   /** Trenutna klasifikacija (sa ručnim korekcijama), posle `analyze()`. */
   readonly classification: Classification | null;
 }
+
+/** Komentari u CSS-u koji izvozi `exportCss()`. */
+const EXPORT_TEXT = {
+  sr: {
+    palette: 'paleta',
+    after: 'Dodati POSLE postojećih stilova sajta.',
+    inline: (n: number) => `Napomena: ${n} boja je u inline style/SVG atributima — njih CSS fajl ne pokriva.`,
+    manual: (fg: string, bg: string, to: string, n: number) =>
+      `Lokalni kontrast: tekst ${fg} na ${bg} treba da bude ${to} na ${n} elemenata (npr. CTA dugmad) — dodati pravilo za njih ručno.`,
+    local: 'Lokalna korekcija kontrasta (npr. tekst na CTA dugmadi)',
+  },
+  en: {
+    palette: 'palette',
+    after: "Include AFTER the site's existing styles.",
+    inline: (n: number) => `Note: ${n} colors are in inline style/SVG attributes — this CSS file does not cover them.`,
+    manual: (fg: string, bg: string, to: string, n: number) =>
+      `Local contrast: text ${fg} on ${bg} should be ${to} on ${n} elements (e.g. CTA buttons) — add a rule for them manually.`,
+    local: 'Local contrast fix (e.g. text on CTA buttons)',
+  },
+} as const;
 
 const MARK = '__cc';
 type MarkedSheet = CSSStyleSheet & { [MARK]?: boolean };
@@ -475,21 +497,18 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
         .map((f) => (f.via.kind === 'inline' && f.via.selector ? `${f.via.selector} {\n  color: ${f.to};\n}` : ''))
         .filter(Boolean);
       const inline = scan.usages.filter((u) => u.element).length;
+      const L = EXPORT_TEXT[opts.lang ?? 'sr'];
       const header = [
-        `/* Website Color Changer — paleta ${palette.dominant} / ${palette.secondary} / ${palette.accent}`,
-        '   Dodati POSLE postojećih stilova sajta. */',
-        inline ? `/* Napomena: ${inline} boja je u inline style/SVG atributima — njih CSS fajl ne pokriva. */` : '',
+        `/* Website Color Changer — ${L.palette} ${palette.dominant} / ${palette.secondary} / ${palette.accent}`,
+        `   ${L.after} */`,
+        inline ? `/* ${L.inline(inline)} */` : '',
         ...lastLocalFixes
           .filter((f) => f.via.kind === 'inline' && !f.via.selector)
-          .map(
-            (f) =>
-              `/* Lokalni kontrast: tekst ${f.fg} na ${f.bg} treba da bude ${f.to} na ${(f.via as { elements: number }).elements} elemenata` +
-              ' (npr. CTA dugmad) — dodati pravilo za njih ručno. */',
-          ),
+          .map((f) => `/* ${L.manual(f.fg, f.bg, f.to, (f.via as { elements: number }).elements)} */`),
       ]
         .filter(Boolean)
         .join('\n');
-      const local = localRules.length ? `\n/* Lokalna korekcija kontrasta (npr. tekst na CTA dugmadi) */\n${localRules.join('\n')}` : '';
+      const local = localRules.length ? `\n/* ${L.local} */\n${localRules.join('\n')}` : '';
       return `${header}\n${css}${local}\n`;
     },
 
