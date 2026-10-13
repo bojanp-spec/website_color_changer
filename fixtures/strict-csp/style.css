@@ -1,0 +1,5 @@
+body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: #f1f5f9; color: #1e293b; }
+.top { background: #1e3a8a; color: #ffffff; padding: 16px; }
+main { padding: 24px; }
+.cta { display: inline-block; background: #2563eb; color: #ffffff; padding: 10px 20px; text-decoration: none; }
+.cta:hover { background: #1d4ed8; }

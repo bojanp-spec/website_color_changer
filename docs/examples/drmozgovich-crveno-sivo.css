@@ -1,0 +1,59 @@
+/*
+ * Website Color Changer — theme-override.css
+ * Paleta: #FAFAFA (60%) / #4B4B4F (30%) / #D32F2F (10%)
+ * Sajt:   #f4f6fa / #10233f / #3e9fd9
+ * Stranice (6): https://drmozgovich.top/, https://drmozgovich.top/sr, https://drmozgovich.top/login, https://drmozgovich.top/register, https://drmozgovich.top/refund, https://drmozgovich.top/terms
+ * Uključiti POSLE svih postojećih stilova sajta.
+ */
+:root {
+  --paper: #fafafa;
+  --sheet-2: #f1f1f1;
+  --ink: #4b4b4f;
+  --muted: #6e6e71;
+  --faint: #919093;
+  --rule: #e7e7e7;
+  --rule-strong: #cdcdcd;
+  --accent-base: #d32f2f;
+  --accent-ink: #9e0900;
+  --accent-wash: #dfc9c6;
+  --accent-contrast: #4b4b4f;
+  --shadow: 0 1px 0 #4b4b4f0d,0 18px 40px -24px #4b4b4f40;
+}
+@media (prefers-color-scheme: dark) {
+:root:not([data-theme="light"]) {
+  --paper: #191919;
+  --sheet: #212121;
+  --sheet-2: #2a2a2a;
+  --ink: #f4f4f5;
+  --muted: #b5b5b6;
+  --faint: #838385;
+  --rule: #393939;
+  --rule-strong: #4b4b4b;
+  --accent-base: #ec6161;
+  --accent-ink: #ec6161;
+  --accent-wash: #3b0c03;
+  --accent-contrast: #4b4b4f;
+}
+}
+:root[data-theme="dark"] {
+  --paper: #191919;
+  --sheet: #212121;
+  --sheet-2: #2a2a2a;
+  --ink: #f4f4f5;
+  --muted: #b5b5b6;
+  --faint: #838385;
+  --rule: #393939;
+  --rule-strong: #4b4b4b;
+  --accent-base: #ec6161;
+  --accent-ink: #ec6161;
+  --accent-wash: #3b0c03;
+  --accent-contrast: #4b4b4f;
+}
+
+/* Lokalna korekcija kontrasta (npr. tekst na CTA dugmadi) */
+a.btn.btn-primary.btn-sm,
+a.btn.btn-primary,
+a.btn.justify-center.btn-primary,
+button.btn.btn-primary.w-full.justify-center {
+  color: #f3f3f8;
+}

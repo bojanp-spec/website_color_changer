@@ -1,0 +1,14 @@
+{
+  "name": "@cc/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "e2e": "node scripts/build.mjs && playwright test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@cc/core": "0.1.0"
+  }
+}

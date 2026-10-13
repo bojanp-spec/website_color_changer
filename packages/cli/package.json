@@ -1,0 +1,22 @@
+{
+  "name": "@cc/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "cc-export": "dist/cli.mjs"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "e2e": "node scripts/build.mjs && playwright test",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cc/core": "0.1.0",
+    "@playwright/test": "1.56.1"
+  },
+  "devDependencies": {
+    "postcss-cc-remap": "0.1.0"
+  }
+}

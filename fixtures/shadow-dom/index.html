@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Web komponente</title>
+<style>body { background: #ffffff; margin: 0; }</style>
+</head>
+<body>
+  <promo-card></promo-card>
+  <div data-cc style="background: #ff00ff; width: 300px; height: 300px">Naš UI — skener ga ignoriše</div>
+  <script>
+    customElements.define('promo-card', class extends HTMLElement {
+      constructor() {
+        super();
+        const root = this.attachShadow({ mode: 'open' });
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync('.btn { background: #1d4ed8; color: #fff; padding: 8px 16px; display: inline-block; }');
+        root.adoptedStyleSheets = [sheet];
+        root.innerHTML = '<style>.box { background: #334155; color: #e2e8f0; padding: 24px; }</style>' +
+          '<div class="box">Kartica u shadow DOM-u <span class="btn" role="button">Akcija</span></div>';
+      }
+    });
+  </script>
+</body>
+</html>

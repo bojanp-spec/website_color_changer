@@ -1,0 +1,14 @@
+{
+  "name": "website-color-changer",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "e2e": "npm run e2e --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "scan": "npm run scan -w @cc/core --",
+    "lint:firefox": "npm run lint:firefox -w @cc/extension"
+  }
+}

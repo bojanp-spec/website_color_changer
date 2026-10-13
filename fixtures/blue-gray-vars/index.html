@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plavo-sivi sajt (CSS varijable)</title>
+<style>
+  :root {
+    --bg: #f8fafc;          /* slate-50: dominantna */
+    --surface: #ffffff;
+    --text: #1e293b;        /* slate-800 */
+    --muted: #64748b;       /* slate-500 */
+    --border: #e2e8f0;      /* slate-200 */
+    --primary: #1e3a8a;     /* blue-900: header/struktura */
+    --accent: #2563eb;      /* blue-600: CTA */
+    --accent-hover: #1d4ed8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f172a; --surface: #1e293b; --text: #e2e8f0; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: var(--bg); color: var(--text); }
+  header { background: var(--primary); color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; }
+  header a { color: #cbd5e1; text-decoration: none; margin-left: 16px; }
+  header a:hover { color: #fff; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px;
+          box-shadow: 0 1px 2px rgba(15, 23, 42, .08); }
+  .card p { color: var(--muted); }
+  .btn-cta { display: inline-block; background: var(--accent); color: #fff; padding: 12px 24px; border-radius: 6px;
+             border: 0; font-weight: 600; text-decoration: none; }
+  .btn-cta:hover { background: var(--accent-hover); }
+  .btn-cta:focus-visible { outline: 3px solid rgb(37 99 235 / .4); }
+  footer { background: #334155; color: #cbd5e1; padding: 24px; text-align: center; }
+</style>
+</head>
+<body>
+  <header><strong>Logo</strong><nav><a href="#">Početna</a><a href="#">Usluge</a><a href="#">Kontakt</a></nav></header>
+  <main>
+    <h1>Naslov stranice</h1>
+    <p>Uvodni tekst koji opisuje šta sajt nudi. Dovoljno dug da bude glavni tekst na stranici, sa više rečenica koje čine pasus.</p>
+    <div class="cards">
+      <div class="card"><h3>Kartica 1</h3><p>Sporedni opis kartice u prigušenoj boji.</p></div>
+      <div class="card"><h3>Kartica 2</h3><p>Sporedni opis kartice u prigušenoj boji.</p></div>
+      <div class="card"><h3>Kartica 3</h3><p>Sporedni opis kartice u prigušenoj boji.</p></div>
+    </div>
+    <p style="margin-top:32px"><a class="btn-cta" href="#">Kupi odmah</a></p>
+  </main>
+  <footer>© 2026 Primer</footer>
+</body>
+</html>
