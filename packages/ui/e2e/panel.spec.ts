@@ -127,6 +127,46 @@ test('export: copy CSS, download .css, copy link', async ({ page }) => {
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('http://127.0.0.1:4173/blue-gray-vars/#cc=fafafa,4b4b4f,d32f2f');
 });
 
+test('brightness and contrast sliders: live preview, kept across palettes, in the link and the CSS, reset', async ({ page }) => {
+  const sum = (rgb: string) => rgb.match(/\d+/g)!.slice(0, 3).reduce((n, x) => n + Number(x), 0);
+  const panel = await openPanel(page);
+  const brightness = panel.locator('input[data-adjust="brightness"]');
+  const contrast = panel.locator('input[data-adjust="contrast"]');
+  await expect(brightness).toHaveValue('0');
+  await panel.locator('[data-preset="crveno-sivo"]').click();
+  const bodyBefore = await bg(page, 'body');
+  const textBefore = await bg(page, 'main p', 'color');
+
+  await brightness.fill('-40');
+  await expect.poll(async () => sum(await bg(page, 'body'))).toBeLessThan(sum(bodyBefore) - 60);
+  await expect(panel.locator('.row.slider output').first()).toHaveText('-40');
+
+  await brightness.fill('0');
+  await contrast.fill('60');
+  await expect.poll(() => bg(page, 'body')).toBe('rgb(255, 255, 255)'); // #fafafa spread toward white
+  await expect.poll(async () => sum(await bg(page, 'main p', 'color'))).toBeLessThan(sum(textBefore));
+
+  // another palette keeps the sliders
+  await panel.locator('[data-preset="zuto-zeleno"]').click();
+  await expect(contrast).toHaveValue('60');
+  await panel.locator('[data-action="copy-link"]').click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('http://127.0.0.1:4173/blue-gray-vars/#cc=fffdf5,2e5e3e,f2b705,0,60');
+  await panel.locator('[data-action="copy-css"]').click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('paleta #FFFDF5 / #2E5E3E / #F2B705 · kontrast +60');
+
+  // ↺ resets to 0 and the site gets the plain palette again
+  await panel.getByRole('button', { name: 'Kontrast: Vrati na 0' }).click();
+  await expect(contrast).toHaveValue('0');
+  await expect.poll(() => bg(page, 'body')).toBe('rgb(255, 253, 245)');
+});
+
+test('a link with sliders applies them', async ({ page }) => {
+  await page.goto('/blue-gray-vars/#cc=fafafa,4b4b4f,d32f2f,-50,0');
+  const panel = await openPanel(page);
+  await expect(panel.locator('input[data-adjust="brightness"]')).toHaveValue('-50');
+  expect(await bg(page, 'body')).not.toBe('rgb(250, 250, 250)');
+});
+
 test('a palette link is applied immediately', async ({ page }) => {
   await page.goto('/blue-gray-vars/#cc=fafafa,4b4b4f,d32f2f');
   await openPanel(page);

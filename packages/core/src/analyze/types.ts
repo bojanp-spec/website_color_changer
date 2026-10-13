@@ -3,11 +3,18 @@ import type { OKLCH } from '../color/types.js';
 /** Roles per the 60-30-10 rule. `protected` = color is not changed (semantic colors, charts, unknown). */
 export type Role = 'dominant' | 'secondary' | 'accent' | 'protected';
 
+/** The three palette colors (60 / 30 / 10). */
+export type PaletteColor = 'dominant' | 'secondary' | 'accent';
+
 /** The three colors the user picks (any CSS color notation). */
 export interface Palette {
   dominant: string;
   secondary: string;
   accent: string;
+  /** Brightness of the new colors, -100…100 (0 = unchanged). */
+  brightness?: number;
+  /** Contrast (lightness spread) of the new colors, -100…100 (0 = unchanged). */
+  contrast?: number;
 }
 
 export interface RoleAssignment {

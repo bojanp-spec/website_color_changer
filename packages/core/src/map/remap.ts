@@ -3,6 +3,27 @@ import type { OKLCH } from '../color/types.js';
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
+/** A brightness/contrast slider value: an integer in -100…100, anything invalid → 0. */
+export function clampAdjustment(v: unknown): number {
+  const n = Math.round(Number(v));
+  return Number.isFinite(n) ? clamp(n, -100, 100) : 0;
+}
+
+/**
+ * Brightness and contrast sliders, applied to the lightness of a new color (OKLCH, perceptual):
+ * - contrast spreads (> 0) or compresses (< 0) lightness around the middle, by a factor 0.5…2;
+ * - brightness moves lightness toward white (> 0) or black (< 0), at most halfway.
+ * Hue and chroma stay; gamut mapping happens on serialization. 0 / 0 returns the color unchanged.
+ */
+export function adjustLightness(c: OKLCH, brightness = 0, contrast = 0): OKLCH {
+  const b = clampAdjustment(brightness) / 100;
+  const k = 2 ** (clampAdjustment(contrast) / 100);
+  if (b === 0 && k === 1) return c;
+  let l = clamp(0.5 + (c.l - 0.5) * k, 0, 1);
+  l = b >= 0 ? l + (1 - l) * b * 0.5 : l * (1 + b * 0.5);
+  return { ...c, l };
+}
+
 /** Hue difference in [-180, 180]. */
 export function hueDelta(from: number, to: number): number {
   return ((((to - from) % 360) + 540) % 360) - 180;

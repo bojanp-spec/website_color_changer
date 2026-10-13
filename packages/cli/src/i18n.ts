@@ -40,6 +40,8 @@ Opcije:
   --no-verify                    preskoči proveru CSS-a na stranicama
   --no-scroll                    ne skroluj stranice pre skeniranja
   --wait <ms>                    dodatno čekanje posle učitavanja
+  --brightness <-100…100>        svetlina novih boja (podrazumevano 0)
+  --contrast <-100…100>          kontrast novih boja (podrazumevano 0)
   --lang sr|en                   jezik poruka (podrazumevano: jezik sistema)
 
 Preseti: ${presetList('sr')}`,
@@ -63,6 +65,8 @@ Preseti: ${presetList('sr')}`,
     contrast: (fg: string, bg: string, ratio: string, target: string, toFg: string, toBg: string) =>
       `${fg} na ${bg}: kontrast ${ratio} < ${target} (${toFg} na ${toBg})`,
     cssPalette: 'Paleta:',
+    sliders: { brightness: 'svetlina', contrast: 'kontrast' },
+    badAdjustment: (name: string, v: string) => `--${name} očekuje broj od -100 do 100, a ne "${v}"`,
     cssSite: 'Sajt:  ',
     cssPages: (n: number) => `Stranice (${n}):`,
     cssAfter: 'Uključiti POSLE svih postojećih stilova sajta.',
@@ -87,6 +91,8 @@ Options:
   --no-verify                    skip verifying the CSS on the pages
   --no-scroll                    don't scroll pages before scanning
   --wait <ms>                    extra wait after the page loads
+  --brightness <-100…100>        brightness of the new colors (default 0)
+  --contrast <-100…100>          contrast of the new colors (default 0)
   --lang en|sr                   message language (default: system language)
 
 Presets:
@@ -111,6 +117,8 @@ Presets:
     contrast: (fg: string, bg: string, ratio: string, target: string, toFg: string, toBg: string) =>
       `${fg} on ${bg}: contrast ${ratio} < ${target} (${toFg} on ${toBg})`,
     cssPalette: 'Palette:',
+    sliders: { brightness: 'brightness', contrast: 'contrast' },
+    badAdjustment: (name: string, v: string) => `--${name} expects a number from -100 to 100, not "${v}"`,
     cssSite: 'Site:   ',
     cssPages: (n: number) => `Pages (${n}):`,
     cssAfter: "Include AFTER all of the site's existing styles.",

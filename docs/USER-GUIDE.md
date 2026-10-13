@@ -117,6 +117,12 @@ The three colors you choose: **Dominant**, **Secondary** and **Accent**.
 
 The site changes as you pick. If you type something that isn't a color, the field turns red and nothing changes.
 
+Below the colors are two sliders:
+- **Brightness** makes all the new colors lighter (to the right) or darker (to the left).
+- **Contrast** moves light and dark colors further apart (to the right) or closer together (to the left).
+
+They only change the new colors, so photos and logos stay the same. They stay where they are when you pick another palette. Click **↺**, or double-click the slider, to set it back to 0. Text always stays readable: even with Contrast all the way to the left, text doesn't drop below the WCAG AA level (see “Contrast” below).
+
 ### ④ Ready-made palettes
 Ten buttons for quick testing. **Original** brings back the site's real colors; the other nine are ready-made combinations:
 
@@ -155,6 +161,7 @@ When turned on, the chosen palette is applied **every time you open this site**,
 ## 4. What the extension remembers
 
 - **The last palette for each site.** The next time you open the panel on that site, the pickers already have your colors. They are applied to the site when you click **Apply palette** or press <kbd>Alt</kbd>+<kbd>C</kbd>.
+- **The Brightness and Contrast sliders** (part ③), together with the palette.
 - **Your color role corrections** (part ②).
 - **The panel's position** and whether it is collapsed.
 
@@ -239,6 +246,7 @@ Your saved palettes are kept after updating.
 | Open/hide the panel | click the 🎨 icon |
 | Try a ready-made palette | click a palette in part ④ |
 | Use my own colors | the swatches or HEX fields in part ③ |
+| Make everything lighter/darker or sharper/softer | the **Brightness** and **Contrast** sliders in part ③ |
 | Compare with the original | <kbd>Alt</kbd>+<kbd>C</kbd> (Mac: <kbd>⌥</kbd>+<kbd>C</kbd>) |
 | Fix a color's role | click the color in part ② |
 | Save for this site | saved automatically; for automatic apply turn on ⑥ |

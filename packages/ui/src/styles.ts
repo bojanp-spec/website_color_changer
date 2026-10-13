@@ -116,6 +116,11 @@ section { position: relative; }
 .menu select { width: 100%; font: inherit; padding: 4px; border-radius: 6px; border: 1px solid var(--line); background: var(--soft); color: var(--fg); }
 .row.check { justify-content: flex-start; font-size: 12px; margin-top: 10px; cursor: pointer; }
 .row.check input { margin: 0; }
+.row.slider label { flex: 0 0 72px; }
+.row.slider input[type=range] { flex: 1; min-width: 0; margin: 0; accent-color: var(--focus); }
+.row.slider output { width: 34px; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.row.slider .reset { width: 22px; height: 22px; font-size: 14px; }
+section > p.hint { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
 .loading { padding: 16px 12px; color: var(--muted); }
 kbd { font: 11px ui-monospace, monospace; padding: 0 4px; border: 1px solid var(--line); border-radius: 4px; }
 `;
