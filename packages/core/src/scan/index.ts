@@ -25,9 +25,14 @@ export async function scanDocument(doc: Document, opts: ScanOptions = {}): Promi
   const sheets: SheetReport[] = [];
 
   const roots: { root: Document | ShadowRoot; prefix: string }[] = [{ root: doc, prefix: '' }];
+  const scopes = new Map<string, ShadowRoot>();
   if (opts.shadowRoots !== false) {
     let i = 0;
-    for (const sr of openShadowRoots(doc)) roots.push({ root: sr, prefix: `${sr.host.localName}#${i++}>` });
+    for (const sr of openShadowRoots(doc)) {
+      const prefix = `${sr.host.localName}#${i++}>`;
+      roots.push({ root: sr, prefix });
+      scopes.set(prefix, sr);
+    }
   }
 
   for (const { root, prefix } of roots) {
@@ -36,10 +41,12 @@ export async function scanDocument(doc: Document, opts: ScanOptions = {}): Promi
     sheets.push(...css.sheets);
   }
 
-  const { weights, pairs, elements } = weighByArea(doc);
+  const { weights, pairs, pairElements, elements } = weighByArea(doc);
   const palette = buildPalette(usages, weights);
   return {
     usages,
+    pairElements,
+    scopes,
     sheets,
     weights,
     pairs: pairs.sort((a, b) => b.weight - a.weight),

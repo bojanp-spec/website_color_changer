@@ -6,10 +6,13 @@
 //
 // --palette: klasifikuje boje (60-30-10) i prikazuje mapu stara → nova boja za izabranu paletu.
 // --all: u mapi prikaži i boje koje se ne menjaju.
+// --screenshot <dir>: snimci cele stranice pre i posle primene palete (original.png, <paleta>.png).
+// --css <fajl>: izvoz CSS sloja za trajnu primenu (uz --palette).
 //
 // Lokalno je potreban Chromium za Playwright: `npx playwright install chromium`.
 import { chromium } from '@playwright/test';
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const args = process.argv.slice(2);
@@ -54,7 +57,8 @@ try {
         return `\x1b[48;2;${(n >> 16) & 255};${(n >> 8) & 255};${n & 255}m      \x1b[0m `;
       };
       const usages = result.usages.map(({ element, ...u }) => (element ? { ...u, element: element.localName } : u));
-      const json = { url: location.href, ...result, usages };
+      const { pairElements: _p, scopes: _s, ...plain } = result;
+      const json = { url: location.href, ...plain, usages };
       if (!palette) return { text: CC.formatPalette(result, swatch), json };
 
       let chosen = CC.PRESETS[palette];
@@ -85,6 +89,43 @@ try {
     console.error(`\n✖ ${error}`);
     process.exitCode = 1;
   }
+  const shotDir = opt('--screenshot');
+  const cssOut = opt('--css');
+  if ((shotDir || cssOut) && opt('--palette') && !error) {
+    if (shotDir) {
+      mkdirSync(shotDir, { recursive: true });
+      await page.screenshot({ path: join(shotDir, 'original.png'), fullPage: true });
+    }
+    const report = await page.evaluate(async (palette) => {
+      const CC = window.CC;
+      let chosen = CC.PRESETS[palette];
+      if (!chosen) {
+        const [dominant, secondary, accent] = palette.split(',').map((x) => x.trim());
+        chosen = { dominant, secondary, accent };
+      }
+      const engine = CC.createEngine(document);
+      await engine.analyze();
+      const r = engine.apply(chosen);
+      await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
+      return { css: engine.exportCss(), rules: r.rules, patched: r.patchedElements, fixes: r.localContrastFixes, fallback: r.fallbackPatched };
+    }, opt('--palette'));
+    console.log(`\n🎨 Primenjeno: ${report.rules} CSS pravila, ${report.patched} elemenata sa izmenjenim atributima` +
+      (report.fallback ? `, ${report.fallback} preko computed fallback-a` : ''));
+    for (const f of report.fixes) {
+      const via = f.via.kind === 'variable' ? `varijabla ${f.via.name}` : `inline na ${f.via.elements} elemenata`;
+      console.log(`   ⚖ lokalni kontrast: ${f.fg} na ${f.bg} → ${f.to} (${via})`);
+    }
+    if (shotDir) {
+      const name = opt('--palette').replace(/[^\w-]+/g, '_').replace(/^_+|_+$/g, '');
+      await page.screenshot({ path: join(shotDir, `${name}.png`), fullPage: true });
+      console.log(`📸 ${join(shotDir, 'original.png')}  →  ${join(shotDir, `${name}.png`)}`);
+    }
+    if (cssOut) {
+      writeFileSync(cssOut, report.css);
+      console.log(`CSS: ${cssOut}`);
+    }
+  }
+
   const out = opt('--json');
   if (out) {
     writeFileSync(out, JSON.stringify(json, null, 2));

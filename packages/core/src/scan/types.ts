@@ -20,6 +20,10 @@ export interface Usage {
   important: boolean;
   /** Identifikator stylesheet-a (vidi {@link SheetReport.id}). */
   sheet?: string;
+  /** Prefiks shadow root-a kome pravilo pripada (`''` = dokument). */
+  scope?: string;
+  /** Za `@keyframes`: ceo tekst pravila (keyframes se mogu zameniti samo u celini). */
+  ruleText?: string;
   /** Element za inline stil / atribut. Ne serijalizuje se. */
   element?: Element;
 }
@@ -77,6 +81,10 @@ export interface PaletteEntry {
 
 export interface ScanResult {
   usages: Usage[];
+  /** Elementi na kojima je zatečen par tekst/pozadina (`"fg|bg"`), do 200 po paru. Ne serijalizuje se. */
+  pairElements: Map<string, Element[]>;
+  /** Shadow root-ovi po prefiksu (`scope`). Ne serijalizuje se. */
+  scopes: Map<string, ShadowRoot>;
   sheets: SheetReport[];
   weights: ColorWeight[];
   pairs: ContrastPair[];

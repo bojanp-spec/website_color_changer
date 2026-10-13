@@ -50,6 +50,13 @@ const MASK_PROPS = /^(-webkit-)?mask/;
 const SHADOW_PROPS = /(^|-)shadow($|-)/;
 
 type Usage = ScanSummary['usages'][number];
+
+/** Da li je deklaracija u kontekstu alternativne šeme (dark mode na svetlom sajtu i obrnuto). */
+export function isAltContext(u: Pick<Usage, 'selector' | 'conditions'>, siteIsLight: boolean): boolean {
+  const alt = siteIsLight ? DARK_CONTEXT : LIGHT_CONTEXT;
+  return (u.conditions ?? []).some((c) => alt.cond.test(c)) || alt.sel.test(u.selector ?? '');
+}
+
 const DARK_CONTEXT = { cond: /prefers-color-scheme:\s*dark/i, sel: /\[data-(?:theme|mode|bs-theme|color-scheme)=["']?dark|\.dark\b|\.theme-dark\b/i };
 const LIGHT_CONTEXT = { cond: /prefers-color-scheme:\s*light/i, sel: /\[data-(?:theme|mode|bs-theme|color-scheme)=["']?light|\.light\b|\.theme-light\b/i };
 
@@ -90,10 +97,9 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
   const light = dominant.o.l > 0.5;
   const usagesOf = new Map<string, Usage[]>();
   for (const u of scan.usages) for (const c of u.colors) usagesOf.set(c, [...(usagesOf.get(c) ?? []), u]);
-  const alt = light ? DARK_CONTEXT : LIGHT_CONTEXT;
   const isAltSchemeOnly = (key: string) => {
     const list = usagesOf.get(key) ?? [];
-    return list.length > 0 && list.every((u) => (u.conditions ?? []).some((c) => alt.cond.test(c)) || alt.sel.test(u.selector ?? ''));
+    return list.length > 0 && list.every((u) => isAltContext(u, light));
   };
   /** Boja koja se javlja samo kao maska, operand u color-mix() ili (neutralna) senka. */
   const nonPaintOnly = (key: string, o: OKLCH) => {

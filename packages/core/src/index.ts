@@ -38,3 +38,10 @@ export {
 export * from './scan/index.js';
 export * from './analyze/index.js';
 export * from './map/index.js';
+export { createColorMapper } from './apply/mapper.js';
+export type { ColorMapper } from './apply/mapper.js';
+export { buildOverrideCss } from './apply/override-sheet.js';
+export type { OverrideOptions } from './apply/override-sheet.js';
+export { DomPatcher } from './apply/dom-patcher.js';
+export { createEngine } from './engine.js';
+export type { ApplyReport, ColorEngine, EngineOptions, LocalContrastFix } from './engine.js';

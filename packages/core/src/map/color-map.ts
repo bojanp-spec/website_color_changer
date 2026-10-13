@@ -31,6 +31,14 @@ export interface ColorMapResult {
   entries: ColorMapEntry[];
   /** Parovi tekst/pozadina koji i posle korekcije ne dostižu cilj. */
   warnings: string[];
+  /** Isto kao `warnings`, strukturirano — za lokalnu korekciju na elementima (M4). */
+  failures: ContrastFailure[];
+}
+
+export interface ContrastFailure {
+  fg: string;
+  bg: string;
+  target: number;
 }
 
 export interface ColorMapOptions {
@@ -124,10 +132,11 @@ export function buildColorMap(
   }
 
   const warnings: string[] = [];
-  if (level) fixContrast(classification, pairs, level, entries, newRgba, warnings);
+  const failures: ContrastFailure[] = [];
+  if (level) fixContrast(classification, pairs, level, entries, newRgba, warnings, failures);
 
   const list = [...entries.values()];
-  return { map: new Map(list.map((e) => [e.from, e.to])), entries: list, warnings };
+  return { map: new Map(list.map((e) => [e.from, e.to])), entries: list, warnings, failures };
 }
 
 /** Tekstualni pregled mape (CLI). `swatch` iscrtava uzorak boje. */
@@ -171,6 +180,7 @@ function fixContrast(
   entries: Map<string, ColorMapEntry>,
   newRgba: Map<string, RGBA>,
   warnings: string[],
+  failures: ContrastFailure[],
 ) {
   const checks: Check[] = [];
   for (const p of pairs) {
@@ -225,6 +235,7 @@ function fixContrast(
   for (const c of checks) {
     const r = ratio(c);
     if (r < c.target - 0.05) {
+      failures.push({ fg: c.fg, bg: c.bg, target: c.target });
       warnings.push(
         `${c.fg} na ${c.bg}: kontrast ${r.toFixed(2)} < ${c.target.toFixed(2)} (${entries.get(c.fg)!.to} na ${entries.get(c.bg)!.to})`,
       );

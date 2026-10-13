@@ -28,6 +28,7 @@ const MIN_ALPHA = 0.05;
 export interface WeighResult {
   weights: ColorWeight[];
   pairs: ContrastPair[];
+  pairElements: Map<string, Element[]>;
   elements: number;
 }
 
@@ -83,6 +84,7 @@ export function weighByArea(doc: Document): WeighResult {
   const view = doc.defaultView ?? window;
   const weights = new Map<string, ColorWeight>();
   const pairs = new Map<string, ContrastPair>();
+  const pairElements = new Map<string, Element[]>();
   const bgOwner = new Map<Element, string>();
   let elements = 0;
 
@@ -176,6 +178,9 @@ export function weighByArea(doc: Document): WeighResult {
         const bgKey = bgOwner.get(el) ?? canvasKey;
         const pairKey = `${fg.key}|${bgKey}`;
         const small = !isLargeText(fontSize, fontWeight);
+        const els = pairElements.get(pairKey) ?? [];
+        if (els.length < 200) els.push(el);
+        pairElements.set(pairKey, els);
         const pair = pairs.get(pairKey);
         if (pair) {
           pair.weight += ink;
@@ -210,5 +215,5 @@ export function weighByArea(doc: Document): WeighResult {
   }
 
   for (const entry of weights.values()) entry.bgArea = Math.max(0, entry.bgArea);
-  return { weights: [...weights.values()], pairs: [...pairs.values()], elements };
+  return { weights: [...weights.values()], pairs: [...pairs.values()], pairElements, elements };
 }

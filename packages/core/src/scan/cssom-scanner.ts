@@ -28,6 +28,7 @@ export interface WalkContext {
   conditions: string[];
   nesting: string[];
   sheet: string;
+  scope?: string;
 }
 
 /** Skenira sve stylesheet-ove dokumenta ili shadow root-a (uključujući `@import` i adoptedStyleSheets). */
@@ -70,7 +71,7 @@ export async function scanStylesheets(
     }
 
     const imports: CSSImportRule[] = [];
-    report.ruleCount = walkRules(rules, { conditions: [], nesting: [], sheet: id }, usages, imports);
+    report.ruleCount = walkRules(rules, { conditions: [], nesting: [], sheet: id, scope: prefix }, usages, imports);
     for (const imp of imports) {
       if (imp.styleSheet) await visit(imp.styleSheet, 'import', `${id}@import`);
     }
@@ -101,10 +102,12 @@ function walkRules(rules: CSSRuleList, ctx: WalkContext, out: Usage[], imports: 
         count += walkRules(rule.cssRules, { ...ctx, nesting: [...ctx.nesting, rule.selectorText] }, out, imports);
       }
     } else if (rule instanceof CSSKeyframesRule) {
+      const first = out.length;
       for (const kf of Array.from(rule.cssRules) as CSSKeyframeRule[]) {
         count++;
         collectDeclarations(kf.style, `@keyframes ${rule.name} ${kf.keyText}`, ctx, out);
       }
+      for (let i = first; i < out.length; i++) out[i]!.ruleText = rule.cssText;
     } else if (rule instanceof CSSGroupingRule) {
       // @media, @supports, @layer, @container, @scope, @starting-style ...
       count += walkRules(rule.cssRules, { ...ctx, conditions: [...ctx.conditions, conditionOf(rule)] }, out, imports);
@@ -148,6 +151,7 @@ export function collectDeclarations(
     };
     if (selector !== undefined) usage.selector = selector;
     if (ctx.sheet) usage.sheet = ctx.sheet;
+    if (ctx.scope !== undefined) usage.scope = ctx.scope;
     if (ctx.nesting.length) usage.nesting = ctx.nesting;
     if (element) usage.element = element;
     out.push(usage);
