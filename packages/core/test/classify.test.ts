@@ -95,3 +95,23 @@ describe('classify — sintetički sajt bez akcenta', () => {
     expect(() => classify({ palette: [], usages: [], pairs: [] })).toThrow();
   });
 });
+
+describe('classify — višebojna SVG grafika (logo)', () => {
+  const w = (bg: number, text = 0, interactive = 0) => ({ bgArea: bg, textArea: text, borderArea: 0, svgArea: 0, interactiveArea: interactive });
+  const scan: ScanSummary = {
+    palette: [
+      { key: '#ffffff', area: 1000, weight: w(1000), variables: [] },
+      { key: '#222222', area: 300, weight: w(0, 300), variables: [] },
+      { key: '#2563eb', area: 20, weight: w(20, 0, 20), variables: [] },
+      { key: '#4285f4', area: 5, weight: { ...w(0), svgArea: 5 }, variables: [] },
+    ],
+    usages: [{ source: 'svg-attr', property: 'fill', value: '#4285F4', colors: ['#4285f4'], multicolorSvg: true }],
+    pairs: [],
+  };
+
+  it('plava iz Google logotipa ostaje, iako je u nijansi akcenta', () => {
+    const c = classify(scan);
+    expect(c.bases.accent).toBe('#2563eb');
+    expect(c.roles.get('#4285f4')).toMatchObject({ role: 'protected', reason: 'višebojna SVG grafika (logo)' });
+  });
+});

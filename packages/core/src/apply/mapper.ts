@@ -19,7 +19,12 @@ export interface ColorMapper {
  * Pravi funkciju mapiranja iz tabele „stara → nova". Boje koje nisu bile u analizi
  * (npr. stilovi učitani kasnije) mapiraju se kao najbliža poznata boja ako je praktično ista.
  */
-export function createColorMapper(map: ReadonlyMap<string, string>): ColorMapper {
+export interface ColorMapperOptions {
+  /** `like` = zadrži zapis originala (podrazumevano); `hex` = uvek `#rrggbb(aa)` (čitljivije u izvezenom CSS-u). */
+  format?: 'like' | 'hex';
+}
+
+export function createColorMapper(map: ReadonlyMap<string, string>, opts: ColorMapperOptions = {}): ColorMapper {
   const known = [...map.keys()].map((k) => ({ key: k, rgba: parseColor(k)!.rgba }));
   const cache = new Map<string, string | undefined>();
   const targets = new Set(map.values());
@@ -47,7 +52,8 @@ export function createColorMapper(map: ReadonlyMap<string, string>): ColorMapper
   const mapValue = (value: string): string =>
     replaceColors(value, (color) => {
       const to = mapKey(toHex(color.rgba));
-      return to ? formatLike(color, parseColor(to)!.rgba) : null;
+      if (!to) return null;
+      return opts.format === 'hex' ? to : formatLike(color, parseColor(to)!.rgba);
     });
 
   return { mapKey, mapValue, targets };

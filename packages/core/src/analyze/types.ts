@@ -48,6 +48,14 @@ export interface ScanSummary {
     weight: { bgArea: number; textArea: number; borderArea: number; svgArea: number; interactiveArea: number };
     variables: string[];
   }[];
-  usages: { source: string; property: string; value?: string; colors: string[]; selector?: string; conditions?: string[] }[];
+  usages: {
+    source: string;
+    property: string;
+    value?: string;
+    colors: string[];
+    selector?: string;
+    conditions?: string[];
+    multicolorSvg?: boolean;
+  }[];
   pairs: { fg: string; bg: string; minFontSize: number; hasSmallText: boolean; weight?: number }[];
 }

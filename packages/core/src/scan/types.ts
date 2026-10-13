@@ -24,6 +24,8 @@ export interface Usage {
   scope?: string;
   /** Za `@keyframes`: ceo tekst pravila (keyframes se mogu zameniti samo u celini). */
   ruleText?: string;
+  /** SVG atribut unutar višebojne grafike (≥ 3 boje u istom `<svg>`) — najčešće tuđi logo. */
+  multicolorSvg?: boolean;
   /** Element za inline stil / atribut. Ne serijalizuje se. */
   element?: Element;
 }

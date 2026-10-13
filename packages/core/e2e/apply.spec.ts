@@ -225,7 +225,9 @@ test.describe('drmozgovich.top (snimak) — glavni test sajt', () => {
     const r = await applyPreset(page);
     // `.btn-primary { color: var(--accent-contrast) }` je na sajtu pobeđeno sa `a { color: inherit }`,
     // pa varijabla ne bi imala efekta — engine to proverava i boji samo te elemente.
-    expect(r.fixes).toEqual([expect.objectContaining({ fg: '#10233f', bg: '#3e9fd9', via: { kind: 'inline', elements: expect.any(Number) } })]);
+    expect(r.fixes).toEqual([
+      expect.objectContaining({ fg: '#10233f', bg: '#3e9fd9', via: expect.objectContaining({ kind: 'inline', selector: expect.stringContaining('a.btn.btn-primary') }) }),
+    ]);
     expect(r.fixes[0]!.via).toMatchObject({ elements: r.patchedElements });
     expect(await computed(page, 'a.btn-primary.btn-sm', 'color')).toBe(r.fixes[0]!.to);
     expect(await computed(page, 'body', 'color')).toBe('#4b4b4f'); // glavni tekst nepromenjen korekcijom

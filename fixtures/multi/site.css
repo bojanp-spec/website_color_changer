@@ -1,0 +1,7 @@
+body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: #f8fafc; color: #1e293b; }
+nav { background: #1e293b; padding: 12px 24px; }
+nav a { color: #cbd5e1; margin-right: 16px; }
+main { padding: 24px; max-width: 800px; }
+.btn { display: inline-block; background: #2563eb; color: #ffffff; padding: 10px 20px; text-decoration: none; }
+.btn:hover { background: #1d4ed8; }
+.muted { color: #64748b; }

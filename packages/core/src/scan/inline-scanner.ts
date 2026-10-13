@@ -18,6 +18,7 @@ export function scanInline(root: Document | ShadowRoot | Element): Usage[] {
     collectDeclarations(el.style, undefined, { conditions: [], nesting: [], sheet: '' }, out, el);
   }
 
+  const svgColorCache = new Map<Element, boolean>();
   const attrSelector = [...new Set([...SVG_COLOR_ATTRS, ...HTML_COLOR_ATTRS])].map((a) => `[${a}]`).join(',');
   for (const el of all(attrSelector)) {
     if (el.closest('[data-cc]')) continue;
@@ -28,7 +29,7 @@ export function scanInline(root: Document | ShadowRoot | Element): Usage[] {
       if (!value) continue;
       const colors = colorKeysIn(value);
       if (!colors.length) continue;
-      out.push({
+      const usage: Usage = {
         source: isSvg ? 'svg-attr' : 'html-attr',
         property: attr,
         value,
@@ -37,8 +38,29 @@ export function scanInline(root: Document | ShadowRoot | Element): Usage[] {
         conditions: [],
         important: false,
         element: el,
-      });
+      };
+      if (isSvg && isMulticolorSvg(el, svgColorCache)) usage.multicolorSvg = true;
+      out.push(usage);
     }
   }
   return out;
+}
+
+/** Da li `<svg>` kome element pripada ima ≥ 3 različite boje u fill/stroke atributima (logo, ilustracija). */
+function isMulticolorSvg(el: Element, cache: Map<Element, boolean>): boolean {
+  const svg = el.closest('svg');
+  if (!svg) return false;
+  let result = cache.get(svg);
+  if (result === undefined) {
+    const colors = new Set<string>();
+    for (const node of [svg, ...Array.from(svg.querySelectorAll('[fill], [stroke], [stop-color]'))]) {
+      for (const attr of ['fill', 'stroke', 'stop-color']) {
+        const v = node.getAttribute(attr);
+        if (v) for (const c of colorKeysIn(v)) colors.add(c);
+      }
+    }
+    result = colors.size >= 3;
+    cache.set(svg, result);
+  }
+  return result;
 }

@@ -50,6 +50,38 @@ Klik na ikonicu otvara isti panel kao bookmarklet, uz razlike:
 
 ¹ Uz dozvolu „pristup svim sajtovima", koja se uključuje u podešavanjima ekstenzije. Bez nje ekstenzija radi samo na klik (`activeTab`) i ne vidi ništa drugo. Ekstenzija ne šalje nikakve podatke van browsera. CSS sa drugog domena preuzima bez kolačića, samo za stylesheet-ove koje stranica stvarno učitava, sa `Content-Type: text/css`, i nikad sa lokalne mreže za stranicu sa drugog hosta.
 
+## Izvoz za produkciju (`cc-export`)
+
+Kad izabereš paletu, alat u produkciji više nije potreban. Dovoljan je jedan CSS fajl koji se uključuje posle postojećih stilova sajta.
+
+```bash
+npm run build -w @cc/cli
+node packages/cli/dist/cli.mjs https://drmozgovich.top --palette crveno-sivo \
+  --crawl 10 --out theme-override.css --map paleta.map.json --report izvestaj.json --screenshots snimci/
+```
+
+1. Obilazi stranice (`--pages /,/kontakt` ili `--crawl N` prateći linkove sa iste domene) u desktop i mobilnom prikazu (`--viewports 1440,390`).
+2. Spaja nalaze i boje klasifikuje i mapira **jednom**, za ceo sajt, pa sve stranice dobijaju istu mapu. Svaka stranica i prikaz imaju istu težinu.
+3. Na svakoj stranici traži lokalne korekcije kontrasta (npr. tekst na CTA dugmadi) i pretvara ih u proverena CSS pravila.
+4. Piše jedan `theme-override.css` (HEX boje, isti selektori, `@layer`, `@media` i dark mode kao na sajtu).
+5. **Provera:** CSS se ubacuje u svaku stranicu kao običan stylesheet, bez alata, i meri se kontrast svakog vidljivog teksta. Prijavljuju se i elementi koji su ostali u staroj boji, npr. zbog inline stilova. Ako kontrast nekog teksta padne, komanda izlazi sa kodom 2, pa može da se koristi u CI-ju.
+
+Ostale opcije: `--override "#e7f2fa=dominant"`, `--all-colors` (menja i semantičke boje i grafikone), `--no-verify`, `--wait <ms>`. Boje iz višebojnih SVG grafika (npr. Google logo) se nikad ne menjaju.
+
+### Direktno u izvornim fajlovima (PostCSS)
+
+Ako je umesto dodatnog sloja draže da se boje promene u samim izvornim CSS/SCSS fajlovima projekta, koristi mapu iz `--map`:
+
+```js
+// postcss.config.js
+import ccRemap from 'postcss-cc-remap';
+export default {
+  plugins: [ccRemap({ map: './paleta.map.json', localRules: 'append' /* samo za glavni stylesheet */ })],
+};
+```
+
+Plugin menja samo vrednosti deklaracija koje nose boju: svojstva boja, shorthand-ove, `--css` i `$scss` varijable. `url()`, stringovi, selektori i ostala svojstva ostaju netaknuti. Test potvrđuje da sloj iz `cc-export` i ovako prepisani izvorni CSS daju iste boje na stranici.
+
 ## Razvoj
 
 ```bash
@@ -95,4 +127,4 @@ console.log(engine.exportCss());                     // CSS za trajnu primenu
 | M4 — Primena (`src/apply`, `src/engine.ts`): CSS sloj u `adoptedStyleSheets` (isti selektori/slojevi/media), inline/SVG atributi sa tačnim vraćanjem, lokalna korekcija kontrasta (CTA), computed fallback za CORS, MutationObserver, `toggle()`/`disable()`/`exportCss()` | ✅ |
 | M5 — UI panel (`packages/ui`): Shadow DOM panel, uloge boja, izbornici, preseti, A/B (<kbd>Alt+C</kbd>), izvoz, link sa paletom, pamćenje po domenu; bookmarklet + `install.html`, snippet režim | ✅ |
 | M6 — Ekstenzija (`packages/extension`, MV3 za Chrome i Firefox): klik → panel (CSP-otporno), CSS sa drugog domena preko ekstenzije uz bezbednosne provere, palete u memoriji ekstenzije, automatska primena po sajtu, stranica sa podešavanjima | ✅ |
-| M7 — CLI izvoz (više stranica, PostCSS) | ⏳ |
+| M7 — Izvoz za produkciju: `packages/cli` (`cc-export`: više stranica, crawl, desktop i mobilni prikaz, zajednička mapa, lokalne korekcije kao CSS pravila, provera bez alata, snimci) i `packages/postcss-cc-remap` (CSS/SCSS izvor) | ✅ |

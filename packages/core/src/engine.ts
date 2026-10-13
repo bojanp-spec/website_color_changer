@@ -28,8 +28,17 @@ export interface LocalContrastFix {
   fg: string;
   bg: string;
   to: string;
-  /** `variable` = promenjena samo ta varijabla (npr. `--accent-contrast`); `inline` = boja na elementima. */
-  via: { kind: 'variable'; name: string } | { kind: 'inline'; elements: number };
+  /**
+   * `variable` = promenjena samo ta varijabla (npr. `--accent-contrast`); `inline` = boja na elementima.
+   * Za `inline`, `selector` je proveren CSS selektor koji pogađa samo te elemente (ili elemente na istoj
+   * pozadini) — da izvezeni CSS može da pokrije korekciju bez inline atributa.
+   */
+  via: { kind: 'variable'; name: string } | { kind: 'inline'; elements: number; selector?: string };
+}
+
+export interface ApplyOptions {
+  /** Gotova mapa boja (npr. zajednička za ceo sajt, iz CLI izvoza) umesto računanja za ovu stranicu. */
+  colorMap?: ColorMapResult;
 }
 
 export interface ApplyReport {
@@ -47,7 +56,7 @@ export interface ColorEngine {
   analyze(): Promise<{ scan: ScanResult; classification: Classification }>;
   /** Ručna korekcija uloge boje; važi od sledećeg `apply`. */
   setRoleOverride(key: string, role: Role): void;
-  apply(palette: Palette): ApplyReport;
+  apply(palette: Palette, options?: ApplyOptions): ApplyReport;
   /** Vraća sajt u original (bez reload-a). Paleta ostaje zapamćena za `toggle()`. */
   disable(): void;
   /** A/B: original ↔ poslednja paleta. Vraća da li je paleta sada primenjena. */
@@ -109,6 +118,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
   let mapper: ColorMapper | null = null;
   let varOverrides = new Map<string, string>();
   let lastLocalFixes: LocalContrastFix[] = [];
+  let lastColorMap: ColorMapResult | null = null;
   let cssByScope = new Map<string, string>();
   const installed = new Map<Document | ShadowRoot, MarkedSheet>();
   const patcher = new DomPatcher();
@@ -272,10 +282,39 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
         fixes.push({ fg: f.fg, bg: f.bg, to, via: { kind: 'variable', name } });
       } else {
         for (const el of elements) inline.push([el, to]);
-        fixes.push({ fg: f.fg, bg: f.bg, to, via: { kind: 'inline', elements: elements.length } });
+        const selector = suggestSelector(elements, f.bg);
+        fixes.push({ fg: f.fg, bg: f.bg, to, via: { kind: 'inline', elements: elements.length, ...(selector ? { selector } : {}) } });
       }
     }
     return { fixes, inline };
+  }
+
+  /** Element je „u istom kontekstu" kao problematični: jedan od njih, sadrži ih, na istoj pozadini ili nevidljiv. */
+  function sameContext(m: Element, elements: Element[], bgKey: string): boolean {
+    return (
+      elements.some((el) => m === el || m.contains(el)) ||
+      colorKey(view.getComputedStyle(m).backgroundColor) === bgKey ||
+      !(m as HTMLElement).checkVisibility?.({ opacityProperty: true, visibilityProperty: true })
+    );
+  }
+
+  /** `tag.klasa.klasa` zajednički za elemente, ako ne pogađa ništa van njihovog konteksta. */
+  function suggestSelector(elements: Element[], bgKey: string): string | undefined {
+    const esc = (s: string) => (view.CSS?.escape ? view.CSS.escape(s) : s.replace(/[^\w-]/g, (c) => `\\${c}`));
+    const parts = new Set(
+      elements.map((el) => {
+        // Klase sa `:`/`[`/`/` (Tailwind varijante) su nestabilne za selektor — preskaču se.
+        const classes = Array.from(el.classList).filter((c) => !/[:[\]/]/.test(c));
+        return `${el.localName}${classes.map((c) => `.${esc(c)}`).join('')}`;
+      }),
+    );
+    const selector = [...parts].join(', ');
+    try {
+      const matched = Array.from(doc.querySelectorAll(selector));
+      return matched.length && matched.every((m) => sameContext(m, elements, bgKey)) ? selector : undefined;
+    } catch {
+      return undefined;
+    }
   }
 
   /**
@@ -294,11 +333,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
       } catch {
         return false;
       }
-      const sameContext = (m: Element) =>
-        elements.some((el) => m === el || m.contains(el)) ||
-        colorKey(view.getComputedStyle(m).backgroundColor) === bgKey ||
-        !(m as HTMLElement).checkVisibility?.({ opacityProperty: true, visibilityProperty: true });
-      if (!users.every(sameContext)) return false;
+      if (!users.every((m) => sameContext(m, elements, bgKey))) return false;
     }
     return true;
   }
@@ -390,12 +425,13 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
       if (scan) classification = classify(scan, { ...opts, overrides });
     },
 
-    apply(next) {
+    apply(next, applyOptions = {}) {
       if (!scan || !classification) throw new Error('Pozovi analyze() pre apply().');
       if (applied) disableInternal();
       palette = next;
 
-      const colorMap = buildColorMap(classification, next, scan.pairs, opts);
+      const colorMap = applyOptions.colorMap ?? buildColorMap(classification, next, scan.pairs, opts);
+      lastColorMap = colorMap;
       mapper = createColorMapper(colorMap.map);
       varOverrides = new Map();
       const local = planLocalContrast(colorMap);
@@ -427,21 +463,24 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
         return false;
       }
       if (!palette) return false;
-      engine.apply(palette);
+      engine.apply(palette, lastColorMap ? { colorMap: lastColorMap } : {});
       return true;
     },
 
     exportCss() {
       if (!scan || !classification || !palette) throw new Error('Nema primenjene palete za izvoz.');
-      const colorMap = buildColorMap(classification, palette, scan.pairs, opts);
+      const colorMap = lastColorMap ?? buildColorMap(classification, palette, scan.pairs, opts);
       const css = buildOverrideCss(scan.usages, createColorMapper(colorMap.map), { varOverrides, isAlt }).get('') ?? '';
+      const localRules = lastLocalFixes
+        .map((f) => (f.via.kind === 'inline' && f.via.selector ? `${f.via.selector} {\n  color: ${f.to};\n}` : ''))
+        .filter(Boolean);
       const inline = scan.usages.filter((u) => u.element).length;
       const header = [
         `/* Website Color Changer — paleta ${palette.dominant} / ${palette.secondary} / ${palette.accent}`,
         '   Dodati POSLE postojećih stilova sajta. */',
         inline ? `/* Napomena: ${inline} boja je u inline style/SVG atributima — njih CSS fajl ne pokriva. */` : '',
         ...lastLocalFixes
-          .filter((f) => f.via.kind === 'inline')
+          .filter((f) => f.via.kind === 'inline' && !f.via.selector)
           .map(
             (f) =>
               `/* Lokalni kontrast: tekst ${f.fg} na ${f.bg} treba da bude ${f.to} na ${(f.via as { elements: number }).elements} elemenata` +
@@ -450,13 +489,15 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
       ]
         .filter(Boolean)
         .join('\n');
-      return `${header}\n${css}\n`;
+      const local = localRules.length ? `\n/* Lokalna korekcija kontrasta (npr. tekst na CTA dugmadi) */\n${localRules.join('\n')}` : '';
+      return `${header}\n${css}${local}\n`;
     },
 
     destroy() {
       disableInternal();
       scan = null;
       classification = null;
+      lastColorMap = null;
       palette = null;
       mapper = null;
     },

@@ -115,6 +115,12 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
     );
   };
 
+  /** Boja se javlja samo u višebojnim SVG grafikama (npr. Google/Apple logo na dugmetu za prijavu). */
+  const inMulticolorGraphicOnly = (key: string) => {
+    const list = usagesOf.get(key) ?? [];
+    return list.length > 0 && list.every((u) => u.multicolorSvg);
+  };
+
   const roles = new Map<string, RoleAssignment>();
   const assign = (key: string, role: Role, reason: string) => {
     const x = byKey.get(key);
@@ -149,6 +155,7 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
   const heuristic = (x: { e: Entry; o: OKLCH }, visible: boolean): [Role, string] | null => {
     const { e, o } = x;
     if (e.area === 0 && nonPaintOnly(e.key, o)) return ['protected', 'samo maska / color-mix() / senka'];
+    if (inMulticolorGraphicOnly(e.key)) return ['protected', 'višebojna SVG grafika (logo)'];
     if (isProtectedByName(e)) return ['protected', `zaštićena varijabla (${e.variables.join(', ')})`];
     if (accent && o.c >= VIVID_CHROMA && hueDistance(o.h, accent.o.h) <= ACCENT_HUE_WINDOW) {
       // Akcenat je MALA površina (10%). Velika neinteraktivna površina iste nijanse
