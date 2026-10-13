@@ -91,11 +91,20 @@ To je sve! Ispod je objašnjenje svakog dela panela (brojevi odgovaraju slici sa
 - Panel možeš da pomeriš: uhvati zaglavlje mišem i prevuci ga.
 
 ### ② Boje sajta
-Boje koje ekstenzija pronađe na sajtu, svrstane po ulogama: Dominantna, Sekundarna, Akcentna i **Ne menja se**. Glavna boja svake uloge je uokvirena.
+Ovo je **pregled originalnih boja sajta**, onakvih kakve su bile pre promene. Ovi kvadratići se **ne menjaju** kad biraš novu paletu; nove boje biraš u delu ③.
 
-U **Ne menja se** su boje koje namerno ne diramo: crvena za greške, zelena za uspeh, boje grafikona i tuđi logotipi (npr. Google logo na dugmetu za prijavu).
+Boje su svrstane po **ulogama**: Dominantna, Sekundarna, Akcentna i **Ne menja se**. Glavna boja svake uloge je uokvirena. Uloga određuje koju boju iz „Nove palete" ta boja dobija: sve dominantne boje sajta dobijaju nijanse tvoje dominantne boje, i tako dalje.
 
-**Ako je neka boja svrstana pogrešno:** klikni na nju i u meniju izaberi tačnu ulogu. Promena se odmah primenjuje, a ekstenzija je pamti za taj sajt.
+U **Ne menja se** su boje koje namerno ne diramo: crvena za greške, zelena za uspeh, boje grafikona, tuđi logotipi (npr. Google logo na dugmetu za prijavu), providne senke i maske.
+
+**Ako je neka boja svrstana pogrešno:**
+1. Klikni na njen kvadratić. Otvara se mali meni sa objašnjenjem zašto je boja tu.
+2. U padajućoj listi izaberi tačnu ulogu.
+3. Boja se premešta u novu grupu, a ekstenzija to pamti za taj sajt.
+
+Ako je na sajtu u tom trenutku **prikazan original**, sajt se neće promeniti dok ne primeniš paletu (gotovu paletu ili <kbd>Alt</kbd>+<kbd>C</kbd>), jer uloga utiče samo na **novu** paletu. Ako je nova paleta već primenjena, promena se vidi odmah.
+
+Meni se zatvara drugim klikom na isti kvadratić, tasterom <kbd>Esc</kbd> ili klikom bilo gde pored.
 
 ### ③ Nova paleta
 Tri boje koje biraš: **Dominantna**, **Sekundarna** i **Akcentna**.
@@ -105,7 +114,21 @@ Tri boje koje biraš: **Dominantna**, **Sekundarna** i **Akcentna**.
 Sajt se menja dok biraš. Ako upišeš nešto što nije boja, polje postaje crveno i ništa se ne menja.
 
 ### ④ Gotove palete
-Kombinacije za brzo isprobavanje: **Crveno / sivo**, **Žuto / zeleno**, **Zeleno / krem**, **Narandžasto / tamno**. **Original** vraća prave boje sajta.
+Deset dugmadi za brzo isprobavanje. **Original** vraća prave boje sajta, a ostalih devet su gotove kombinacije:
+
+| Paleta | Dominantna (60%) | Sekundarna (30%) | Akcentna (10%) |
+|---|---|---|---|
+| Crveno / sivo | skoro bela | tamnosiva | crvena |
+| Žuto / zeleno | topla bela | tamnozelena | žuta |
+| Zeleno / krem | krem | sivozelena | zelena |
+| Narandžasto / tamno | skoro crna | svetlosiva | narandžasta |
+| Ljubičasto / roze | lavanda-bela | tamnoljubičasta | roze |
+| Tirkiz / okean | ledeno bela | petrolej plava | tirkiz |
+| Terakota / pesak | pesak | braon | terakota |
+| Grafit / električno plava | hladno bela | grafit | električno plava |
+| Ponoć / zlatno | ponoćno plava | svetla | zlatna |
+
+**Narandžasto / tamno** i **Ponoć / zlatno** su tamne palete: svetao sajt postaje taman, a tekst svetao.
 
 ### ⑤ Prikaži original / Prikaži novu paletu
 Prebacivanje između originala i nove palete, da lako uporediš. Isto radi i prečica na tastaturi:
@@ -178,6 +201,16 @@ Ako izabrana boja čini neki tekst teškim za čitanje (npr. beli tekst na žuto
 Ako baš ne može da se popravi, panel to prikaže narandžastim tekstom „⚠ Kontrast ispod cilja". Probaj tada svetliju ili tamniju akcentnu boju.
 
 ---
+
+## Ažuriranje na novu verziju
+
+Kad u folderu `downloads/` izađe nova verzija:
+
+- **Chrome:** preuzmi novi zip i raspakuj ga **preko starog** foldera `boje-sajta-chrome`, tako da zameni postojeće fajlove. Zatim na `chrome://extensions` klikni ikonicu za ponovno učitavanje ⟳ na kartici „Website Color Changer". Broj verzije na kartici treba da se promeni.
+- **Firefox (privremeno učitana):** na `about:debugging#/runtime/this-firefox` klikni **Remove** kod stare verzije, pa ponovo **Load Temporary Add-on…** sa novim zip-om.
+- **Firefox (potpisana):** novi zip ponovo pošalji na potpisivanje, pa instaliraj novi `.xpi`.
+
+Sačuvane palete ostaju posle ažuriranja.
 
 ## Česta pitanja i problemi
 

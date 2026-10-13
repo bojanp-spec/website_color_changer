@@ -1,4 +1,4 @@
-import { createEngine, parseColor, PRESETS, toHex } from '@cc/core';
+import { createEngine, parseColor, PRESET_LABELS, PRESETS, toHex } from '@cc/core';
 import type { ApplyReport, Classification, ColorEngine, EngineOptions, Palette, Role, ScanResult } from '@cc/core';
 import { localStorageAdapter, paletteFromHash, shareUrl } from './state.js';
 import type { PanelStorage, Saved } from './state.js';
@@ -36,12 +36,6 @@ const ROLE_NAMES: Record<Role, string> = {
   secondary: 'Sekundarna (30%)',
   accent: 'Akcentna (10%)',
   protected: 'Ne menja se',
-};
-const PRESET_NAMES: Record<string, string> = {
-  'crveno-sivo': 'Crveno / sivo',
-  'zuto-zeleno': 'Žuto / zeleno',
-  'zeleno-krem': 'Zeleno / krem',
-  'narandzasto-tamno': 'Narandžasto / tamno',
 };
 const FALLBACK_ACCENT = '#e53935';
 /** Koliko boja po ulozi prikazati pre „još N". */
@@ -157,7 +151,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     presetGrid.append(btn);
   };
   addPreset('original', 'Original', detected);
-  for (const [id, p] of Object.entries(PRESETS)) addPreset(id, PRESET_NAMES[id] ?? id, p);
+  for (const [id, p] of Object.entries(PRESETS)) addPreset(id, PRESET_LABELS[id] ?? id, p);
   const presetSection = h('section', {}, h('h2', {}, 'Gotove palete'), presetGrid);
 
   const abBtn = h('button', { class: 'btn primary', 'data-action': 'toggle', onclick: toggleAB }, '') as HTMLButtonElement;
@@ -193,7 +187,9 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   };
   doc.addEventListener('keydown', onKey);
   const onOutside = (e: Event) => {
-    if (openMenu && !e.composedPath().includes(openMenu)) closeMenu();
+    // Klik na kvadratić boje sam otvara/zatvara meni (openRoleMenu); ovde samo klik „pored".
+    const path = e.composedPath();
+    if (openMenu && !path.includes(openMenu) && !path.some((n) => n instanceof Element && n.classList.contains('chip'))) closeMenu();
   };
   root.addEventListener('pointerdown', onOutside);
 
@@ -321,6 +317,11 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   }
 
   function openRoleMenu(anchor: HTMLElement, key: string) {
+    // Drugi klik na istu boju zatvara meni.
+    if (openMenu?.dataset.color === key) {
+      closeMenu();
+      return;
+    }
     closeMenu();
     const r = classification.roles.get(key)!;
     const select = h('select', { 'aria-label': `Uloga boje ${key}` }) as HTMLSelectElement;
@@ -335,10 +336,33 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
       classification = engine.classification ?? classification;
       closeMenu();
       renderDetected();
-      if (engine.applied) applyNow();
+      if (engine.applied) {
+        applyNow();
+      } else {
+        renderView();
+        status.textContent = `Uloga boje ${key} je promenjena. Videćeš razliku kad primeniš novu paletu (Alt+C).`;
+      }
     });
-    openMenu = h('div', { class: 'menu', role: 'menu' }, h('p', {}, h('code', {}, key), ` — ${r.reason}`), select);
-    anchor.append(openMenu);
+    select.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        closeMenu();
+        anchor.focus();
+      }
+    });
+    openMenu = h(
+      'div',
+      { class: 'menu', role: 'dialog', 'aria-label': `Uloga boje ${key}`, 'data-color': key },
+      h('p', {}, h('code', {}, key), ` — ${r.reason}`),
+      select,
+      h('p', { class: 'hint' }, 'Uloga određuje koju boju iz „Nove palete" ova boja dobija kada je paleta primenjena.'),
+    );
+    // Meni NE sme biti unutar dugmeta (kvadratića): klik na padajuću listu bi „propao" do
+    // dugmeta, koje bi meni zatvorilo i otvorilo ponovo — izbor se nikad ne bi upisao.
+    detectedSection.append(openMenu);
+    const top = anchor.offsetTop + anchor.offsetHeight + 6;
+    const left = Math.max(0, Math.min(anchor.offsetLeft, detectedSection.clientWidth - openMenu.offsetWidth));
+    Object.assign(openMenu.style, { top: `${top}px`, left: `${left}px` });
     select.focus();
   }
 
