@@ -36,6 +36,11 @@ interface Solid {
   alpha: number;
 }
 
+/** Alfa iz kanonskog ključa (`#rrggbbaa` → aa/255; `#rrggbb` → 1). */
+function keyAlpha(key: string): number {
+  return key.length === 9 ? parseInt(key.slice(7), 16) / 255 : 1;
+}
+
 function solid(value: string): Solid | null {
   const p = parseColor(value);
   if (!p || p.rgba.a < MIN_ALPHA) return null;
@@ -132,7 +137,10 @@ export function weighByArea(doc: Document): WeighResult {
     // --- Pozadina (boja i gradijenti)
     if (!(el === body && bodyIsCanvas)) {
       const bg = solid(cs.backgroundColor);
-      const gradientKeys = /gradient\(/.test(cs.backgroundImage) ? colorKeysIn(cs.backgroundImage) : [];
+      // Providne stanice (Tailwind `from-transparent` → rgba(0,0,0,0)) se ne vide — ne računaju se.
+      const gradientKeys = /gradient\(/.test(cs.backgroundImage)
+        ? colorKeysIn(cs.backgroundImage).filter((k) => keyAlpha(k) >= MIN_ALPHA)
+        : [];
       if (visible && area > 0 && (bg || gradientKeys.length)) {
         const covered = Math.max(bg?.alpha ?? 0, gradientKeys.length ? 1 : 0);
         if (bg) add(bg.key, 'bgArea', area * (gradientKeys.length ? 0 : 1));

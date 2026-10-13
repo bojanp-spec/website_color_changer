@@ -25,3 +25,6 @@
 .cta { background: #3182CE url("data:image/png;base64,iVBORw0KGgo=") no-repeat right 8px center; color: white;
        border: none; padding: 10px 20px; font-size: 15px; }
 .cta:hover { background-color: #2B6CB0; animation: pulse 1s; }
+
+/* Tailwind-ov obrazac: gradijent iz providnog u boju */
+.fade { height: 40px; background-image: linear-gradient(to bottom, transparent, #2D3748); }

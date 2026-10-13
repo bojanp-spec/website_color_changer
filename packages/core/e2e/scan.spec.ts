@@ -127,6 +127,12 @@ test.describe('blue-gray-plain (hardkodovane boje)', () => {
     expect(r.pairs).toEqual(expect.arrayContaining([expect.objectContaining({ fg: '#ffffff', bg: '#3182ce' })]));
   });
 
+  test('providna stanica gradijenta nema površinu', async ({ page }) => {
+    const r = await scan(page);
+    expect(r.palette.filter((p) => p.key.endsWith('00') && p.key.length === 9 && p.area > 0)).toEqual([]);
+    expect(paletteEntry(r, '#2d3748')!.weight.bgArea).toBeGreaterThan(0);
+  });
+
   test('skeniranje ne menja stranicu', async ({ page }) => {
     const before = await page.evaluate(() => document.documentElement.outerHTML);
     await page.evaluate(() => {
