@@ -1,0 +1,4374 @@
+{
+  "url": "https://drmozgovich.top/",
+  "usages": [
+    {
+      "source": "variable",
+      "property": "--tw-shadow",
+      "value": "0 0 #0000",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer properties",
+        "@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b))))"
+      ],
+      "important": false,
+      "selector": "*, ::backdrop, ::after, ::before",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--tw-inset-shadow",
+      "value": "0 0 #0000",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer properties",
+        "@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b))))"
+      ],
+      "important": false,
+      "selector": "*, ::backdrop, ::after, ::before",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--tw-ring-shadow",
+      "value": "0 0 #0000",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer properties",
+        "@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b))))"
+      ],
+      "important": false,
+      "selector": "*, ::backdrop, ::after, ::before",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--tw-inset-ring-shadow",
+      "value": "0 0 #0000",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer properties",
+        "@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b))))"
+      ],
+      "important": false,
+      "selector": "*, ::backdrop, ::after, ::before",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--tw-ring-offset-color",
+      "value": "#fff",
+      "colors": [
+        "#ffffff"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer properties",
+        "@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b))))"
+      ],
+      "important": false,
+      "selector": "*, ::backdrop, ::after, ::before",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--tw-ring-offset-shadow",
+      "value": "0 0 #0000",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer properties",
+        "@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b))))"
+      ],
+      "important": false,
+      "selector": "*, ::backdrop, ::after, ::before",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--color-white",
+      "value": "#fff",
+      "colors": [
+        "#ffffff"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer theme"
+      ],
+      "important": false,
+      "selector": ":host, :root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer base"
+      ],
+      "important": false,
+      "selector": "button, input, optgroup, select, textarea",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer base"
+      ],
+      "important": false,
+      "selector": "::file-selector-button",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".eyebrow",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--faint)",
+      "colors": [],
+      "varRefs": [
+        "--faint"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".sample-tag",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-top-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-right-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-bottom-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-left-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--accent-contrast)",
+      "colors": [],
+      "varRefs": [
+        "--accent-contrast"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-primary",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--accent-base)",
+      "colors": [],
+      "varRefs": [
+        "--accent-base"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-primary, .btn-primary:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "color-mix(in srgb,var(--accent-base) 88%,black)",
+      "colors": [
+        "#000000"
+      ],
+      "varRefs": [
+        "--accent-base"
+      ],
+      "conditions": [
+        "@layer components",
+        "@supports (color:color-mix(in lab,red,red))"
+      ],
+      "important": false,
+      "selector": ".btn-primary:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-ghost",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--rule-strong)",
+      "colors": [],
+      "varRefs": [
+        "--rule-strong"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-ghost",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--sheet-2)",
+      "colors": [],
+      "varRefs": [
+        "--sheet-2"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-ghost:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-ghost:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--paper)",
+      "colors": [],
+      "varRefs": [
+        "--paper"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-good",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--good)",
+      "colors": [],
+      "varRefs": [
+        "--good"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-good",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--red)",
+      "colors": [],
+      "varRefs": [
+        "--red"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-danger",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--red)",
+      "colors": [],
+      "varRefs": [
+        "--red"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-danger",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--red-wash)",
+      "colors": [],
+      "varRefs": [
+        "--red-wash"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".btn-danger:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--sheet)",
+      "colors": [],
+      "varRefs": [
+        "--sheet"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".card",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border",
+      "value": "1px solid var(--rule)",
+      "colors": [],
+      "varRefs": [
+        "--rule"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".card",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "box-shadow",
+      "value": "var(--shadow)",
+      "colors": [],
+      "varRefs": [
+        "--shadow"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".card-lead",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".card-lead",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-top",
+      "value": "2px solid var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".ledger-section",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "box-shadow",
+      "value": "0 3px 0 -2px var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".total-rule",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-top",
+      "value": "1px solid var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".total-rule",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-top-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-right-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-bottom-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-left-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--muted)",
+      "colors": [],
+      "varRefs": [
+        "--muted"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-active",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--rule-strong)",
+      "colors": [],
+      "varRefs": [
+        "--rule-strong"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-active",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--amber)",
+      "colors": [],
+      "varRefs": [
+        "--amber"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-rose",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--amber-wash)",
+      "colors": [],
+      "varRefs": [
+        "--amber-wash"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-rose",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--good)",
+      "colors": [],
+      "varRefs": [
+        "--good"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-trial",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--good-wash)",
+      "colors": [],
+      "varRefs": [
+        "--good-wash"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-trial",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--red)",
+      "colors": [],
+      "varRefs": [
+        "--red"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-review",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--red-wash)",
+      "colors": [],
+      "varRefs": [
+        "--red-wash"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-review",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--faint)",
+      "colors": [],
+      "varRefs": [
+        "--faint"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-cancelled",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--sheet-2)",
+      "colors": [],
+      "varRefs": [
+        "--sheet-2"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-cancelled",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-accent",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--accent-wash)",
+      "colors": [],
+      "varRefs": [
+        "--accent-wash"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".pill-accent",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-bottom",
+      "value": "1px solid var(--rule-strong)",
+      "colors": [],
+      "varRefs": [
+        "--rule-strong"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".seg",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--faint)",
+      "colors": [],
+      "varRefs": [
+        "--faint"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".seg button",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-bottom-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".seg button",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".seg button[aria-pressed=\"true\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-bottom-color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".seg button[aria-pressed=\"true\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--muted)",
+      "colors": [],
+      "varRefs": [
+        "--muted"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".icon-btn",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border",
+      "value": "1px solid var(--rule-strong)",
+      "colors": [],
+      "varRefs": [
+        "--rule-strong"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".icon-btn",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".icon-btn:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".icon-btn:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--sheet-2)",
+      "colors": [],
+      "varRefs": [
+        "--sheet-2"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".data-table tbody tr:hover > td, .svc-ico",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--muted)",
+      "colors": [],
+      "varRefs": [
+        "--muted"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".svc-ico",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-top",
+      "value": "1px solid var(--rule)",
+      "colors": [],
+      "varRefs": [
+        "--rule"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".legal h2",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".legal a",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--sheet-2)",
+      "colors": [],
+      "varRefs": [
+        "--sheet-2"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".legal code",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--muted)",
+      "colors": [],
+      "varRefs": [
+        "--muted"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".legal-lede",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--faint)",
+      "colors": [],
+      "varRefs": [
+        "--faint"
+      ],
+      "conditions": [
+        "@layer components"
+      ],
+      "important": false,
+      "selector": ".legal-updated",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--rule)",
+      "colors": [],
+      "varRefs": [
+        "--rule"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ":where(.divide-rule > :not(:last-child))",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--accent-base)",
+      "colors": [],
+      "varRefs": [
+        "--accent-base"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-accent, .border-accent-base",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-accent-ink",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--amber)",
+      "colors": [],
+      "varRefs": [
+        "--amber"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-amber",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--good)",
+      "colors": [],
+      "varRefs": [
+        "--good"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-good",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-ink",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--red)",
+      "colors": [],
+      "varRefs": [
+        "--red"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-red",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--rule)",
+      "colors": [],
+      "varRefs": [
+        "--rule"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-rule",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--rule-strong)",
+      "colors": [],
+      "varRefs": [
+        "--rule-strong"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-rule-strong",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-top-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-transparent",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-right-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-transparent",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-bottom-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-transparent",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-left-color",
+      "value": "rgba(0, 0, 0, 0)",
+      "colors": [
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-transparent",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-left-color",
+      "value": "var(--amber)",
+      "colors": [],
+      "varRefs": [
+        "--amber"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-l-amber",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-left-color",
+      "value": "var(--good)",
+      "colors": [],
+      "varRefs": [
+        "--good"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-l-good",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-left-color",
+      "value": "var(--red)",
+      "colors": [],
+      "varRefs": [
+        "--red"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".border-l-red",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--accent-base)",
+      "colors": [],
+      "varRefs": [
+        "--accent-base"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-accent, .bg-accent-base",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--accent-wash)",
+      "colors": [],
+      "varRefs": [
+        "--accent-wash"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-accent-wash",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--amber)",
+      "colors": [],
+      "varRefs": [
+        "--amber"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-amber",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--amber-wash)",
+      "colors": [],
+      "varRefs": [
+        "--amber-wash"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-amber-wash",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--good)",
+      "colors": [],
+      "varRefs": [
+        "--good"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-good",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--good-wash)",
+      "colors": [],
+      "varRefs": [
+        "--good-wash"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-good-wash",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-ink",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--paper)",
+      "colors": [],
+      "varRefs": [
+        "--paper"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-paper\\/95",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "color-mix(in oklab,var(--paper) 95%,transparent)",
+      "colors": [],
+      "varRefs": [
+        "--paper"
+      ],
+      "conditions": [
+        "@layer utilities",
+        "@supports (color:color-mix(in lab,red,red))"
+      ],
+      "important": false,
+      "selector": ".bg-paper\\/95",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--red)",
+      "colors": [],
+      "varRefs": [
+        "--red"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-red",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--red-wash)",
+      "colors": [],
+      "varRefs": [
+        "--red-wash"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-red-wash",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--rule)",
+      "colors": [],
+      "varRefs": [
+        "--rule"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-rule",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--rule-strong)",
+      "colors": [],
+      "varRefs": [
+        "--rule-strong"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-rule-strong",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--sheet)",
+      "colors": [],
+      "varRefs": [
+        "--sheet"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-sheet",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--sheet-2)",
+      "colors": [],
+      "varRefs": [
+        "--sheet-2"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".bg-sheet-2",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".text-accent-ink",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--amber)",
+      "colors": [],
+      "varRefs": [
+        "--amber"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".text-amber",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--faint)",
+      "colors": [],
+      "varRefs": [
+        "--faint"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".text-faint",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--good)",
+      "colors": [],
+      "varRefs": [
+        "--good"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".text-good",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".text-ink",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--muted)",
+      "colors": [],
+      "varRefs": [
+        "--muted"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".text-muted",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--paper)",
+      "colors": [],
+      "varRefs": [
+        "--paper"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".text-paper",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--red)",
+      "colors": [],
+      "varRefs": [
+        "--red"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".text-red",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--color-white)",
+      "colors": [],
+      "varRefs": [
+        "--color-white"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".text-white",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "accent-color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".accent-\\[var\\(--accent-ink\\)\\]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--tw-shadow",
+      "value": "0 1px 3px 0 var(--tw-shadow-color,#0000001a),0 1px 2px -1px var(--tw-shadow-color,#0000001a)",
+      "colors": [
+        "#0000001a"
+      ],
+      "varRefs": [
+        "--tw-shadow-color"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".shadow",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "box-shadow",
+      "value": "var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)",
+      "colors": [],
+      "varRefs": [
+        "--tw-inset-shadow",
+        "--tw-inset-ring-shadow",
+        "--tw-ring-offset-shadow",
+        "--tw-ring-shadow",
+        "--tw-shadow"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".shadow, .shadow-lg",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--tw-shadow",
+      "value": "0 10px 15px -3px var(--tw-shadow-color,#0000001a),0 4px 6px -4px var(--tw-shadow-color,#0000001a)",
+      "colors": [
+        "#0000001a"
+      ],
+      "varRefs": [
+        "--tw-shadow-color"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".shadow-lg",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "filter",
+      "value": "var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,)",
+      "colors": [],
+      "varRefs": [
+        "--tw-blur",
+        "--tw-brightness",
+        "--tw-contrast",
+        "--tw-grayscale",
+        "--tw-hue-rotate",
+        "--tw-invert",
+        "--tw-saturate",
+        "--tw-sepia",
+        "--tw-drop-shadow"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".filter",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".focus-within\\:border-accent-ink:focus-within",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "box-shadow",
+      "value": "var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)",
+      "colors": [],
+      "varRefs": [
+        "--tw-inset-shadow",
+        "--tw-inset-ring-shadow",
+        "--tw-ring-offset-shadow",
+        "--tw-ring-shadow",
+        "--tw-shadow"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".focus-within\\:ring-2:focus-within",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer utilities",
+        "@media (hover: hover)"
+      ],
+      "important": false,
+      "selector": ".hover\\:border-accent-ink:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer utilities",
+        "@media (hover: hover)"
+      ],
+      "important": false,
+      "selector": ".hover\\:border-ink:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--accent-wash)",
+      "colors": [],
+      "varRefs": [
+        "--accent-wash"
+      ],
+      "conditions": [
+        "@layer utilities",
+        "@media (hover: hover)"
+      ],
+      "important": false,
+      "selector": ".hover\\:bg-accent-wash:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--sheet-2)",
+      "colors": [],
+      "varRefs": [
+        "--sheet-2"
+      ],
+      "conditions": [
+        "@layer utilities",
+        "@media (hover: hover)"
+      ],
+      "important": false,
+      "selector": ".hover\\:bg-sheet-2:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer utilities",
+        "@media (hover: hover)"
+      ],
+      "important": false,
+      "selector": ".hover\\:text-accent-ink:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [
+        "@layer utilities",
+        "@media (hover: hover)"
+      ],
+      "important": false,
+      "selector": ".hover\\:text-ink:hover",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".focus-visible\\:border-accent-ink:focus-visible",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "var(--paper)",
+      "colors": [],
+      "varRefs": [
+        "--paper"
+      ],
+      "conditions": [
+        "@layer utilities",
+        "@media not all and (min-width: 860px)"
+      ],
+      "important": false,
+      "selector": ".max-\\[860px\\]\\:bg-paper\\/90",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background-color",
+      "value": "color-mix(in oklab,var(--paper) 90%,transparent)",
+      "colors": [],
+      "varRefs": [
+        "--paper"
+      ],
+      "conditions": [
+        "@layer utilities",
+        "@media not all and (min-width: 860px)",
+        "@supports (color:color-mix(in lab,red,red))"
+      ],
+      "important": false,
+      "selector": ".max-\\[860px\\]\\:bg-paper\\/90",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "border-color",
+      "value": "var(--rule)",
+      "colors": [],
+      "varRefs": [
+        "--rule"
+      ],
+      "conditions": [
+        "@layer utilities"
+      ],
+      "important": false,
+      "selector": ".\\[\\&_td\\]\\:border-rule td",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--paper",
+      "value": "#f4f6fa",
+      "colors": [
+        "#f4f6fa"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--sheet",
+      "value": "#fff",
+      "colors": [
+        "#ffffff"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--sheet-2",
+      "value": "#e9edf5",
+      "colors": [
+        "#e9edf5"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--ink",
+      "value": "#10233f",
+      "colors": [
+        "#10233f"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--muted",
+      "value": "#4c5975",
+      "colors": [
+        "#4c5975"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--faint",
+      "value": "#8791a8",
+      "colors": [
+        "#8791a8"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--rule",
+      "value": "#dde3ee",
+      "colors": [
+        "#dde3ee"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--rule-strong",
+      "value": "#c1c9db",
+      "colors": [
+        "#c1c9db"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--red",
+      "value": "#9c4d3f",
+      "colors": [
+        "#9c4d3f"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--red-wash",
+      "value": "#f5e8e5",
+      "colors": [
+        "#f5e8e5"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--good",
+      "value": "#3d6b47",
+      "colors": [
+        "#3d6b47"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--good-wash",
+      "value": "#e6efe8",
+      "colors": [
+        "#e6efe8"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--amber",
+      "value": "#9c5a1e",
+      "colors": [
+        "#9c5a1e"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--amber-wash",
+      "value": "#f5e9d8",
+      "colors": [
+        "#f5e9d8"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-base",
+      "value": "#3e9fd9",
+      "colors": [
+        "#3e9fd9"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-ink",
+      "value": "#1b6fa8",
+      "colors": [
+        "#1b6fa8"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-wash",
+      "value": "#e7f2fa",
+      "colors": [
+        "#e7f2fa"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-contrast",
+      "value": "#10233f",
+      "colors": [
+        "#10233f"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c1",
+      "value": "#9c7a3d",
+      "colors": [
+        "#9c7a3d"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c2",
+      "value": "#3f5578",
+      "colors": [
+        "#3f5578"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c3",
+      "value": "#5c6f5e",
+      "colors": [
+        "#5c6f5e"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c4",
+      "value": "#5a6f8a",
+      "colors": [
+        "#5a6f8a"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c5",
+      "value": "#6b5a68",
+      "colors": [
+        "#6b5a68"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c6",
+      "value": "#6c5100",
+      "colors": [
+        "#6c5100"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--shadow",
+      "value": "0 1px 0 #10233f0d,0 18px 40px -24px #10233f40",
+      "colors": [
+        "#10233f0d",
+        "#10233f40"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--paper",
+      "value": "#0b1626",
+      "colors": [
+        "#0b1626"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--sheet",
+      "value": "#101f34",
+      "colors": [
+        "#101f34"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--sheet-2",
+      "value": "#16283f",
+      "colors": [
+        "#16283f"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--ink",
+      "value": "#eef2f8",
+      "colors": [
+        "#eef2f8"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--muted",
+      "value": "#a7b3c9",
+      "colors": [
+        "#a7b3c9"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--faint",
+      "value": "#74819c",
+      "colors": [
+        "#74819c"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--rule",
+      "value": "#223752",
+      "colors": [
+        "#223752"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--rule-strong",
+      "value": "#33496a",
+      "colors": [
+        "#33496a"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--red",
+      "value": "#d97f6c",
+      "colors": [
+        "#d97f6c"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--red-wash",
+      "value": "#2c1c17",
+      "colors": [
+        "#2c1c17"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--good",
+      "value": "#82b58f",
+      "colors": [
+        "#82b58f"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--good-wash",
+      "value": "#17251c",
+      "colors": [
+        "#17251c"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--amber",
+      "value": "#cf9a54",
+      "colors": [
+        "#cf9a54"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--amber-wash",
+      "value": "#2b210f",
+      "colors": [
+        "#2b210f"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-base",
+      "value": "#6cc0f0",
+      "colors": [
+        "#6cc0f0"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-ink",
+      "value": "#6cc0f0",
+      "colors": [
+        "#6cc0f0"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-wash",
+      "value": "#13293d",
+      "colors": [
+        "#13293d"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-contrast",
+      "value": "#10233f",
+      "colors": [
+        "#10233f"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c1",
+      "value": "#c2a06a",
+      "colors": [
+        "#c2a06a"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c2",
+      "value": "#7f96c0",
+      "colors": [
+        "#7f96c0"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c3",
+      "value": "#93a692",
+      "colors": [
+        "#93a692"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c4",
+      "value": "#8ba0bd",
+      "colors": [
+        "#8ba0bd"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c5",
+      "value": "#a68fa0",
+      "colors": [
+        "#a68fa0"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c6",
+      "value": "#a28148",
+      "colors": [
+        "#a28148"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--shadow",
+      "value": "0 1px 0 #0000004d,0 18px 44px -22px #0009",
+      "colors": [
+        "#0000004d",
+        "#00000099"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"])",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--paper",
+      "value": "#0b1626",
+      "colors": [
+        "#0b1626"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--sheet",
+      "value": "#101f34",
+      "colors": [
+        "#101f34"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--sheet-2",
+      "value": "#16283f",
+      "colors": [
+        "#16283f"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--ink",
+      "value": "#eef2f8",
+      "colors": [
+        "#eef2f8"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--muted",
+      "value": "#a7b3c9",
+      "colors": [
+        "#a7b3c9"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--faint",
+      "value": "#74819c",
+      "colors": [
+        "#74819c"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--rule",
+      "value": "#223752",
+      "colors": [
+        "#223752"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--rule-strong",
+      "value": "#33496a",
+      "colors": [
+        "#33496a"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--red",
+      "value": "#d97f6c",
+      "colors": [
+        "#d97f6c"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--red-wash",
+      "value": "#2c1c17",
+      "colors": [
+        "#2c1c17"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--good",
+      "value": "#82b58f",
+      "colors": [
+        "#82b58f"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--good-wash",
+      "value": "#17251c",
+      "colors": [
+        "#17251c"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--amber",
+      "value": "#cf9a54",
+      "colors": [
+        "#cf9a54"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--amber-wash",
+      "value": "#2b210f",
+      "colors": [
+        "#2b210f"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-base",
+      "value": "#6cc0f0",
+      "colors": [
+        "#6cc0f0"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-ink",
+      "value": "#6cc0f0",
+      "colors": [
+        "#6cc0f0"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-wash",
+      "value": "#13293d",
+      "colors": [
+        "#13293d"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--accent-contrast",
+      "value": "#10233f",
+      "colors": [
+        "#10233f"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c1",
+      "value": "#c2a06a",
+      "colors": [
+        "#c2a06a"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c2",
+      "value": "#7f96c0",
+      "colors": [
+        "#7f96c0"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c3",
+      "value": "#93a692",
+      "colors": [
+        "#93a692"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c4",
+      "value": "#8ba0bd",
+      "colors": [
+        "#8ba0bd"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c5",
+      "value": "#a68fa0",
+      "colors": [
+        "#a68fa0"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--c6",
+      "value": "#a28148",
+      "colors": [
+        "#a28148"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "variable",
+      "property": "--shadow",
+      "value": "0 1px 0 #0000004d,0 18px 44px -22px #0009",
+      "colors": [
+        "#0000004d",
+        "#00000099"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"]",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--ink)",
+      "colors": [],
+      "varRefs": [
+        "--ink"
+      ],
+      "conditions": [],
+      "important": false,
+      "selector": "body",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--paper)",
+      "colors": [],
+      "varRefs": [
+        "--paper"
+      ],
+      "conditions": [],
+      "important": false,
+      "selector": "body",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "color",
+      "value": "var(--paper)",
+      "colors": [],
+      "varRefs": [
+        "--paper"
+      ],
+      "conditions": [],
+      "important": false,
+      "selector": "::selection",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [],
+      "important": false,
+      "selector": "::selection",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "outline",
+      "value": "2px solid var(--accent-ink)",
+      "colors": [],
+      "varRefs": [
+        "--accent-ink"
+      ],
+      "conditions": [],
+      "important": false,
+      "selector": ":focus-visible",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "filter",
+      "value": "drop-shadow(rgb(255, 255, 255) 0px 0px 1.5px) drop-shadow(rgb(255, 255, 255) 0px 0px 1.5px) drop-shadow(rgb(255, 255, 255) 0px 0px 1px)",
+      "colors": [
+        "#ffffff"
+      ],
+      "varRefs": [],
+      "conditions": [
+        "@media (prefers-color-scheme: dark)"
+      ],
+      "important": false,
+      "selector": ":root:not([data-theme=\"light\"]) .brand-logo",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "filter",
+      "value": "drop-shadow(rgb(255, 255, 255) 0px 0px 1.5px) drop-shadow(rgb(255, 255, 255) 0px 0px 1.5px) drop-shadow(rgb(255, 255, 255) 0px 0px 1px)",
+      "colors": [
+        "#ffffff"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ":root[data-theme=\"dark\"] .brand-logo",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "var(--accent-base)",
+      "colors": [],
+      "varRefs": [
+        "--accent-base"
+      ],
+      "conditions": [],
+      "important": false,
+      "selector": ".scroll-progress",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "mask-image",
+      "value": "radial-gradient(70% 60% at 70% 55%, rgb(0, 0, 0) 0px, rgba(0, 0, 0, 0) 75%)",
+      "colors": [
+        "#000000",
+        "#00000000"
+      ],
+      "varRefs": [],
+      "conditions": [],
+      "important": false,
+      "selector": ".hero-rules",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "repeating-linear-gradient(to bottom,transparent 0 39px,var(--rule) 39px 40px)",
+      "colors": [],
+      "varRefs": [
+        "--rule"
+      ],
+      "conditions": [],
+      "important": false,
+      "selector": ".hero-rules",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    },
+    {
+      "source": "cssom",
+      "property": "background",
+      "value": "radial-gradient(closest-side,var(--accent-wash),transparent)",
+      "colors": [],
+      "varRefs": [
+        "--accent-wash"
+      ],
+      "conditions": [],
+      "important": false,
+      "selector": ".hero-glow",
+      "sheet": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css"
+    }
+  ],
+  "sheets": [
+    {
+      "id": "https://drmozgovich.top/_next/static/css/eba0879ae0cb9b72.css",
+      "href": "https://drmozgovich.top/_next/static/css/eba0879ae0cb9b72.css",
+      "owner": "link",
+      "status": "ok",
+      "ruleCount": 59
+    },
+    {
+      "id": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css",
+      "href": "https://drmozgovich.top/_next/static/css/42f58ef9ebf7a496.css",
+      "owner": "link",
+      "status": "ok",
+      "ruleCount": 647
+    }
+  ],
+  "weights": [
+    {
+      "key": "#f4f6fa",
+      "bgArea": 2726178.596235132,
+      "textArea": 44157.06,
+      "borderArea": 0,
+      "svgArea": 0,
+      "interactiveArea": 1912.5,
+      "elementCount": 5
+    },
+    {
+      "key": "#f4f6faf2",
+      "bgArea": 55663.50390625,
+      "textArea": 0,
+      "borderArea": 0,
+      "svgArea": 0,
+      "interactiveArea": 0,
+      "elementCount": 1
+    },
+    {
+      "key": "#dde3ee",
+      "bgArea": 893647.6875,
+      "textArea": 0,
+      "borderArea": 13015.031982421875,
+      "svgArea": 0,
+      "interactiveArea": 0,
+      "elementCount": 12
+    },
+    {
+      "key": "#10233f",
+      "bgArea": 378380.8249089122,
+      "textArea": 387861.85279999994,
+      "borderArea": 5273.09375,
+      "svgArea": 0,
+      "interactiveArea": 15638.0696,
+      "elementCount": 76
+    },
+    {
+      "key": "#4c5975",
+      "bgArea": 0,
+      "textArea": 292304.36319999996,
+      "borderArea": 0,
+      "svgArea": 81.42229843139648,
+      "interactiveArea": 8320.142298431396,
+      "elementCount": 32
+    },
+    {
+      "key": "#c1c9db",
+      "bgArea": 0,
+      "textArea": 0,
+      "borderArea": 2088.625,
+      "svgArea": 0,
+      "interactiveArea": 2088.625,
+      "elementCount": 6
+    },
+    {
+      "key": "#3e9fd9",
+      "bgArea": 31396.14907079935,
+      "textArea": 0,
+      "borderArea": 0,
+      "svgArea": 0,
+      "interactiveArea": 31396.14907079935,
+      "elementCount": 5
+    },
+    {
+      "key": "#e7f2fa",
+      "bgArea": 658998.779296875,
+      "textArea": 0,
+      "borderArea": 0,
+      "svgArea": 0,
+      "interactiveArea": 0,
+      "elementCount": 6
+    },
+    {
+      "key": "#1b6fa8",
+      "bgArea": 0,
+      "textArea": 9284.16,
+      "borderArea": 0,
+      "svgArea": 0,
+      "interactiveArea": 0,
+      "elementCount": 15
+    },
+    {
+      "key": "#ffffff",
+      "bgArea": 854478.3090820312,
+      "textArea": 0,
+      "borderArea": 0,
+      "svgArea": 0,
+      "interactiveArea": 0,
+      "elementCount": 11
+    },
+    {
+      "key": "#8791a8",
+      "bgArea": 0,
+      "textArea": 36402.240000000005,
+      "borderArea": 0,
+      "svgArea": 0,
+      "interactiveArea": 647.36,
+      "elementCount": 7
+    },
+    {
+      "key": "#3d6b47",
+      "bgArea": 0,
+      "textArea": 1771.3152000000007,
+      "borderArea": 0,
+      "svgArea": 0,
+      "interactiveArea": 0,
+      "elementCount": 16
+    }
+  ],
+  "pairs": [
+    {
+      "fg": "#10233f",
+      "bg": "#f4f6fa",
+      "weight": 272208.74,
+      "minFontSize": 15,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#4c5975",
+      "bg": "#f4f6fa",
+      "weight": 219371.08959999995,
+      "minFontSize": 13.6,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#10233f",
+      "bg": "#ffffff",
+      "weight": 103448.5432,
+      "minFontSize": 14.88,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#4c5975",
+      "bg": "#ffffff",
+      "weight": 68578.7136,
+      "minFontSize": 14.72,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#f4f6fa",
+      "bg": "#10233f",
+      "weight": 42244.56,
+      "minFontSize": 15,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#8791a8",
+      "bg": "#f4f6fa",
+      "weight": 30391.04,
+      "minFontSize": 12.8,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#1b6fa8",
+      "bg": "#f4f6fa",
+      "weight": 6889.92,
+      "minFontSize": 15.2,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#10233f",
+      "bg": "#3e9fd9",
+      "weight": 6017.2544,
+      "minFontSize": 13.28,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#8791a8",
+      "bg": "#ffffff",
+      "weight": 6011.199999999999,
+      "minFontSize": 13.6,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#4c5975",
+      "bg": "#f4f6faf2",
+      "weight": 4354.56,
+      "minFontSize": 14.4,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#10233f",
+      "bg": "#f4f6faf2",
+      "weight": 3883.3152000000005,
+      "minFontSize": 13.28,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#10233f",
+      "bg": "#e7f2fa",
+      "weight": 2304,
+      "minFontSize": 24,
+      "hasSmallText": false
+    },
+    {
+      "fg": "#f4f6fa",
+      "bg": "#3e9fd9",
+      "weight": 1912.5,
+      "minFontSize": 15,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#3d6b47",
+      "bg": "#ffffff",
+      "weight": 1771.3152000000007,
+      "minFontSize": 14.88,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#1b6fa8",
+      "bg": "#ffffff",
+      "weight": 1386.24,
+      "minFontSize": 15.2,
+      "hasSmallText": true
+    },
+    {
+      "fg": "#1b6fa8",
+      "bg": "#e7f2fa",
+      "weight": 1008,
+      "minFontSize": 12,
+      "hasSmallText": true
+    }
+  ],
+  "palette": [
+    {
+      "key": "#f4f6fa",
+      "area": 2770335.656235132,
+      "share": 0.4334756719062472,
+      "weight": {
+        "key": "#f4f6fa",
+        "bgArea": 2726178.596235132,
+        "textArea": 44157.06,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 1912.5,
+        "elementCount": 5
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--paper"
+      ]
+    },
+    {
+      "key": "#dde3ee",
+      "area": 906662.7194824219,
+      "share": 0.1418659253926272,
+      "weight": {
+        "key": "#dde3ee",
+        "bgArea": 893647.6875,
+        "textArea": 0,
+        "borderArea": 13015.031982421875,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 12
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--rule"
+      ]
+    },
+    {
+      "key": "#ffffff",
+      "area": 854478.3090820312,
+      "share": 0.13370060711777165,
+      "weight": {
+        "key": "#ffffff",
+        "bgArea": 854478.3090820312,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 11
+      },
+      "declared": {
+        "variable": 3,
+        "cssom": 2
+      },
+      "variables": [
+        "--tw-ring-offset-color",
+        "--color-white",
+        "--sheet"
+      ]
+    },
+    {
+      "key": "#10233f",
+      "area": 771515.7714589122,
+      "share": 0.12071942136929042,
+      "weight": {
+        "key": "#10233f",
+        "bgArea": 378380.8249089122,
+        "textArea": 387861.85279999994,
+        "borderArea": 5273.09375,
+        "svgArea": 0,
+        "interactiveArea": 15638.0696,
+        "elementCount": 76
+      },
+      "declared": {
+        "variable": 4
+      },
+      "variables": [
+        "--ink",
+        "--accent-contrast"
+      ]
+    },
+    {
+      "key": "#e7f2fa",
+      "area": 658998.779296875,
+      "share": 0.10311383676493541,
+      "weight": {
+        "key": "#e7f2fa",
+        "bgArea": 658998.779296875,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 6
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--accent-wash"
+      ]
+    },
+    {
+      "key": "#4c5975",
+      "area": 292385.78549843136,
+      "share": 0.04574973597134801,
+      "weight": {
+        "key": "#4c5975",
+        "bgArea": 0,
+        "textArea": 292304.36319999996,
+        "borderArea": 0,
+        "svgArea": 81.42229843139648,
+        "interactiveArea": 8320.142298431396,
+        "elementCount": 32
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--muted"
+      ]
+    },
+    {
+      "key": "#f4f6faf2",
+      "area": 55663.50390625,
+      "share": 0.008709693607744479,
+      "weight": {
+        "key": "#f4f6faf2",
+        "bgArea": 55663.50390625,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 1
+      },
+      "declared": {},
+      "variables": []
+    },
+    {
+      "key": "#8791a8",
+      "area": 36402.240000000005,
+      "share": 0.005695874941138608,
+      "weight": {
+        "key": "#8791a8",
+        "bgArea": 0,
+        "textArea": 36402.240000000005,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 647.36,
+        "elementCount": 7
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--faint"
+      ]
+    },
+    {
+      "key": "#3e9fd9",
+      "area": 31396.14907079935,
+      "share": 0.004912569631446257,
+      "weight": {
+        "key": "#3e9fd9",
+        "bgArea": 31396.14907079935,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 31396.14907079935,
+        "elementCount": 5
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--accent-base"
+      ]
+    },
+    {
+      "key": "#1b6fa8",
+      "area": 9284.16,
+      "share": 0.0014526967102442437,
+      "weight": {
+        "key": "#1b6fa8",
+        "bgArea": 0,
+        "textArea": 9284.16,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 15
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--accent-ink"
+      ]
+    },
+    {
+      "key": "#c1c9db",
+      "area": 2088.625,
+      "share": 0.00032680809749442957,
+      "weight": {
+        "key": "#c1c9db",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 2088.625,
+        "svgArea": 0,
+        "interactiveArea": 2088.625,
+        "elementCount": 6
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--rule-strong"
+      ]
+    },
+    {
+      "key": "#3d6b47",
+      "area": 1771.3152000000007,
+      "share": 0.00027715848971211456,
+      "weight": {
+        "key": "#3d6b47",
+        "bgArea": 0,
+        "textArea": 1771.3152000000007,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 16
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--good"
+      ]
+    },
+    {
+      "key": "#00000000",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#00000000",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 5,
+        "cssom": 16
+      },
+      "variables": [
+        "--tw-shadow",
+        "--tw-inset-shadow",
+        "--tw-ring-shadow",
+        "--tw-inset-ring-shadow",
+        "--tw-ring-offset-shadow"
+      ]
+    },
+    {
+      "key": "#6cc0f0",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#6cc0f0",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 4
+      },
+      "variables": [
+        "--accent-base",
+        "--accent-ink"
+      ]
+    },
+    {
+      "key": "#000000",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#000000",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "cssom": 2
+      },
+      "variables": []
+    },
+    {
+      "key": "#0000001a",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#0000001a",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--tw-shadow"
+      ]
+    },
+    {
+      "key": "#0b1626",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#0b1626",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--paper"
+      ]
+    },
+    {
+      "key": "#101f34",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#101f34",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--sheet"
+      ]
+    },
+    {
+      "key": "#16283f",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#16283f",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--sheet-2"
+      ]
+    },
+    {
+      "key": "#eef2f8",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#eef2f8",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--ink"
+      ]
+    },
+    {
+      "key": "#a7b3c9",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#a7b3c9",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--muted"
+      ]
+    },
+    {
+      "key": "#74819c",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#74819c",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--faint"
+      ]
+    },
+    {
+      "key": "#223752",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#223752",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--rule"
+      ]
+    },
+    {
+      "key": "#33496a",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#33496a",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--rule-strong"
+      ]
+    },
+    {
+      "key": "#d97f6c",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#d97f6c",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--red"
+      ]
+    },
+    {
+      "key": "#2c1c17",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#2c1c17",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--red-wash"
+      ]
+    },
+    {
+      "key": "#82b58f",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#82b58f",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--good"
+      ]
+    },
+    {
+      "key": "#17251c",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#17251c",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--good-wash"
+      ]
+    },
+    {
+      "key": "#cf9a54",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#cf9a54",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--amber"
+      ]
+    },
+    {
+      "key": "#2b210f",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#2b210f",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--amber-wash"
+      ]
+    },
+    {
+      "key": "#13293d",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#13293d",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--accent-wash"
+      ]
+    },
+    {
+      "key": "#c2a06a",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#c2a06a",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--c1"
+      ]
+    },
+    {
+      "key": "#7f96c0",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#7f96c0",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--c2"
+      ]
+    },
+    {
+      "key": "#93a692",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#93a692",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--c3"
+      ]
+    },
+    {
+      "key": "#8ba0bd",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#8ba0bd",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--c4"
+      ]
+    },
+    {
+      "key": "#a68fa0",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#a68fa0",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--c5"
+      ]
+    },
+    {
+      "key": "#a28148",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#a28148",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--c6"
+      ]
+    },
+    {
+      "key": "#0000004d",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#0000004d",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--shadow"
+      ]
+    },
+    {
+      "key": "#00000099",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#00000099",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 2
+      },
+      "variables": [
+        "--shadow"
+      ]
+    },
+    {
+      "key": "#e9edf5",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#e9edf5",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--sheet-2"
+      ]
+    },
+    {
+      "key": "#9c4d3f",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#9c4d3f",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--red"
+      ]
+    },
+    {
+      "key": "#f5e8e5",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#f5e8e5",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--red-wash"
+      ]
+    },
+    {
+      "key": "#e6efe8",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#e6efe8",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--good-wash"
+      ]
+    },
+    {
+      "key": "#9c5a1e",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#9c5a1e",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--amber"
+      ]
+    },
+    {
+      "key": "#f5e9d8",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#f5e9d8",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--amber-wash"
+      ]
+    },
+    {
+      "key": "#9c7a3d",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#9c7a3d",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--c1"
+      ]
+    },
+    {
+      "key": "#3f5578",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#3f5578",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--c2"
+      ]
+    },
+    {
+      "key": "#5c6f5e",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#5c6f5e",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--c3"
+      ]
+    },
+    {
+      "key": "#5a6f8a",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#5a6f8a",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--c4"
+      ]
+    },
+    {
+      "key": "#6b5a68",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#6b5a68",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--c5"
+      ]
+    },
+    {
+      "key": "#6c5100",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#6c5100",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--c6"
+      ]
+    },
+    {
+      "key": "#10233f0d",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#10233f0d",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--shadow"
+      ]
+    },
+    {
+      "key": "#10233f40",
+      "area": 0,
+      "share": 0,
+      "weight": {
+        "key": "#10233f40",
+        "bgArea": 0,
+        "textArea": 0,
+        "borderArea": 0,
+        "svgArea": 0,
+        "interactiveArea": 0,
+        "elementCount": 0
+      },
+      "declared": {
+        "variable": 1
+      },
+      "variables": [
+        "--shadow"
+      ]
+    }
+  ],
+  "stats": {
+    "elements": 315,
+    "rules": 706,
+    "durationMs": 25
+  }
+}

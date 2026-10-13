@@ -53,12 +53,19 @@ export interface ContrastFix {
   reached: boolean;
 }
 
+export interface EnsureContrastOptions {
+  /** Dozvoljeni smer promene svetline teksta. Podrazumevano oba (bira manji pomak). */
+  direction?: 'darker' | 'lighter';
+  canvas?: RGBA;
+}
+
 /**
  * Pomera OKLCH svetlinu teksta (nijansa i hroma ostaju) dok kontrast prema pozadini
  * ne dostigne `target`. Bira smer (ka tamnom ili svetlom) koji može da dostigne cilj
- * uz najmanju promenu svetline.
+ * uz najmanju promenu svetline, osim ako je smer zadat.
  */
-export function ensureContrast(fg: RGBA, bg: RGBA, target: number, canvas: RGBA = WHITE): ContrastFix {
+export function ensureContrast(fg: RGBA, bg: RGBA, target: number, opts: EnsureContrastOptions = {}): ContrastFix {
+  const canvas = opts.canvas ?? WHITE;
   const initial = contrastRatio(fg, bg, canvas);
   if (initial >= target) return { color: fg, ratio: initial, adjusted: false, reached: true };
 
@@ -68,7 +75,8 @@ export function ensureContrast(fg: RGBA, bg: RGBA, target: number, canvas: RGBA 
 
   type Candidate = { l: number; ratio: number };
   const candidates: Candidate[] = [];
-  for (const extreme of [0, 1]) {
+  const extremes = opts.direction === 'darker' ? [0] : opts.direction === 'lighter' ? [1] : [0, 1];
+  for (const extreme of extremes) {
     if (ratioAt(extreme) < target) continue;
     // Binarna pretraga između trenutne svetline i ekstrema.
     let near = lch.l;
@@ -83,7 +91,7 @@ export function ensureContrast(fg: RGBA, bg: RGBA, target: number, canvas: RGBA 
 
   if (!candidates.length) {
     // Cilj nedostižan — vrati ekstrem sa najboljim kontrastom.
-    const best = ratioAt(0) >= ratioAt(1) ? 0 : 1;
+    const best = extremes.length === 1 ? extremes[0]! : ratioAt(0) >= ratioAt(1) ? 0 : 1;
     return { color: at(best), ratio: ratioAt(best), adjusted: true, reached: false };
   }
 

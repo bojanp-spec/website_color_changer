@@ -26,7 +26,7 @@ export { isColorFunctionName, isNamedColor, parseColor, PASSTHROUGH_KEYWORDS } f
 export type { ColorMatch } from './color/tokenize.js';
 export { findColors, hasColor, replaceColors } from './color/tokenize.js';
 export { formatLike, toHex, toHslString, toOklchString, toRgbString } from './color/serialize.js';
-export type { ContrastFix, WcagLevel } from './color/contrast.js';
+export type { ContrastFix, EnsureContrastOptions, WcagLevel } from './color/contrast.js';
 export {
   composite,
   contrastRatio,
@@ -36,3 +36,5 @@ export {
   requiredContrast,
 } from './color/contrast.js';
 export * from './scan/index.js';
+export * from './analyze/index.js';
+export * from './map/index.js';
