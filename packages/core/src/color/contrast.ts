@@ -3,7 +3,7 @@ import type { RGBA } from './types.js';
 
 const WHITE: RGBA = { r: 1, g: 1, b: 1, a: 1 };
 
-/** Alfa kompoziting: `fg` preko `bg` (sRGB, kao što ga browser crta). */
+/** Alpha compositing: `fg` over `bg` (sRGB, the way the browser paints it). */
 export function composite(fg: RGBA, bg: RGBA): RGBA {
   const a = fg.a + bg.a * (1 - fg.a);
   if (a === 0) return { r: 0, g: 0, b: 0, a: 0 };
@@ -11,15 +11,15 @@ export function composite(fg: RGBA, bg: RGBA): RGBA {
   return { r: mix(fg.r, bg.r), g: mix(fg.g, bg.g), b: mix(fg.b, bg.b), a };
 }
 
-/** WCAG 2.x relativna luminansa (0 = crna, 1 = bela). */
+/** WCAG 2.x relative luminance (0 = black, 1 = white). */
 export function relativeLuminance(color: RGBA): number {
   const c = toSrgbGamut(color);
   return 0.2126 * srgbToLinear(c.r) + 0.7152 * srgbToLinear(c.g) + 0.0722 * srgbToLinear(c.b);
 }
 
 /**
- * WCAG 2.x odnos kontrasta (1..21). Providna pozadina se prvo slaže preko `canvas`
- * (podrazumevano bela), a providan tekst preko dobijene pozadine.
+ * WCAG 2.x contrast ratio (1..21). A translucent background is first composited over `canvas`
+ * (white by default), and translucent text over the resulting background.
  */
 export function contrastRatio(fg: RGBA, bg: RGBA, canvas: RGBA = WHITE): number {
   const solidBg = bg.a < 1 ? composite(bg, canvas) : bg;
@@ -33,7 +33,7 @@ export function contrastRatio(fg: RGBA, bg: RGBA, canvas: RGBA = WHITE): number 
 export type WcagLevel = 'AA' | 'AAA';
 
 /**
- * Minimalni kontrast po WCAG 2.x. „Veliki tekst" = ≥ 24px, ili ≥ 18.66px (14pt) bold.
+ * Minimum contrast per WCAG 2.x. "Large text" = ≥ 24px, or ≥ 18.66px (14pt) bold.
  */
 export function requiredContrast(level: WcagLevel, largeText = false): number {
   if (level === 'AAA') return largeText ? 4.5 : 7;
@@ -47,22 +47,22 @@ export function isLargeText(fontSizePx: number, fontWeight: number): boolean {
 export interface ContrastFix {
   color: RGBA;
   ratio: number;
-  /** `false` ako je boja već zadovoljavala cilj. */
+  /** `false` if the color already met the target. */
   adjusted: boolean;
-  /** `false` ako cilj nije dostižan ni sa crnom/belom (npr. srednje siva pozadina i 7:1). */
+  /** `false` if the target is unreachable even with black/white (e.g. mid-gray background and 7:1). */
   reached: boolean;
 }
 
 export interface EnsureContrastOptions {
-  /** Dozvoljeni smer promene svetline teksta. Podrazumevano oba (bira manji pomak). */
+  /** Allowed direction of text lightness change. Both by default (picks the smaller shift). */
   direction?: 'darker' | 'lighter';
   canvas?: RGBA;
 }
 
 /**
- * Pomera OKLCH svetlinu teksta (nijansa i hroma ostaju) dok kontrast prema pozadini
- * ne dostigne `target`. Bira smer (ka tamnom ili svetlom) koji može da dostigne cilj
- * uz najmanju promenu svetline, osim ako je smer zadat.
+ * Shifts the text's OKLCH lightness (hue and chroma stay) until the contrast against the background
+ * reaches `target`. Picks the direction (darker or lighter) that can reach the target
+ * with the smallest lightness change, unless a direction is given.
  */
 export function ensureContrast(fg: RGBA, bg: RGBA, target: number, opts: EnsureContrastOptions = {}): ContrastFix {
   const canvas = opts.canvas ?? WHITE;
@@ -78,7 +78,7 @@ export function ensureContrast(fg: RGBA, bg: RGBA, target: number, opts: EnsureC
   const extremes = opts.direction === 'darker' ? [0] : opts.direction === 'lighter' ? [1] : [0, 1];
   for (const extreme of extremes) {
     if (ratioAt(extreme) < target) continue;
-    // Binarna pretraga između trenutne svetline i ekstrema.
+    // Binary search between the current lightness and the extreme.
     let near = lch.l;
     let far = extreme;
     for (let i = 0; i < 30; i++) {
@@ -90,7 +90,7 @@ export function ensureContrast(fg: RGBA, bg: RGBA, target: number, opts: EnsureC
   }
 
   if (!candidates.length) {
-    // Cilj nedostižan — vrati ekstrem sa najboljim kontrastom.
+    // Target unreachable — return the extreme with the best contrast.
     const best = extremes.length === 1 ? extremes[0]! : ratioAt(0) >= ratioAt(1) ? 0 : 1;
     return { color: at(best), ratio: ratioAt(best), adjusted: true, reached: false };
   }

@@ -14,7 +14,7 @@ const BASE = 'http://127.0.0.1:4173';
 
 function cli(args: string[], env: NodeJS.ProcessEnv = {}) {
   return new Promise<{ code: number; stdout: string; stderr: string }>((resolve) => {
-    // Bez CC_LANG/LANG iz okruženja testa, osim ako ga test zada — jezik zavisi samo od argumenata.
+    // Drop CC_LANG/LANG from the test environment unless the test sets them — the language depends only on the arguments.
     const base = { ...process.env, CC_LANG: '', LANG: '', LC_ALL: '' };
     execFile(process.execPath, [CLI, ...args], { timeout: 110_000, env: { ...base, ...env } }, (err, stdout, stderr) => {
       resolve({ code: err ? ((err as { code?: number }).code ?? 1) : 0, stdout, stderr });
@@ -29,27 +29,27 @@ function outDir() {
 
 const readReport = (path: string) => JSON.parse(readFileSync(path, 'utf8')) as ExportReport;
 
-test('više stranica (--crawl): jedan CSS za ceo sajt, provera prolazi', async () => {
+test('multiple pages (--crawl): one CSS for the whole site, verification passes', async () => {
   const o = outDir();
   const r = await cli([`${BASE}/multi/`, '--palette', 'crveno-sivo', '--crawl', '5', '--out', o.css, '--report', o.report, '--lang', 'sr']);
   expect(r.code, r.stderr || r.stdout).toBe(0);
   const css = readFileSync(o.css, 'utf8');
   expect(css).toContain('body {\n  background-color: #fafafa;');
-  expect(css).toContain('.quote {'); // samo na stranici „O nama", pronađenoj praćenjem linka
+  expect(css).toContain('.quote {'); // only on the "About us" page, found by following a link
   expect(css).toContain('.btn:hover {');
   const report = readReport(o.report);
-  // spoljni link i PDF se ne obilaze; svaka stranica u dva prikaza
+  // the external link and the PDF are not visited; each page in two viewports
   expect([...new Set(report.pages.map((p) => p.url))]).toEqual([`${BASE}/multi/`, `${BASE}/multi/about.html`]);
   expect(report.pages.map((p) => p.viewport)).toEqual([1440, 390, 1440, 390]);
   expect(report.verification.every((v) => v.contrastRegressions.length === 0)).toBe(true);
-  // inline `style="color:#2563eb"` CSS fajl ne može da pokrije — i to se prijavljuje
+  // inline `style="color:#2563eb"` can't be covered by a CSS file — and that gets reported
   expect(report.verification.find((v) => v.url.endsWith('about.html'))!.uncovered).toEqual([
     expect.objectContaining({ selector: 'p', property: 'color', color: '#2563eb' }),
   ]);
   expect(r.stdout).toContain('provera: kontrast svih tekstova OK');
 });
 
-test('drmozgovich.top (snimak): lokalna korekcija CTA teksta postaje CSS pravilo', async () => {
+test('drmozgovich.top (snapshot): local CTA text fix becomes a CSS rule', async () => {
   const o = outDir();
   const r = await cli([`${BASE}/drmozgovich/`, '--palette', 'crveno-sivo', '--viewports', '1440', '--out', o.css, '--report', o.report]);
   expect(r.code, r.stderr || r.stdout).toBe(0);
@@ -62,7 +62,7 @@ test('drmozgovich.top (snimak): lokalna korekcija CTA teksta postaje CSS pravilo
   expect(report.warnings).toEqual([]);
 });
 
-test('unakrsna provera: CSS sloj i PostCSS-prepisani izvorni CSS daju iste boje', async ({ page }) => {
+test('cross-check: CSS layer and PostCSS-rewritten source CSS produce the same colors', async ({ page }) => {
   const o = outDir();
   const r = await cli([`${BASE}/blue-gray-plain/`, '--palette', 'zuto-zeleno', '--viewports', '1440', '--out', o.css, '--map', o.map, '--no-verify']);
   expect(r.code, r.stderr || r.stdout).toBe(0);
@@ -75,15 +75,15 @@ test('unakrsna provera: CSS sloj i PostCSS-prepisani izvorni CSS daju iste boje'
       }),
     );
 
-  // A: original + izvezeni sloj (kako bi išlo u produkciju)
+  // A: original + exported layer (as it would ship to production)
   await page.goto('/blue-gray-plain/');
   await page.addStyleTag({ content: readFileSync(o.css, 'utf8') });
   const withLayer = await probe();
 
-  // B: izvorni CSS fajlovi prepisani PostCSS plugin-om, bez sloja
+  // B: source CSS files rewritten by the PostCSS plugin, no layer
   const rewrite = async (file: string, localRules: 'append' | 'ignore') =>
     (await postcss([ccRemap({ map: o.map, localRules })]).process(readFileSync(join(FIXTURES, 'blue-gray-plain', file), 'utf8'), { from: undefined })).css;
-  // Lokalne korekcije kontrasta (tekst na žutom CTA) idu u glavni stylesheet.
+  // Local contrast fixes (text on the yellow CTA) go into the main stylesheet.
   const styles = await rewrite('styles.css', 'append');
   const base = await rewrite('base.css', 'ignore');
   await page.route('**/blue-gray-plain/styles.css', (route) => route.fulfill({ contentType: 'text/css', body: styles }));
@@ -92,10 +92,10 @@ test('unakrsna provera: CSS sloj i PostCSS-prepisani izvorni CSS daju iste boje'
   const rewritten = await probe();
 
   expect(rewritten).toEqual(withLayer);
-  expect(styles).toContain('url("data:image/png;base64,iVBORw0KGgo=")'); // url() netaknut
+  expect(styles).toContain('url("data:image/png;base64,iVBORw0KGgo=")'); // url() untouched
 });
 
-test('jasne greške za pogrešne argumente', async () => {
+test('clear errors for invalid arguments', async () => {
   const noUrl = await cli(['--lang', 'sr']);
   expect(noUrl.code).toBe(1);
   expect(noUrl.stdout).toContain('Upotreba:');
@@ -108,7 +108,7 @@ test('jasne greške za pogrešne argumente', async () => {
   expect(override.stderr).toContain('--override');
 });
 
-test('engleski izlaz i komentari u CSS-u; jezik iz okruženja', async () => {
+test('English output and CSS comments; language from the environment', async () => {
   const o = outDir();
   const r = await cli([`${BASE}/multi/`, '--palette', 'tirkiz-okean', '--viewports', '1440', '--out', o.css, '--lang', 'en']);
   expect(r.code, r.stderr || r.stdout).toBe(0);
@@ -120,7 +120,7 @@ test('engleski izlaz i komentari u CSS-u; jezik iz okruženja', async () => {
   expect(css).toContain("Include AFTER all of the site's existing styles.");
   expect(css).toContain(' * Palette: #F1F8FA (60%)');
 
-  // bez --lang: srpski sistem → srpski, ostalo → engleski
+  // without --lang: Serbian system → Serbian, anything else → English
   const sr = await cli([], { LANG: 'sr_RS.UTF-8' });
   expect(sr.stdout).toContain('Upotreba:');
   const en = await cli([], { LANG: 'de_DE.UTF-8' });

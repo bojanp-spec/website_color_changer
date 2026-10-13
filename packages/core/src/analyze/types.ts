@@ -1,9 +1,9 @@
 import type { OKLCH } from '../color/types.js';
 
-/** Uloge po pravilu 60-30-10. `protected` = boja se ne menja (semantičke boje, grafikoni, nepoznato). */
+/** Roles per the 60-30-10 rule. `protected` = color is not changed (semantic colors, charts, unknown). */
 export type Role = 'dominant' | 'secondary' | 'accent' | 'protected';
 
-/** Tri boje koje korisnik bira (bilo koji CSS zapis boje). */
+/** The three colors the user picks (any CSS color notation). */
 export interface Palette {
   dominant: string;
   secondary: string;
@@ -14,36 +14,36 @@ export interface RoleAssignment {
   key: string;
   role: Role;
   oklch: OKLCH;
-  /** Kratko objašnjenje zašto je boja dobila ulogu (srpski) — prikazuje se u CLI-ju. */
+  /** Short explanation of why the color got its role (Serbian) — shown in the CLI. */
   reason: string;
-  /** Šifra razloga — UI je prevodi (`reasonText(code, arg, 'en')`). */
+  /** Reason code — the UI translates it (`reasonText(code, arg, 'en')`). */
   reasonCode: import('./reasons.js').ReasonCode;
   reasonArg?: string;
-  /** Izmerena vidljiva površina po vrsti upotrebe (0 za boje koje se trenutno ne vide). */
+  /** Measured visible area per usage type (0 for colors not currently visible). */
   usage: { bg: number; text: number; border: number };
   /**
-   * `alt` = boja postoji samo u alternativnoj šemi sajta (npr. dark mode na svetlom sajtu).
-   * Kod promene polariteta (svetla → tamna paleta) samo `main` boje obrću odnose svetline.
+   * `alt` = the color exists only in the site's alternate scheme (e.g. dark mode on a light site).
+   * When polarity flips (light → dark palette), only `main` colors invert their lightness relations.
    */
   scheme: 'main' | 'alt';
-  /** CSS varijable koje nose ovu boju. */
+  /** CSS variables that carry this color. */
   variables: string[];
 }
 
 export interface Classification {
-  /** Da li je glavna šema sajta svetla (dominantna boja L > 0.5). */
+  /** Whether the site's main scheme is light (dominant color L > 0.5). */
   light: boolean;
-  /** Bazne boje uloga (kanonski ključevi). `accent` je `null` ako sajt nema izraženu akcentnu boju. */
+  /** Base colors of the roles (canonical keys). `accent` is `null` if the site has no distinct accent color. */
   bases: { dominant: string; secondary: string; accent: string | null };
   /**
-   * Bazne boje alternativne šeme (npr. dark mode svetlog sajta): boja iz te šeme koja deli
-   * CSS varijablu sa baznom bojom (`--paper` u dark mode-u). `null` ako je nema.
+   * Base colors of the alternate scheme (e.g. dark mode of a light site): the color from that scheme
+   * that shares a CSS variable with the base color (`--paper` in dark mode). `null` if there is none.
    */
   altBases: { dominant: string | null; secondary: string | null; accent: string | null };
   roles: Map<string, RoleAssignment>;
 }
 
-/** Minimalni podskup rezultata skeniranja koji klasifikacija koristi — serijalizabilan (JSON). */
+/** Minimal subset of scan results used by classification — serializable (JSON). */
 export interface ScanSummary {
   palette: {
     key: string;

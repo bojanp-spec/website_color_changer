@@ -1,4 +1,4 @@
-// dist/cli.mjs (Node, bin: cc-export) + dist/cc-core.iife.js (ubacuje se u stranice).
+// dist/cli.mjs (Node, bin: cc-export) + dist/cc-core.iife.js (injected into pages).
 import { build } from 'esbuild';
 import { chmodSync } from 'node:fs';
 

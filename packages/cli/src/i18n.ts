@@ -3,8 +3,8 @@ import { PRESET_LABELS_EN, PRESETS } from '@cc/core';
 export type Lang = 'sr' | 'en';
 
 /**
- * Jezik izlaza: `--lang en|sr`, pa promenljiva `CC_LANG`, pa jezik sistema (`LC_ALL`/`LANG`):
- * `sr*` → srpski, sve ostalo → engleski.
+ * Output language: `--lang en|sr`, then the `CC_LANG` variable, then the system language (`LC_ALL`/`LANG`):
+ * `sr*` → Serbian, anything else → English.
  */
 export function detectLang(argv: string[], env: NodeJS.ProcessEnv = process.env): Lang {
   const i = argv.findIndex((a) => a === '--lang' || a.startsWith('--lang='));

@@ -1,91 +1,91 @@
 export type UsageSource = 'cssom' | 'inline' | 'variable' | 'svg-attr' | 'html-attr';
 
-/** Jedno mesto u kodu sajta gde je deklarisana boja (ili referenca na varijablu boje). */
+/** A single place in the site's code where a color (or a reference to a color variable) is declared. */
 export interface Usage {
   source: UsageSource;
-  /** CSS svojstvo (`background-color`, `--brand`) ili ime atributa (`fill`, `bgcolor`). */
+  /** CSS property (`background-color`, `--brand`) or attribute name (`fill`, `bgcolor`). */
   property: string;
-  /** Cela deklarisana vrednost, bajt-identična originalu. */
+  /** The full declared value, byte-identical to the original. */
   value: string;
-  /** Konkretne boje pronađene u vrednosti, kao kanonski ključ (`#rrggbb` / `#rrggbbaa`). */
+  /** Concrete colors found in the value, as canonical keys (`#rrggbb` / `#rrggbbaa`). */
   colors: string[];
-  /** Varijable na koje vrednost upućuje (`var(--primary)` → `--primary`). */
+  /** Variables the value references (`var(--primary)` → `--primary`). */
   varRefs: string[];
-  /** Selektor pravila (za `cssom`/`variable` iz stylesheet-a). Za ugnježdena pravila — unutrašnji. */
+  /** Rule selector (for `cssom`/`variable` from a stylesheet). For nested rules — the inner one. */
   selector?: string;
-  /** Spoljni selektori kod CSS nesting-a, od najspoljnijeg ka unutrašnjem. */
+  /** Outer selectors for CSS nesting, from outermost to innermost. */
   nesting?: string[];
-  /** Grupni uslovi, spolja ka unutra: `@media (max-width: 600px)`, `@supports …`, `@layer base`. */
+  /** Grouping conditions, outside in: `@media (max-width: 600px)`, `@supports …`, `@layer base`. */
   conditions: string[];
   important: boolean;
-  /** Identifikator stylesheet-a (vidi {@link SheetReport.id}). */
+  /** Stylesheet identifier (see {@link SheetReport.id}). */
   sheet?: string;
-  /** Prefiks shadow root-a kome pravilo pripada (`''` = dokument). */
+  /** Prefix of the shadow root the rule belongs to (`''` = document). */
   scope?: string;
-  /** Za `@keyframes`: ceo tekst pravila (keyframes se mogu zameniti samo u celini). */
+  /** For `@keyframes`: the full rule text (keyframes can only be replaced as a whole). */
   ruleText?: string;
-  /** SVG atribut unutar višebojne grafike (≥ 3 boje u istom `<svg>`) — najčešće tuđi logo. */
+  /** SVG attribute inside a multicolor graphic (≥ 3 colors in the same `<svg>`) — usually a third-party logo. */
   multicolorSvg?: boolean;
-  /** Element za inline stil / atribut. Ne serijalizuje se. */
+  /** Element for an inline style / attribute. Not serialized. */
   element?: Element;
 }
 
 export type SheetStatus = 'ok' | 'refetched' | 'blocked';
 
 export interface SheetReport {
-  /** `href` za eksterne, inače `style#<n>` / `adopted#<n>` (sa prefiksom shadow hosta). */
+  /** `href` for external sheets, otherwise `style#<n>` / `adopted#<n>` (with the shadow host prefix). */
   id: string;
   href: string | null;
   owner: 'link' | 'style' | 'import' | 'adopted';
   status: SheetStatus;
-  /** Ukupan broj pregledanih pravila, uključujući ugnježdena. */
+  /** Total number of rules visited, including nested ones. */
   ruleCount: number;
 }
 
-/** Koliko ekrana boja pokriva, po vrsti upotrebe. Jedinice: px² (tekst: aproksimacija „mastila"). */
+/** How much of the screen a color covers, per usage type. Units: px² (text: an "ink" approximation). */
 export interface ColorWeight {
   key: string;
   bgArea: number;
   textArea: number;
   borderArea: number;
   svgArea: number;
-  /** Deo gornjih površina koji pripada interaktivnim elementima (dugmad, linkovi, CTA). */
+  /** The part of the above areas belonging to interactive elements (buttons, links, CTAs). */
   interactiveArea: number;
   elementCount: number;
-  /** Boja platna koju sajt nije deklarisao (podrazumevana bela pozadina browsera). */
+  /** Canvas color the site did not declare (the browser's default white background). */
   implicit?: boolean;
 }
 
-/** Par tekst/pozadina zatečen na stranici — za proveru kontrasta posle remapiranja. */
+/** A text/background pair found on the page — for checking contrast after remapping. */
 export interface ContrastPair {
   fg: string;
   bg: string;
-  /** Težina teksta (isto kao `textArea`). */
+  /** Text weight (same as `textArea`). */
   weight: number;
-  /** Najmanji font na kome se par javlja (najstroži zahtev kontrasta). */
+  /** Smallest font size the pair occurs at (strictest contrast requirement). */
   minFontSize: number;
-  /** Da li se par javlja i kao „mali" tekst (WCAG prag 4.5 umesto 3). */
+  /** Whether the pair also occurs as "small" text (WCAG threshold 4.5 instead of 3). */
   hasSmallText: boolean;
 }
 
 export interface PaletteEntry {
   key: string;
-  /** Ukupna vidljiva površina (bg + text + border + svg). */
+  /** Total visible area (bg + text + border + svg). */
   area: number;
-  /** Udeo u ukupnoj vidljivoj površini, 0..1. */
+  /** Share of the total visible area, 0..1. */
   share: number;
   weight: ColorWeight;
-  /** Koliko puta se boja javlja u deklaracijama, po izvoru. */
+  /** How many times the color appears in declarations, per source. */
   declared: Partial<Record<UsageSource, number>>;
-  /** Varijable čija vrednost sadrži ovu boju. */
+  /** Variables whose value contains this color. */
   variables: string[];
 }
 
 export interface ScanResult {
   usages: Usage[];
-  /** Elementi na kojima je zatečen par tekst/pozadina (`"fg|bg"`), do 200 po paru. Ne serijalizuje se. */
+  /** Elements where a text/background pair (`"fg|bg"`) was found, up to 200 per pair. Not serialized. */
   pairElements: Map<string, Element[]>;
-  /** Shadow root-ovi po prefiksu (`scope`). Ne serijalizuje se. */
+  /** Shadow roots by prefix (`scope`). Not serialized. */
   scopes: Map<string, ShadowRoot>;
   sheets: SheetReport[];
   weights: ColorWeight[];

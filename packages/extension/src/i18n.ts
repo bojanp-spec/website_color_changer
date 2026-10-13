@@ -1,4 +1,4 @@
-// Tekstovi stranice sa podešavanjima. Jezik se bira pri build-u (esbuild `define`).
+// Options page strings. The language is chosen at build time (esbuild `define`).
 declare const __CC_LANG__: 'sr' | 'en' | undefined;
 export const LANG: 'sr' | 'en' = typeof __CC_LANG__ !== 'undefined' && __CC_LANG__ === 'en' ? 'en' : 'sr';
 

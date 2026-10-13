@@ -19,7 +19,7 @@ function describe(e: PaletteEntry): string {
   return parts.join(' · ');
 }
 
-/** Tekstualni izveštaj (za CLI / logove). `swatch` iscrtava uzorak boje, npr. ANSI truecolor. */
+/** Text report (for CLI / logs). `swatch` renders a color sample, e.g. ANSI truecolor. */
 export function formatPalette(result: ScanResult, swatch: (hex: string) => string = () => ''): string {
   const lines = result.palette.map((e) => `${swatch(e.key)}${e.key.padEnd(10)} ${pct(e.share)}  ${describe(e)}`);
   const blocked = result.sheets.filter((s) => s.status === 'blocked');
@@ -31,7 +31,7 @@ export function formatPalette(result: ScanResult, swatch: (hex: string) => strin
   return lines.join('\n');
 }
 
-/** Ispis palete u konzolu browsera, sa obojenim uzorcima. */
+/** Prints the palette to the browser console, with colored swatches. */
 export function printPalette(result: ScanResult, out: Pick<Console, 'log' | 'groupCollapsed' | 'groupEnd'> = console): void {
   out.groupCollapsed(`🎨 Website Color Changer — ${result.palette.length} boja`);
   for (const e of result.palette) {

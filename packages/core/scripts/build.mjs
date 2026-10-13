@@ -1,4 +1,4 @@
-// IIFE bundle za ubacivanje u stranicu (Playwright, bookmarklet): window.CC = { scanDocument, ... }
+// IIFE bundle for injecting into a page (Playwright, bookmarklet): window.CC = { scanDocument, ... }
 import { build } from 'esbuild';
 
 await build({

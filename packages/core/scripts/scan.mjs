@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-// Skenira paletu boja sajta u headless Chromium-u i ispisuje je u terminal.
+// Scans a site's color palette in headless Chromium and prints it to the terminal.
 //
 //   npm run scan -- https://example.com [--json out.json] [--width 1440] [--no-scroll] [--dark]
 //                   [--palette crveno-sivo | --palette "#FAFAFA,#4B4B4F,#D32F2F"] [--all]
 //
-// --palette: klasifikuje boje (60-30-10) i prikazuje mapu stara → nova boja za izabranu paletu.
-// --all: u mapi prikaži i boje koje se ne menjaju.
-// --screenshot <dir>: snimci cele stranice pre i posle primene palete (original.png, <paleta>.png).
-// --css <fajl>: izvoz CSS sloja za trajnu primenu (uz --palette).
+// --palette: classifies colors (60-30-10) and shows the old → new color map for the chosen palette.
+// --all: also show colors that don't change in the map.
+// --screenshot <dir>: full-page screenshots before and after applying the palette (original.png, <palette>.png).
+// --css <file>: export the CSS layer for permanent use (with --palette).
 //
-// Lokalno je potreban Chromium za Playwright: `npx playwright install chromium`.
+// Running locally requires Chromium for Playwright: `npx playwright install chromium`.
 import { chromium } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -22,7 +22,7 @@ const opt = (name) => {
   return i === -1 ? undefined : args[i + 1];
 };
 if (!url) {
-  console.error('Upotreba: npm run scan -- <url> [--json out.json] [--width 1440] [--no-scroll] [--dark] [--palette <preset | "#dom,#sek,#akc">]');
+  console.error('Usage: npm run scan -- <url> [--json out.json] [--width 1440] [--no-scroll] [--dark] [--palette <preset | "#dom,#sec,#acc">]');
   process.exit(1);
 }
 
@@ -36,7 +36,7 @@ try {
   await page.goto(url, { waitUntil: 'networkidle', timeout: 60_000 });
 
   if (!args.includes('--no-scroll')) {
-    // Lazy-load sadržaj: skroluj do dna, pa nazad na vrh.
+    // Lazy-loaded content: scroll to the bottom, then back to the top.
     await page.evaluate(async () => {
       for (let y = 0; y < document.documentElement.scrollHeight; y += innerHeight * 0.8) {
         scrollTo(0, y);
@@ -72,8 +72,8 @@ try {
         json.classification = { bases: c.bases, altBases: c.altBases, roles: [...c.roles.values()] };
         json.colorMap = m.entries;
         const shown = all ? m : { ...m, entries: m.entries.filter((e) => e.role !== 'protected') };
-        const head = `Paleta: ${chosen.dominant} / ${chosen.secondary} / ${chosen.accent}` +
-          `   (sajt: ${c.bases.dominant} / ${c.bases.secondary} / ${c.bases.accent ?? '—'})`;
+        const head = `Palette: ${chosen.dominant} / ${chosen.secondary} / ${chosen.accent}` +
+          `   (site: ${c.bases.dominant} / ${c.bases.secondary} / ${c.bases.accent ?? '—'})`;
         return { text: CC.formatPalette(result, swatch), json, mapText: `${head}\n${CC.formatColorMap(shown, swatch)}` };
       } catch (e) {
         return { text: CC.formatPalette(result, swatch), json, error: String(e?.message ?? e) };
@@ -109,11 +109,11 @@ try {
       await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
       return { css: engine.exportCss(), rules: r.rules, patched: r.patchedElements, fixes: r.localContrastFixes, fallback: r.fallbackPatched };
     }, opt('--palette'));
-    console.log(`\n🎨 Primenjeno: ${report.rules} CSS pravila, ${report.patched} elemenata sa izmenjenim atributima` +
-      (report.fallback ? `, ${report.fallback} preko computed fallback-a` : ''));
+    console.log(`\n🎨 Applied: ${report.rules} CSS rules, ${report.patched} elements with modified attributes` +
+      (report.fallback ? `, ${report.fallback} via computed fallback` : ''));
     for (const f of report.fixes) {
-      const via = f.via.kind === 'variable' ? `varijabla ${f.via.name}` : `inline na ${f.via.elements} elemenata`;
-      console.log(`   ⚖ lokalni kontrast: ${f.fg} na ${f.bg} → ${f.to} (${via})`);
+      const via = f.via.kind === 'variable' ? `variable ${f.via.name}` : `inline on ${f.via.elements} elements`;
+      console.log(`   ⚖ local contrast: ${f.fg} on ${f.bg} → ${f.to} (${via})`);
     }
     if (shotDir) {
       const name = opt('--palette').replace(/[^\w-]+/g, '_').replace(/^_+|_+$/g, '');

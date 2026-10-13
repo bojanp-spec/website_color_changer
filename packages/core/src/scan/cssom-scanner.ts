@@ -2,16 +2,16 @@ import { hasColor } from '../color/tokenize.js';
 import { colorKeysIn, isColorProperty, varRefsIn } from './properties.js';
 import type { SheetReport, Usage } from './types.js';
 
-/** Vraća tekst CSS fajla ili `null` ako nije dostupan. */
+/** Returns the CSS file text, or `null` if unavailable. */
 export type CssFetcher = (href: string) => Promise<string | null>;
 
 export interface CssomScanOptions {
   /**
-   * Kako doći do cross-origin stylesheet-a čija pravila browser krije (SecurityError).
-   * Podrazumevano: `fetch` sa CORS-om. `false` isključuje ponovno preuzimanje.
+   * How to get cross-origin stylesheets whose rules the browser hides (SecurityError).
+   * Default: `fetch` with CORS. `false` disables re-fetching.
    */
   fetchCss?: CssFetcher | false;
-  /** Prefiks za id-jeve stylesheet-ova (koristi se za shadow root-ove). */
+  /** Prefix for stylesheet ids (used for shadow roots). */
   idPrefix?: string;
 }
 
@@ -31,7 +31,7 @@ export interface WalkContext {
   scope?: string;
 }
 
-/** Skenira sve stylesheet-ove dokumenta ili shadow root-a (uključujući `@import` i adoptedStyleSheets). */
+/** Scans all stylesheets of a document or shadow root (including `@import` and adoptedStyleSheets). */
 export async function scanStylesheets(
   root: Document | ShadowRoot,
   opts: CssomScanOptions = {},
@@ -44,7 +44,7 @@ export async function scanStylesheets(
 
   const visit = async (sheet: CSSStyleSheet, owner: SheetReport['owner'], fallbackId: string) => {
     const ownerNode = sheet.ownerNode as Element | null;
-    if (ownerNode?.closest?.('[data-cc]')) return; // naš sopstveni sloj
+    if (ownerNode?.closest?.('[data-cc]')) return; // our own layer
     const href = sheet.href;
     const id = href ?? `${prefix}${fallbackId}`;
     const report: SheetReport = { id, href, owner, status: 'ok', ruleCount: 0 };
@@ -60,7 +60,7 @@ export async function scanStylesheets(
       const text = await fetchCss(href);
       if (text !== null) {
         const copy = new CSSStyleSheet();
-        copy.replaceSync(text); // @import se ovde ignoriše — prihvatljivo za fallback
+        copy.replaceSync(text); // @import is ignored here — acceptable for a fallback
         rules = copy.cssRules;
         report.status = 'refetched';
       }
@@ -89,7 +89,7 @@ export async function scanStylesheets(
   return { usages, sheets };
 }
 
-/** Obilazi pravila rekurzivno; vraća broj pregledanih pravila. */
+/** Walks rules recursively; returns the number of rules visited. */
 function walkRules(rules: CSSRuleList, ctx: WalkContext, out: Usage[], imports: CSSImportRule[]): number {
   let count = 0;
   for (const rule of Array.from(rules)) {
@@ -112,7 +112,7 @@ function walkRules(rules: CSSRuleList, ctx: WalkContext, out: Usage[], imports: 
       // @media, @supports, @layer, @container, @scope, @starting-style ...
       count += walkRules(rule.cssRules, { ...ctx, conditions: [...ctx.conditions, conditionOf(rule)] }, out, imports);
     } else if ('style' in rule && (rule as CSSRule & { style: CSSStyleDeclaration }).style) {
-      // CSSNestedDeclarations (deklaracije posle ugnježdenih pravila) i slično
+      // CSSNestedDeclarations (declarations after nested rules) and the like
       const parentSelector = ctx.nesting[ctx.nesting.length - 1] ?? ':root';
       collectDeclarations((rule as CSSRule & { style: CSSStyleDeclaration }).style, parentSelector, { ...ctx, nesting: ctx.nesting.slice(0, -1) }, out);
     }
@@ -120,7 +120,7 @@ function walkRules(rules: CSSRuleList, ctx: WalkContext, out: Usage[], imports: 
   return count;
 }
 
-/** Zaglavlje grupnog pravila: `@media (max-width: 600px)`. */
+/** Header of a grouping rule: `@media (max-width: 600px)`. */
 function conditionOf(rule: CSSGroupingRule): string {
   const text = rule.cssText;
   const brace = text.indexOf('{');
@@ -161,8 +161,8 @@ export function collectDeclarations(
     const property = style.item(i);
     const value = style.getPropertyValue(property).trim();
     if (!value) {
-      // Shorthand sa var() (npr. `background: var(--bg)`) ostavlja longhand-ove prazne
-      // („pending substitution") — vrednost je dostupna samo preko shorthand-a.
+      // A shorthand with var() (e.g. `background: var(--bg)`) leaves the longhands empty
+      // ("pending substitution") — the value is only available via the shorthand.
       if (isColorProperty(property)) pending.add(property);
       continue;
     }
@@ -183,7 +183,7 @@ export function collectDeclarations(
 
 const SIDES = ['top', 'right', 'bottom', 'left'];
 
-/** Shorthand-ovi koji mogu nositi boju, od najširih ka užim, sa longhand-ovima boje koje pokrivaju. */
+/** Shorthands that can carry a color, from broadest to narrowest, with the color longhands they cover. */
 const SHORTHANDS: [string, string[]][] = [
   ['background', ['background-color', 'background-image']],
   ['border', SIDES.map((s) => `border-${s}-color`)],

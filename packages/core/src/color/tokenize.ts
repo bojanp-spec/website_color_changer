@@ -2,21 +2,21 @@ import { isColorFunctionName, isNamedColor, parseColor, PASSTHROUGH_KEYWORDS } f
 import type { ParsedColor } from './parse.js';
 
 export interface ColorMatch {
-  /** Tačan tekst boje iz vrednosti. */
+  /** Exact color text from the value. */
   text: string;
   start: number;
   end: number;
-  /** `null` za `transparent`/`currentColor` i boje koje ne možemo izračunati (npr. `rgb(var(--x))`). */
+  /** `null` for `transparent`/`currentColor` and colors we cannot compute (e.g. `rgb(var(--x))`). */
   color: ParsedColor | null;
 }
 
-// Ne-ASCII kao negirana klasa: doslovni U+FFFF u izvoru/bundle-u Chrome odbija
-// kao content script („isn't UTF-8 encoded").
+// Non-ASCII as a negated class: Chrome rejects a literal U+FFFF in the source/bundle
+// of a content script ("isn't UTF-8 encoded").
 const isIdentStart = (ch: string | undefined) => !!ch && /[a-zA-Z_\-]|[^\x00-\x7f]/.test(ch);
 const isIdentChar = (ch: string | undefined) => !!ch && /[a-zA-Z0-9_\-]|[^\x00-\x7f]/.test(ch);
 const isDigit = (ch: string | undefined) => !!ch && ch >= '0' && ch <= '9';
 
-/** Indeks odmah posle `)` koja zatvara zagradu otvorenu na `openIdx`; poštuje navodnike. */
+/** Index right after the `)` closing the parenthesis opened at `openIdx`; respects quotes. */
 function matchParen(value: string, openIdx: number): number {
   let depth = 0;
   for (let i = openIdx; i < value.length; i++) {
@@ -34,7 +34,7 @@ function matchParen(value: string, openIdx: number): number {
   return value.length;
 }
 
-/** Indeks odmah posle zatvarajućeg navodnika stringa koji počinje na `i`. */
+/** Index right after the closing quote of the string starting at `i`. */
 function skipString(value: string, i: number): number {
   const quote = value[i];
   for (let j = i + 1; j < value.length; j++) {
@@ -45,8 +45,8 @@ function skipString(value: string, i: number): number {
 }
 
 /**
- * Pronalazi sve boje u vrednosti CSS svojstva (uključujući shorthand-ove, gradijente,
- * senke i `var()` fallback-ove). Sadržaj `url(...)` i stringova se preskače.
+ * Finds all colors in a CSS property value (including shorthands, gradients,
+ * shadows and `var()` fallbacks). Contents of `url(...)` and strings are skipped.
  */
 export function findColors(value: string): ColorMatch[] {
   const out: ColorMatch[] = [];
@@ -76,7 +76,7 @@ export function findColors(value: string): ColorMatch[] {
       continue;
     }
 
-    // Broj sa jedinicom (10px, 1.5em, 2e3) — preskače se ceo, da se `e`/`px` ne čitaju kao ime.
+    // Number with a unit (10px, 1.5em, 2e3) — skipped whole so `e`/`px` are not read as a name.
     if (isDigit(ch) || (ch === '.' && isDigit(value[i + 1]))) {
       let j = i + 1;
       while (isIdentChar(value[j]) || value[j] === '.' || ((value[j] === '+' || value[j] === '-') && /e/i.test(value[j - 1] ?? ''))) j++;
@@ -100,13 +100,13 @@ export function findColors(value: string): ColorMatch[] {
           out.push({ text, start: i, end, color: parseColor(text) });
           i = end;
         } else {
-          // Ostale funkcije (linear-gradient, var, color-mix, drop-shadow...) — ulazimo unutra.
+          // Other functions (linear-gradient, var, color-mix, drop-shadow...) — step inside.
           i = j + 1;
         }
         continue;
       }
 
-      // Custom property imena (--brand) i delovi selektora/ključnih reči nisu boje.
+      // Custom property names (--brand) and parts of selectors/keywords are not colors.
       if (!ident.startsWith('--')) {
         if (PASSTHROUGH_KEYWORDS.has(lower)) {
           out.push({ text: ident, start: i, end: j, color: null });
@@ -124,9 +124,9 @@ export function findColors(value: string): ColorMatch[] {
 }
 
 /**
- * Zamenjuje svaku konkretnu boju u vrednosti rezultatom `fn`. Ostatak stringa
- * (url-ovi, pozicije, debljine, `transparent`, `currentColor`, `var()` reference)
- * ostaje bajt-identičan. Ako `fn` vrati `null`/`undefined`, boja ostaje ista.
+ * Replaces every concrete color in the value with the result of `fn`. The rest of the string
+ * (urls, positions, widths, `transparent`, `currentColor`, `var()` references)
+ * stays byte-identical. If `fn` returns `null`/`undefined`, the color stays the same.
  */
 export function replaceColors(
   value: string,
@@ -146,7 +146,7 @@ export function replaceColors(
   return last === 0 ? value : out + value.slice(last);
 }
 
-/** Da li vrednost sadrži bar jednu konkretnu boju koju možemo da remapiramo. */
+/** Whether the value contains at least one concrete color we can remap. */
 export function hasColor(value: string): boolean {
   return findColors(value).some((m) => m.color !== null);
 }

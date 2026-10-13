@@ -34,7 +34,7 @@ const scan = (url: string, palette: PageScan['palette'], usages: PlainUsage[], p
 });
 
 describe('mergeScans', () => {
-  it('deklaracije iz istog stylesheet-a se računaju jednom, redosled prvog pojavljivanja', () => {
+  it('declarations from the same stylesheet count once, in order of first appearance', () => {
     const m = mergeScans([
       scan('/', [], [usage('body', '#ffffff'), usage('.a', '#111111')]),
       scan('/o-nama', [], [usage('body', '#ffffff'), usage('.quote', '#222222', 'about.css')]),
@@ -42,19 +42,19 @@ describe('mergeScans', () => {
     expect(m.usages.map((u) => u.selector)).toEqual(['body', '.a', '.quote']);
   });
 
-  it('svaka stranica ima istu težinu (površina se normalizuje)', () => {
+  it('every page has the same weight (area is normalized)', () => {
     const m = mergeScans([
       scan('/dugacka', [entry('#ffffff', 9000), entry('#000000', 0, 1000)], []),
       scan('/kratka', [entry('#eeeeee', 100)], []),
     ]);
     const area = Object.fromEntries(m.palette.map((e) => [e.key, e.area]));
     expect(area['#ffffff']).toBeCloseTo(0.9);
-    expect(area['#eeeeee']).toBeCloseTo(1); // kratka stranica nije „preglasana"
+    expect(area['#eeeeee']).toBeCloseTo(1); // the short page isn't "outvoted"
     expect(m.palette[0]!.key).toBe('#eeeeee');
     expect(m.palette.reduce((n, e) => n + e.share, 0)).toBeCloseTo(1);
   });
 
-  it('varijable i parovi tekst/pozadina se spajaju', () => {
+  it('variables and text/background pairs are merged', () => {
     const pair = (fg: string, bg: string, weight: number, minFontSize: number, hasSmallText: boolean) => ({ fg, bg, weight, minFontSize, hasSmallText });
     const m = mergeScans([
       scan('/', [entry('#2563eb', 10, 0, ['--accent'])], [], [pair('#fff', '#2563eb', 5, 18, false)]),

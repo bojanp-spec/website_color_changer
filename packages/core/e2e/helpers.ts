@@ -8,7 +8,7 @@ export type SerializedScan = Omit<ScanResult, 'usages' | 'pairElements' | 'scope
   usages: (Omit<ScanResult['usages'][number], 'element'> & { element?: string })[];
 };
 
-/** Ubacuje core bundle u stranicu i vraća serijalizovan rezultat skeniranja. */
+/** Injects the core bundle into the page and returns the serialized scan result. */
 export async function scan(page: Page, opts: Omit<ScanOptions, 'fetchCss'> & { fetchCss?: false } = {}): Promise<SerializedScan> {
   await page.addScriptTag({ path: BUNDLE });
   return page.evaluate(async (o) => {

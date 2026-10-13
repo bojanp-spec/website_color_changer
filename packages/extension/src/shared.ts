@@ -1,6 +1,6 @@
 import type { Palette, Role } from '@cc/core';
 
-/** Podešavanja jednog sajta u memoriji ekstenzije (chrome.storage.local). */
+/** Settings for a single site in the extension's storage (chrome.storage.local). */
 export interface SiteSettings {
   palette?: Palette;
   overrides?: Record<string, Role>;
@@ -12,7 +12,7 @@ export interface SiteSettings {
 
 export const siteKey = (hostname: string) => `site:${hostname}`;
 
-/** Poruke stranica ↔ bridge (window.postMessage). */
+/** Page ↔ bridge messages (window.postMessage). */
 export type PageOp = 'load' | 'save' | 'fetch-css' | 'auto-get' | 'auto-set';
 export interface PageRequest {
   __cc: 'req';
@@ -28,13 +28,13 @@ export interface PageResponse {
   error?: string;
 }
 
-/** Poruke bridge/options → background (chrome.runtime.sendMessage). */
+/** Bridge/options → background messages (chrome.runtime.sendMessage). */
 export type BackgroundMessage = { type: 'fetch-css'; href: string } | { type: 'inject-auto' } | { type: 'permissions-changed' };
 
-/** Najveći CSS fajl koji ekstenzija preuzima za stranicu. */
+/** The largest CSS file the extension will fetch for a page. */
 export const MAX_CSS_BYTES = 5 * 1024 * 1024;
 
-/** Adrese lokalne mreže / ovog računara — CSS sa njih se preuzima samo za stranice sa istog hosta. */
+/** Local network / this machine addresses — CSS from them is fetched only for pages on the same host. */
 export function isPrivateHost(hostname: string): boolean {
   const h = hostname.replace(/^\[|\]$/g, '').toLowerCase();
   if (h === 'localhost' || h.endsWith('.localhost') || h.endsWith('.local') || h.endsWith('.internal')) return true;
@@ -46,9 +46,9 @@ export function isPrivateHost(hostname: string): boolean {
 }
 
 /**
- * Da li ekstenzija sme da preuzme `href` kao CSS za stranicu `pageUrl`.
- * Stranica (i njene skripte) mogu da zatraže preuzimanje — zato ograničenja:
- * samo http(s), bez kolačića, i ne sa lokalne mreže osim ako je i stranica na istom hostu.
+ * Whether the extension may fetch `href` as CSS for the page `pageUrl`.
+ * The page (and its scripts) can request a fetch — hence the restrictions:
+ * http(s) only, no cookies, and not from the local network unless the page is on the same host.
  */
 export function cssFetchAllowed(href: string, pageUrl: string): string | null {
   let target: URL;

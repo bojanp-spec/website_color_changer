@@ -1,9 +1,9 @@
 import type { ContrastPair, LocalContrastFix, PaletteEntry, SheetReport, Usage } from '@cc/core';
 
-/** Upotreba boje bez reference na DOM element (serijalizabilna iz browsera). */
+/** A color usage without a DOM element reference (serializable from the browser). */
 export type PlainUsage = Omit<Usage, 'element'> & { inline?: boolean };
 
-/** Rezultat skeniranja jedne stranice u jednom prikazu. */
+/** Scan result for one page in one viewport. */
 export interface PageScan {
   url: string;
   viewport: number;
@@ -11,16 +11,16 @@ export interface PageScan {
   palette: PaletteEntry[];
   pairs: ContrastPair[];
   sheets: SheetReport[];
-  /** Linkovi sa iste domene (za --crawl). */
+  /** Same-domain links (for --crawl). */
   links: string[];
 }
 
 export interface PageVerification {
   url: string;
   viewport: number;
-  /** Tekstovi čiji je kontrast posle primene CSS-a pao ispod min(AA, original). */
+  /** Texts whose contrast dropped below min(AA, original) after applying the CSS. */
   contrastRegressions: { text: string; before: number; after: number }[];
-  /** Elementi koji i dalje imaju staru boju koja je trebalo da se promeni (npr. inline stil). */
+  /** Elements still showing an old color that should have changed (e.g. inline style). */
   uncovered: { selector: string; property: string; color: string }[];
   screenshot?: string;
 }

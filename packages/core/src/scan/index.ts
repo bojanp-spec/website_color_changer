@@ -5,7 +5,7 @@ import { weighByArea } from './area-weigher.js';
 import type { ColorWeight, PaletteEntry, ScanResult, SheetReport, Usage } from './types.js';
 
 export interface ScanOptions extends CssomScanOptions {
-  /** Skenira i otvorene shadow root-ove web komponenti. Podrazumevano `true`. */
+  /** Also scans open shadow roots of web components. Default `true`. */
   shadowRoots?: boolean;
 }
 
@@ -18,7 +18,7 @@ function* openShadowRoots(root: Document | ShadowRoot): Generator<ShadowRoot> {
   }
 }
 
-/** Faza 1: pronalazi sve deklarisane boje sajta i meri njihovu vidljivu površinu. Ne menja stranicu. */
+/** Phase 1: finds all declared site colors and measures their visible area. Does not modify the page. */
 export async function scanDocument(doc: Document, opts: ScanOptions = {}): Promise<ScanResult> {
   const t0 = performance.now();
   const usages: Usage[] = [];
@@ -62,8 +62,8 @@ export async function scanDocument(doc: Document, opts: ScanOptions = {}): Promi
 const visibleArea = (w: ColorWeight) => w.bgArea + w.textArea + w.borderArea + w.svgArea;
 
 /**
- * Spaja deklaracije i izmerene površine u jednu listu boja, sortiranu po vidljivoj površini.
- * Boje koje su deklarisane, a trenutno se ne vide (`:hover`, `@media`, modali), su na kraju sa area = 0.
+ * Merges declarations and measured areas into a single color list, sorted by visible area.
+ * Colors that are declared but not currently visible (`:hover`, `@media`, modals) come last with area = 0.
  */
 export function buildPalette(usages: Usage[], weights: ColorWeight[]): PaletteEntry[] {
   const byKey = new Map<string, PaletteEntry>();

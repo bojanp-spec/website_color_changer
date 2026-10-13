@@ -1,8 +1,8 @@
-// Gradi ekstenziju za Chrome i Firefox (Manifest V3) iz istog koda, na srpskom i engleskom:
-//   dist/chrome/, dist/chrome_en/            — za „Load unpacked" (chrome://extensions)
-//   dist/firefox/, dist/firefox_en/          — za about:debugging → „Load Temporary Add-on"
-//   dist/chrome-test/, dist/chrome-test_en/  — kao chrome, ali sa unapred datom dozvolom za sve sajtove (samo za testove)
-//   dist/*.zip                               — paketi (engleski imaju sufiks _en)
+// Builds the extension for Chrome and Firefox (Manifest V3) from the same code, in Serbian and English:
+//   dist/chrome/, dist/chrome_en/            — for "Load unpacked" (chrome://extensions)
+//   dist/firefox/, dist/firefox_en/          — for about:debugging → "Load Temporary Add-on"
+//   dist/chrome-test/, dist/chrome-test_en/  — like chrome, but with permission for all sites pre-granted (tests only)
+//   dist/*.zip                               — packages (English ones have the _en suffix)
 import { build } from 'esbuild';
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -52,7 +52,7 @@ function targetsFor(lang) {
         gecko: {
           id: l.geckoId,
           strict_min_version: '140.0',
-          // Ekstenzija ne šalje nikakve podatke van browsera.
+          // The extension sends no data outside the browser.
           data_collection_permissions: { required: ['none'] },
         },
         gecko_android: { strict_min_version: '142.0' },

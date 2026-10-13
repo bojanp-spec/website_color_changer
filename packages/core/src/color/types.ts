@@ -1,7 +1,7 @@
 /**
- * sRGB boja sa gama korekcijom, kanali u opsegu 0..1.
- * Kanali mogu biti van [0,1] kada boja potiče iz šireg prostora (lab, oklch, display-p3)
- * — to se rešava tek pri serijalizaciji (gamut mapping).
+ * Gamma-encoded sRGB color, channels in the 0..1 range.
+ * Channels may fall outside [0,1] when the color comes from a wider space (lab, oklch, display-p3)
+ * — this is resolved only at serialization (gamut mapping).
  */
 export interface RGBA {
   r: number;
@@ -11,7 +11,7 @@ export interface RGBA {
   a: number;
 }
 
-/** OKLCH: l 0..1, c >= 0 (praktično do ~0.4), h 0..360 stepeni, a 0..1. */
+/** OKLCH: l 0..1, c >= 0 (practically up to ~0.4), h 0..360 degrees, a 0..1. */
 export interface OKLCH {
   l: number;
   c: number;
@@ -19,7 +19,7 @@ export interface OKLCH {
   a: number;
 }
 
-/** OKLab: l 0..1, a/b približno -0.4..0.4. */
+/** OKLab: l 0..1, a/b roughly -0.4..0.4. */
 export interface OKLab {
   l: number;
   a: number;
@@ -27,7 +27,7 @@ export interface OKLab {
   alpha: number;
 }
 
-/** Sintaksni oblik u kom je boja zapisana — koristi se da se nova boja zapiše „istim jezikom". */
+/** Syntactic form the color was written in — used to write the new color "in the same language". */
 export type ColorFormat =
   | 'hex'
   | 'named'

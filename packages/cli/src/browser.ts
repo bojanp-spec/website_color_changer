@@ -7,9 +7,9 @@ type CCWindow = Window & { CC: CCModule };
 
 export interface LoadOptions {
   viewport: number;
-  /** Skroluj do dna (lazy-load sadržaj). */
+  /** Scroll to the bottom (lazy-loaded content). */
   scroll: boolean;
-  /** Dodatno čekanje posle učitavanja (ms). */
+  /** Extra wait after load (ms). */
   wait: number;
 }
 
@@ -27,7 +27,7 @@ export async function openPage(context: BrowserContext, url: string, opts: LoadO
     });
     await page.waitForLoadState('networkidle').catch(() => {});
   }
-  // Ulazne animacije sajta: merimo tek kad se završe (beskonačne se preskaču).
+  // Site entrance animations: measure only once they finish (infinite ones are skipped).
   await page
     .evaluate(() =>
       Promise.race([
@@ -44,7 +44,7 @@ export async function injectCore(page: Page, bundle: string) {
   if (!(await page.evaluate(() => 'CC' in window))) await page.addScriptTag({ path: bundle });
 }
 
-/** Skeniranje stranice; vraća samo serijalizabilne podatke. */
+/** Scans the page; returns only serializable data. */
 export async function scanPage(page: Page, bundle: string, viewport: number): Promise<PageScan> {
   await injectCore(page, bundle);
   return page.evaluate(async (vp) => {
@@ -63,7 +63,7 @@ export async function scanPage(page: Page, bundle: string, viewport: number): Pr
   }, viewport);
 }
 
-/** Primeni zajedničku mapu na stranicu i vrati lokalne korekcije kontrasta koje traže DOM. */
+/** Applies the shared map to the page and returns local contrast fixes that require the DOM. */
 export async function localFixes(page: Page, bundle: string, palette: Palette, map: ColorMapResult): Promise<LocalContrastFix[]> {
   await injectCore(page, bundle);
   const plain = { entries: map.entries, warnings: map.warnings, failures: map.failures, map: [...map.map] };
@@ -81,8 +81,8 @@ export async function localFixes(page: Page, bundle: string, palette: Palette, m
 }
 
 /**
- * Provera izvezenog CSS-a bez engine-a: CSS se doda kao poslednji stylesheet (kao u produkciji),
- * pa se meri kontrast svakog vidljivog teksta i traže elementi koji su ostali u staroj boji.
+ * Verifies the exported CSS without the engine: the CSS is added as the last stylesheet (as in production),
+ * then the contrast of every visible text is measured and elements left in an old color are found.
  */
 export async function verifyPage(
   page: Page,
@@ -122,8 +122,8 @@ export async function verifyPage(
       return out;
     });
 
-  // Tranzicije sajta (npr. `transition: background .2s` na dugmadi) bi merenje uhvatile usred
-  // animacije; u produkciji CSS važi od prvog učitavanja, pa tranzicije isključujemo tokom provere.
+  // Site transitions (e.g. `transition: background .2s` on buttons) would catch the measurement mid-
+  // animation; in production the CSS applies from first load, so transitions are disabled during verification.
   await page.evaluate(() => {
     const still = new CSSStyleSheet();
     still.replaceSync('*, *::before, *::after { transition: none !important; }');

@@ -9,10 +9,10 @@ import { remap } from './remap.js';
 import type { LightnessMode } from './remap.js';
 
 export interface ContrastAdjustment {
-  /** Boja pozadine (stari ključ) prema kojoj je merena. */
+  /** Background color (old key) it was measured against. */
   against: string;
   target: number;
-  /** Kontrast odmah posle remapiranja, pre korekcije. */
+  /** Contrast right after remapping, before the fix. */
   before: number;
   after: number;
 }
@@ -26,12 +26,12 @@ export interface ColorMapEntry {
 }
 
 export interface ColorMapResult {
-  /** Stari kanonski ključ → nova boja (`#rrggbb` / `#rrggbbaa`). Zaštićene boje mapiraju na sebe. */
+  /** Old canonical key → new color (`#rrggbb` / `#rrggbbaa`). Protected colors map to themselves. */
   map: Map<string, string>;
   entries: ColorMapEntry[];
-  /** Parovi tekst/pozadina koji i posle korekcije ne dostižu cilj. */
+  /** Text/background pairs that still miss the target after the fix. */
   warnings: string[];
-  /** Isto kao `warnings`, strukturirano — za lokalnu korekciju na elementima (M4). */
+  /** Same as `warnings`, structured — for local fixes on elements (M4). */
   failures: ContrastFailure[];
 }
 
@@ -42,7 +42,7 @@ export interface ContrastFailure {
 }
 
 export interface ColorMapOptions {
-  /** Nivo WCAG kontrasta koji se održava. `false` isključuje korekciju. Podrazumevano `'AA'`. */
+  /** WCAG contrast level to maintain. `false` disables the fix. Default `'AA'`. */
   enforceContrast?: WcagLevel | false;
 }
 
@@ -52,7 +52,7 @@ function rgbaOf(color: string, what: string): RGBA {
   return p.rgba;
 }
 
-/** Boja iz alternativne šeme koja deli CSS varijablu sa datom bojom. */
+/** The color from the alternate scheme that shares a CSS variable with the given color. */
 function altCounterpart(classification: Classification, key: string): string | null {
   const vars = classification.roles.get(key)?.variables ?? [];
   if (!vars.length) return null;
@@ -69,9 +69,9 @@ const ROLE_LABEL: Record<Exclude<Role, 'protected'>, keyof Palette> = {
 };
 
 /**
- * Pravi tabelu „stara boja → nova boja" za izabranu paletu, a zatim ispravlja kontrast
- * teksta prema pozadinama na kojima je zatečen (ne traži više od originalnog dizajna).
- * Deterministično: ista klasifikacija i paleta → isti rezultat.
+ * Builds an "old color → new color" table for the chosen palette, then fixes the contrast
+ * of text against the backgrounds it was found on (never demanding more than the original design).
+ * Deterministic: same classification and palette → same result.
  */
 export function buildColorMap(
   classification: Classification,
@@ -90,11 +90,11 @@ export function buildColorMap(
     return key ? classification.roles.get(key)?.oklch : undefined;
   };
 
-  // Svetao sajt + tamna paleta (ili obrnuto): glavna šema menja polaritet.
+  // Light site + dark palette (or vice versa): the main scheme flips polarity.
   const flip = classification.light !== newBases.dominant.l > 0.5;
   const modeFor = (role: keyof typeof newBases, scheme: 'main' | 'alt'): LightnessMode => {
     if (!flip || scheme === 'alt') return 'keep';
-    // Površine/linije ostaju „odvojene" od pozadine u novom smeru; tekst i akcenat obrću odnos.
+    // Surfaces/lines stay "separated" from the background in the new direction; text and accent invert the relation.
     if (role === 'dominant') return newBases.dominant.l > 0.5 ? 'darker' : 'lighter';
     return 'invert';
   };
@@ -105,8 +105,8 @@ export function buildColorMap(
     const base = r.role === 'protected' ? undefined : oldBase(ROLE_LABEL[r.role]);
     let rgba: RGBA;
     if (r.role === 'protected' || !base) {
-      // Promena polariteta: zaštićena boja uzima vrednost koju sajt sam definiše za drugu šemu
-      // (npr. `--good` iz dark mode-a), da semantička boja ostane čitljiva na novoj pozadini.
+      // Polarity flip: a protected color takes the value the site itself defines for the other scheme
+      // (e.g. `--good` from dark mode), so the semantic color stays readable on the new background.
       const counterpart = flip && r.scheme === 'main' ? altCounterpart(classification, r.key) : null;
       rgba = rgbaOf(counterpart ?? r.key, r.key);
       if (counterpart) {
@@ -119,8 +119,8 @@ export function buildColorMap(
       const altKey = r.scheme === 'alt' ? classification.altBases[role] : null;
       const altBase = altKey ? classification.roles.get(altKey)?.oklch : undefined;
       if (altBase) {
-        // Alternativna šema ima sopstvenu bazu. Ako nova paleta ima polaritet te šeme,
-        // ona se primenjuje direktno; inače se baza alternativne šeme prvo prevede.
+        // The alternate scheme has its own base. If the new palette has that scheme's polarity,
+        // it is applied directly; otherwise the alternate scheme's base is translated first.
         const newAltBase = flip ? newBases[role] : remap(altBase, base, newBases[role]);
         rgba = oklchToRgbInGamut(remap(r.oklch, altBase, newAltBase));
       } else {
@@ -139,7 +139,7 @@ export function buildColorMap(
   return { map: new Map(list.map((e) => [e.from, e.to])), entries: list, warnings, failures };
 }
 
-/** Tekstualni pregled mape (CLI). `swatch` iscrtava uzorak boje. */
+/** Text overview of the map (CLI). `swatch` renders a color sample. */
 export function formatColorMap(result: ColorMapResult, swatch: (hex: string) => string = () => ''): string {
   const order: Role[] = ['dominant', 'secondary', 'accent', 'protected'];
   const label: Record<Role, string> = {
@@ -166,12 +166,12 @@ export function formatColorMap(result: ColorMapResult, swatch: (hex: string) => 
 type Check = { fg: string; bg: string; target: number; weight: number; darker: boolean };
 
 /**
- * Ispravlja kontrast menjajući svetlinu boje TEKSTA (nikad pozadine), uz tri pravila:
- * - smer se ne obrće: tekst koji je (posle remapiranja) tamniji od pozadine ostaje tamniji;
- * - menjaju se samo boje koje su pretežno tekst (ne dominantna pozadina koja je usput i tekst na dugmetu);
- * - korekcija se prihvata samo ako ukupno smanjuje manjak kontrasta na stranici
- *   (boja može biti tekst na više pozadina, ili i tekst i pozadina).
- * Što ne može da se reši bez menjanja pojedinačnih elemenata, ostaje u upozorenjima.
+ * Fixes contrast by changing the lightness of the TEXT color (never the background), with three rules:
+ * - the direction never flips: text that is (after remapping) darker than the background stays darker;
+ * - only colors that are mostly text are changed (not the dominant background that also happens to be button text);
+ * - a fix is accepted only if it reduces the page's total contrast deficit
+ *   (a color may be text on several backgrounds, or both text and background).
+ * Whatever cannot be solved without changing individual elements stays in the warnings.
  */
 function fixContrast(
   classification: Classification,
@@ -188,9 +188,9 @@ function fixContrast(
     const fg = rgbaOf(p.fg, p.fg);
     const bg = rgbaOf(p.bg, p.bg);
     const original = contrastRatio(fg, bg);
-    // Ne tražimo više od originala (dizajnerska odluka sajta), ali ni manje od WCAG praga.
+    // Don't demand more than the original (the site's design decision), but no less than the WCAG threshold.
     const target = Math.min(requiredContrast(level, !p.hasSmallText), original);
-    // Smer korekcije po NOVIM bojama (posle remapiranja, uključujući promenu polariteta).
+    // Fix direction based on the NEW colors (after remapping, including polarity flip).
     const darker = rgbToOklch(newRgba.get(p.fg)!).l < rgbToOklch(newRgba.get(p.bg)!).l;
     checks.push({ fg: p.fg, bg: p.bg, target, weight: p.weight ?? 1, darker });
   }
@@ -209,7 +209,7 @@ function fixContrast(
     const byFg = new Map<string, Check[]>();
     for (const c of failing()) if (adjustable(c.fg) && !tried.has(`${c.fg}|${c.bg}`)) byFg.set(c.fg, [...(byFg.get(c.fg) ?? []), c]);
     if (!byFg.size) break;
-    // Najpre boje sa najviše teksta u problemu.
+    // Colors with the most failing text first.
     const order = [...byFg.entries()].sort(
       (a, b) => b[1].reduce((n, c) => n + deficit(c), 0) - a[1].reduce((n, c) => n + deficit(c), 0),
     );
@@ -223,7 +223,7 @@ function fixContrast(
       const deficitBefore = totalDeficit();
       newRgba.set(fg, fix.color);
       if (totalDeficit() >= deficitBefore) {
-        newRgba.set(fg, prev); // pogoršava druge parove — odustani
+        newRgba.set(fg, prev); // makes other pairs worse — give up
         continue;
       }
       const entry = entries.get(fg)!;

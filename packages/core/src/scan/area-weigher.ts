@@ -4,7 +4,7 @@ import { toHex } from '../color/serialize.js';
 import { colorKeysIn } from './properties.js';
 import type { ColorWeight, ContrastPair } from './types.js';
 
-/** Elementi koje tretiramo kao interaktivne (kandidati za akcentnu boju). */
+/** Elements we treat as interactive (accent color candidates). */
 export const INTERACTIVE_SELECTOR = [
   'a[href]',
   'button',
@@ -22,7 +22,7 @@ export const INTERACTIVE_SELECTOR = [
 
 const SVG_SHAPES = new Set(['path', 'rect', 'circle', 'ellipse', 'polygon', 'polyline', 'line', 'text', 'tspan', 'use']);
 
-/** Ispod ove alfe pozadina se ne računa kao vidljiva. */
+/** Backgrounds below this alpha do not count as visible. */
 const MIN_ALPHA = 0.05;
 
 export interface WeighResult {
@@ -37,7 +37,7 @@ interface Solid {
   alpha: number;
 }
 
-/** Alfa iz kanonskog ključa (`#rrggbbaa` → aa/255; `#rrggbb` → 1). */
+/** Alpha from a canonical key (`#rrggbbaa` → aa/255; `#rrggbb` → 1). */
 function keyAlpha(key: string): number {
   return key.length === 9 ? parseInt(key.slice(7), 16) / 255 : 1;
 }
@@ -60,14 +60,14 @@ function* walk(root: Document | ShadowRoot): Generator<Element> {
   }
 }
 
-/** Roditelj u „composed" stablu (prelazi granicu shadow root-a). */
+/** Parent in the "composed" tree (crosses the shadow root boundary). */
 function composedParent(el: Element): Element | null {
   if (el.parentElement) return el.parentElement;
   const root = el.parentNode;
   return root instanceof ShadowRoot ? root.host : null;
 }
 
-/** Direktni tekst elementa (bez teksta potomaka), sa skupljenim razmacima. */
+/** The element's own text (excluding descendants' text), with collapsed whitespace. */
 function ownText(el: Element): string {
   if (el instanceof HTMLInputElement && ['submit', 'button', 'reset'].includes(el.type)) return el.value.trim();
   let text = '';
@@ -76,9 +76,9 @@ function ownText(el: Element): string {
 }
 
 /**
- * Meri koliku površinu ekrana zauzima svaka boja (pozadine, tekst, ivice, SVG) na celom
- * dokumentu — i ispod pregiba. Pozadina potomka se oduzima od pozadine pretka, pa se
- * računa samo zaista vidljiv deo. Usput beleži parove tekst/pozadina za proveru kontrasta.
+ * Measures how much screen area each color takes (backgrounds, text, borders, SVG) across the whole
+ * document — including below the fold. A descendant's background is subtracted from its ancestor's, so
+ * only the truly visible part counts. Along the way it records text/background pairs for contrast checks.
  */
 export function weighByArea(doc: Document): WeighResult {
   const view = doc.defaultView ?? window;
@@ -97,7 +97,7 @@ export function weighByArea(doc: Document): WeighResult {
     return entry;
   };
 
-  // --- Platno (canvas): pozadina <html>, ili <body> koja se propagira, ili podrazumevana bela.
+  // --- Canvas: the <html> background, or the propagated <body> one, or default white.
   const html = doc.documentElement;
   const body = doc.body;
   const htmlBg = solid(view.getComputedStyle(html).backgroundColor);
@@ -136,10 +136,10 @@ export function weighByArea(doc: Document): WeighResult {
       touched.add(key);
     };
 
-    // --- Pozadina (boja i gradijenti)
+    // --- Background (color and gradients)
     if (!(el === body && bodyIsCanvas)) {
       const bg = solid(cs.backgroundColor);
-      // Providne stanice (Tailwind `from-transparent` → rgba(0,0,0,0)) se ne vide — ne računaju se.
+      // Transparent stops (Tailwind `from-transparent` → rgba(0,0,0,0)) are invisible — not counted.
       const gradientKeys = /gradient\(/.test(cs.backgroundImage)
         ? colorKeysIn(cs.backgroundImage).filter((k) => keyAlpha(k) >= MIN_ALPHA)
         : [];
@@ -147,7 +147,7 @@ export function weighByArea(doc: Document): WeighResult {
         const covered = Math.max(bg?.alpha ?? 0, gradientKeys.length ? 1 : 0);
         if (bg) add(bg.key, 'bgArea', area * (gradientKeys.length ? 0 : 1));
         for (const k of gradientKeys) add(k, 'bgArea', area / gradientKeys.length);
-        // Ovaj deo pretkove pozadine se ne vidi.
+        // This part of the ancestor's background is not visible.
         w(parentOwner).bgArea -= area * covered;
         bgOwner.set(el, bg?.key ?? gradientKeys[0] ?? parentOwner);
       }
@@ -157,7 +157,7 @@ export function weighByArea(doc: Document): WeighResult {
       continue;
     }
 
-    // --- SVG oblici
+    // --- SVG shapes
     if (el.namespaceURI === 'http://www.w3.org/2000/svg' && SVG_SHAPES.has(el.localName)) {
       const fill = solid(cs.fill);
       if (fill) add(fill.key, 'svgArea', area * 0.5);
@@ -166,7 +166,7 @@ export function weighByArea(doc: Document): WeighResult {
       if (stroke && sw > 0) add(stroke.key, 'svgArea', 2 * (rect.width + rect.height) * sw);
     }
 
-    // --- Tekst
+    // --- Text
     const text = ownText(el);
     if (text) {
       const fg = solid(cs.color);
@@ -192,7 +192,7 @@ export function weighByArea(doc: Document): WeighResult {
       }
     }
 
-    // --- Ivice
+    // --- Borders
     const sides = [
       ['Top', rect.width],
       ['Right', rect.height],

@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 import { BUNDLE, find, paletteEntry, scan } from './helpers.js';
 
-test.describe('blue-gray-vars (CSS varijable)', () => {
+test.describe('blue-gray-vars (CSS variables)', () => {
   test.beforeEach(({ page }) => page.goto('/blue-gray-vars/'));
 
-  test('pronalazi definicije varijabli, i u @media za dark mode', async ({ page }) => {
+  test('finds variable definitions, including in @media for dark mode',async ({ page }) => {
     const r = await scan(page);
     const vars = find(r, (u) => u.source === 'variable');
     expect(vars).toEqual(
@@ -21,9 +21,9 @@ test.describe('blue-gray-vars (CSS varijable)', () => {
     expect(paletteEntry(r, '#2563eb')?.variables).toEqual(['--accent']);
   });
 
-  test('beleži reference na varijable i :hover/:focus stanja', async ({ page }) => {
+  test('records variable references and :hover/:focus states', async ({ page }) => {
     const r = await scan(page);
-    // `background: var(--bg)` — shorthand sa varijablom ostaje shorthand
+    // `background: var(--bg)` — a shorthand with a variable stays a shorthand
     expect(find(r, (u) => u.selector === 'body' && u.property === 'background')[0]).toMatchObject({
       value: 'var(--bg)',
       colors: [],
@@ -39,11 +39,11 @@ test.describe('blue-gray-vars (CSS varijable)', () => {
       property: 'outline-color',
       colors: ['#2563eb66'],
     });
-    // deklarisana, ali trenutno nevidljiva boja (hover) je u paleti sa area = 0
+    // a declared but currently invisible color (hover) is in the palette with area = 0
     expect(paletteEntry(r, '#1d4ed8')).toMatchObject({ area: 0 });
   });
 
-  test('ponder površine: pozadina dominira, akcent je mali i interaktivan', async ({ page }) => {
+  test('area weighting: background dominates, accent is small and interactive',async ({ page }) => {
     const r = await scan(page);
     expect(r.palette[0]?.key).toBe('#f8fafc');
     expect(r.palette[0]!.share).toBeGreaterThan(0.4);
@@ -54,30 +54,30 @@ test.describe('blue-gray-vars (CSS varijable)', () => {
     expect(accent.weight.interactiveArea).toBeCloseTo(accent.area, 0);
 
     expect(paletteEntry(r, '#1e3a8a')!.weight.bgArea).toBeGreaterThan(0); // header
-    expect(paletteEntry(r, '#64748b')!.weight.textArea).toBeGreaterThan(0); // prigušen tekst
-    expect(paletteEntry(r, '#e2e8f0')!.weight.borderArea).toBeGreaterThan(0); // ivice kartica
+    expect(paletteEntry(r, '#64748b')!.weight.textArea).toBeGreaterThan(0); // muted text
+    expect(paletteEntry(r, '#e2e8f0')!.weight.borderArea).toBeGreaterThan(0); // card borders
 
-    // Kartice pokrivaju deo dominantne pozadine — ta površina se oduzima.
+    // Cards cover part of the dominant background — that area is subtracted.
     const card = paletteEntry(r, '#ffffff')!;
     expect(card.weight.bgArea).toBeGreaterThan(0);
   });
 
-  test('beleži parove tekst/pozadina za kontrast', async ({ page }) => {
+  test('records text/background pairs for contrast', async ({ page }) => {
     const r = await scan(page);
     expect(r.pairs).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ fg: '#ffffff', bg: '#2563eb' }), // CTA
-        expect.objectContaining({ fg: '#64748b', bg: '#ffffff' }), // opis u kartici
-        expect.objectContaining({ fg: '#1e293b', bg: '#f8fafc' }), // glavni tekst
+        expect.objectContaining({ fg: '#64748b', bg: '#ffffff' }), // card description
+        expect.objectContaining({ fg: '#1e293b', bg: '#f8fafc' }), // main text
       ]),
     );
   });
 });
 
-test.describe('blue-gray-plain (hardkodovane boje)', () => {
+test.describe('blue-gray-plain (hardcoded colors)', () => {
   test.beforeEach(({ page }) => page.goto('/blue-gray-plain/'));
 
-  test('@import, gradijent, @layer, @supports, nesting, @keyframes', async ({ page }) => {
+  test('@import, gradient,@layer, @supports, nesting, @keyframes', async ({ page }) => {
     const r = await scan(page);
     expect(r.sheets.find((s) => s.href?.endsWith('/base.css'))).toMatchObject({ owner: 'import', status: 'ok' });
     expect(find(r, (u) => u.selector === '.topbar' && u.property === 'background-image')[0]).toMatchObject({
@@ -94,14 +94,14 @@ test.describe('blue-gray-plain (hardkodovane boje)', () => {
     expect(find(r, (u) => u.selector === '@keyframes pulse 0%')[0]).toMatchObject({ colors: ['#3182ce'] });
   });
 
-  test('shorthand sa url(): samo boja je boja', async ({ page }) => {
+  test('shorthand with url(): only the color counts as a color',async ({ page }) => {
     const r = await scan(page);
     const cta = find(r, (u) => u.selector === '.cta');
     expect(cta.find((u) => u.property === 'background-color')).toMatchObject({ value: 'rgb(49, 130, 206)', colors: ['#3182ce'] });
-    expect(cta.find((u) => u.property === 'background-image')).toBeUndefined(); // samo url(), bez boje
+    expect(cta.find((u) => u.property === 'background-image')).toBeUndefined(); // url() only, no color
   });
 
-  test('inline stilovi, SVG atributi i zastareli bgcolor', async ({ page }) => {
+  test('inline styles, SVG attributes and legacy bgcolor',async ({ page }) => {
     const r = await scan(page);
     expect(find(r, (u) => u.source === 'inline')).toEqual(
       expect.arrayContaining([
@@ -119,7 +119,7 @@ test.describe('blue-gray-plain (hardkodovane boje)', () => {
     expect(paletteEntry(r, '#2c5282')!.weight.svgArea).toBeGreaterThan(0);
   });
 
-  test('platno uzima pozadinu <html>, providan tekst čuva alfu, submit dugme je tekst', async ({ page }) => {
+  test('canvas takes the <html> background, translucent text keeps alpha, submit button is text',async ({ page }) => {
     const r = await scan(page);
     expect(paletteEntry(r, '#eef2f6')!.weight.bgArea).toBeGreaterThan(0);
     expect(paletteEntry(r, '#eef2f6')!.weight.implicit).toBeUndefined();
@@ -127,13 +127,13 @@ test.describe('blue-gray-plain (hardkodovane boje)', () => {
     expect(r.pairs).toEqual(expect.arrayContaining([expect.objectContaining({ fg: '#ffffff', bg: '#3182ce' })]));
   });
 
-  test('providna stanica gradijenta nema površinu', async ({ page }) => {
+  test('a transparent gradient stop has no area',async ({ page }) => {
     const r = await scan(page);
     expect(r.palette.filter((p) => p.key.endsWith('00') && p.key.length === 9 && p.area > 0)).toEqual([]);
     expect(paletteEntry(r, '#2d3748')!.weight.bgArea).toBeGreaterThan(0);
   });
 
-  test('skeniranje ne menja stranicu', async ({ page }) => {
+  test('scanning does not modify the page',async ({ page }) => {
     const before = await page.evaluate(() => document.documentElement.outerHTML);
     await page.evaluate(() => {
       (window as unknown as { __mutations: number }).__mutations = 0;
@@ -147,37 +147,37 @@ test.describe('blue-gray-plain (hardkodovane boje)', () => {
       await (window as unknown as { CC: typeof import('../src/index.js') }).CC.scanDocument(document);
       await new Promise((r) => setTimeout(r, 50));
       const mutations = (window as unknown as { __mutations: number }).__mutations;
-      document.querySelector('head > script:last-of-type')?.remove(); // bundle koji je ubacio test
+      document.querySelector('head > script:last-of-type')?.remove(); // bundle injected by the test
       return { html: document.documentElement.outerHTML, mutations };
     });
-    // jedina mutacija je <script> tag koji je ubacio test
+    // the only mutation is the <script> tag injected by the test
     expect(after.mutations).toBe(1);
     expect(after.html).toBe(before);
   });
 });
 
-test.describe('cross-origin stylesheet-ovi', () => {
+test.describe('cross-origin stylesheets', () => {
   test.beforeEach(({ page }) => page.goto('/cross-origin/'));
 
-  test('CORS: ponovo preuzima; bez CORS-a: blokiran, ali površina se ipak meri', async ({ page }) => {
+  test('CORS: refetched; without CORS: blocked, but area is still measured',async ({ page }) => {
     const r = await scan(page);
     expect(r.sheets.find((s) => s.href?.includes('/cors/'))).toMatchObject({ status: 'refetched' });
     expect(r.sheets.find((s) => s.href?.includes('/nocors/'))).toMatchObject({ status: 'blocked' });
     expect(find(r, (u) => u.selector === '.remote-cors')[0]).toMatchObject({ colors: ['#2a4365'] });
     expect(find(r, (u) => u.selector === '.remote-nocors')).toEqual([]);
-    expect(paletteEntry(r, '#4a5568')!.weight.bgArea).toBeGreaterThan(0); // iz computed stila
+    expect(paletteEntry(r, '#4a5568')!.weight.bgArea).toBeGreaterThan(0); // from computed style
   });
 
-  test('fetchCss: false isključuje ponovno preuzimanje', async ({ page }) => {
+  test('fetchCss: false disables refetching',async ({ page }) => {
     const r = await scan(page, { fetchCss: false });
     expect(r.sheets.find((s) => s.href?.includes('/cors/'))).toMatchObject({ status: 'blocked' });
   });
 });
 
-test.describe('shadow DOM i naš sopstveni UI', () => {
+test.describe('shadow DOM and our own UI', () => {
   test.beforeEach(({ page }) => page.goto('/shadow-dom/'));
 
-  test('skenira <style> i adoptedStyleSheets u otvorenim shadow root-ovima', async ({ page }) => {
+  test('scans <style> and adoptedStyleSheets in open shadow roots',async ({ page }) => {
     const r = await scan(page);
     expect(find(r, (u) => u.selector === '.box')[0]).toMatchObject({ colors: ['#334155'], sheet: 'promo-card#0>style#0' });
     expect(find(r, (u) => u.selector === '.btn')[0]).toMatchObject({ colors: ['#1d4ed8'], sheet: 'promo-card#0>adopted#0' });
@@ -186,13 +186,13 @@ test.describe('shadow DOM i naš sopstveni UI', () => {
     expect(r.pairs).toEqual(expect.arrayContaining([expect.objectContaining({ fg: '#e2e8f0', bg: '#334155' })]));
   });
 
-  test('ignoriše elemente sa data-cc', async ({ page }) => {
+  test('ignores elements with data-cc',async ({ page }) => {
     const r = await scan(page);
     expect(paletteEntry(r, '#ff00ff')).toBeUndefined();
   });
 });
 
-test('printPalette ispisuje paletu u konzolu', async ({ page }) => {
+test('printPalette prints the palette to the console',async ({ page }) => {
   await page.goto('/blue-gray-vars/');
   const logs: string[] = [];
   page.on('console', (m) => logs.push(m.text()));

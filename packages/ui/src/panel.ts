@@ -8,22 +8,22 @@ import { PANEL_CSS } from './styles.js';
 export interface PanelHandle {
   readonly engine: ColorEngine;
   readonly host: HTMLElement;
-  /** Prikaži/sakrij panel (sajt ostaje u trenutnom stanju). */
+  /** Show/hide the panel (the site stays in its current state). */
   toggleVisible(): void;
-  /** Ukloni panel i vrati sajt u original. */
+  /** Remove the panel and restore the site to the original. */
   destroy(): void;
 }
 
 export interface PanelOptions {
-  /** Paleta koja se odmah primenjuje (npr. iz URL hash-a). Podrazumevano: iz `#cc=…`. */
+  /** Palette to apply immediately (e.g. from the URL hash). Default: from `#cc=…`. */
   initialPalette?: Palette | null;
-  /** Memorija za podešavanja po domenu. Podrazumevano localStorage sajta. */
+  /** Storage for per-domain settings. Defaults to the site's localStorage. */
   storage?: PanelStorage;
-  /** Opcije engine-a (npr. `fetchCss` preko ekstenzije). */
+  /** Engine options (e.g. `fetchCss` via the extension). */
   engine?: EngineOptions;
-  /** Ekstenzija: prekidač „automatski primeni na ovom sajtu". */
+  /** Extension: the "apply automatically on this site" toggle. */
   autoApply?: { get(): Promise<boolean>; set(on: boolean): Promise<void> };
-  /** Poziva se kad korisnik zatvori panel. */
+  /** Called when the user closes the panel. */
   onClose?: () => void;
 }
 
@@ -33,7 +33,7 @@ const ROLES: { role: keyof Palette; label: string; share: string }[] = [
   { role: 'accent', label: t('accent'), share: '10%' },
 ];
 const FALLBACK_ACCENT = '#e53935';
-/** Koliko boja po ulozi prikazati pre „još N". */
+/** How many colors per role to show before "N more". */
 const CHIPS_VISIBLE = 10;
 
 type Attrs = Record<string, string | boolean | ((e: Event) => void)>;
@@ -49,15 +49,15 @@ function h<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Attrs = {}, ...
   return el;
 }
 
-/** Kanonski `#rrggbb` (bez alfe) ili `null` za nevalidan unos. */
+/** Canonical `#rrggbb` (no alpha) or `null` for invalid input. */
 function normalize(input: string): string | null {
   const p = parseColor(input.trim());
   return p ? toHex({ ...p.rgba, a: 1 }) : null;
 }
 
 /**
- * Plutajući panel za izbor palete na bilo kom sajtu. Renderuje se u shadow root-u hosta
- * `<cc-panel data-cc>` — engine ga ignoriše pri skeniranju, a stilovi sajta ne dopiru do njega.
+ * Floating panel for picking a palette on any site. Rendered in the shadow root of the
+ * `<cc-panel data-cc>` host — the engine ignores it when scanning, and site styles don't reach it.
  */
 export async function mountPanel(doc: Document = document, opts: PanelOptions = {}): Promise<PanelHandle> {
   const storage = opts.storage ?? localStorageAdapter;
@@ -65,7 +65,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   const save = (patch: Partial<Saved>) => void storage.save(patch).catch(() => {});
   const host = doc.createElement('cc-panel');
   host.setAttribute('data-cc', '');
-  // Otvoren shadow root: izolacija stilova je ista kao kod zatvorenog, a testovi mogu da ga čitaju.
+  // Open shadow root: style isolation is the same as with a closed one, and tests can read it.
   const root = host.attachShadow({ mode: 'open' });
   const panel = h('div', { class: saved.collapsed ? 'panel collapsed' : 'panel', role: 'dialog', 'aria-label': 'Website Color Changer', lang: LANG });
   attachStyles(doc, root);
@@ -99,7 +99,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     },
   };
 
-  // ---------------------------------------------------------------- zaglavlje
+  // ---------------------------------------------------------------- header
   const collapseBtn = h('button', { class: 'icon', title: t('collapse'), 'aria-label': t('collapseLabel'), onclick: toggleCollapsed }, '–');
   const closeBtn = h('button', { class: 'icon', title: t('close'), 'aria-label': t('closeLabel'), onclick: () => api.destroy() }, '×');
   const header = h('header', {}, h('h1', {}, t('title')), collapseBtn, closeBtn);
@@ -124,7 +124,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   const fromUrl = opts.initialPalette === undefined ? paletteFromHash() : opts.initialPalette;
   palette = fromUrl ?? saved.palette ?? detected;
 
-  // ---------------------------------------------------------------- sekcije
+  // ---------------------------------------------------------------- sections
   const detectedSection = h('section');
   const pickers = new Map<keyof Palette, { color: HTMLInputElement; text: HTMLInputElement }>();
   const pickerSection = h('section', {}, h('h2', {}, t('newPalette')));
@@ -182,7 +182,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   };
   doc.addEventListener('keydown', onKey);
   const onOutside = (e: Event) => {
-    // Klik na kvadratić boje sam otvara/zatvara meni (openRoleMenu); ovde samo klik „pored".
+    // A click on a color swatch opens/closes the menu itself (openRoleMenu); here we only handle clicks "outside".
     const path = e.composedPath();
     if (openMenu && !path.includes(openMenu) && !path.some((n) => n instanceof Element && n.classList.contains('chip'))) closeMenu();
   };
@@ -190,7 +190,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
 
   return api;
 
-  // ================================================================= logika
+  // ================================================================= logic
 
   function setRole(role: keyof Palette, value: string, from: 'color' | 'text') {
     const hex = normalize(value);
@@ -312,7 +312,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   }
 
   function openRoleMenu(anchor: HTMLElement, key: string) {
-    // Drugi klik na istu boju zatvara meni.
+    // A second click on the same color closes the menu.
     if (openMenu?.dataset.color === key) {
       closeMenu();
       return;
@@ -352,8 +352,8 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
       select,
       h('p', { class: 'hint' }, t('roleHint')),
     );
-    // Meni NE sme biti unutar dugmeta (kvadratića): klik na padajuću listu bi „propao" do
-    // dugmeta, koje bi meni zatvorilo i otvorilo ponovo — izbor se nikad ne bi upisao.
+    // The menu must NOT be inside the button (the swatch): a click on the dropdown would "fall through" to
+    // the button, which would close and reopen the menu — the selection would never be saved.
     detectedSection.append(openMenu);
     const top = anchor.offsetTop + anchor.offsetHeight + 6;
     const left = Math.max(0, Math.min(anchor.offsetLeft, detectedSection.clientWidth - openMenu.offsetWidth));
@@ -371,7 +371,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     try {
       await navigator.clipboard.writeText(text);
     } catch {
-      // Fallback za stranice bez dozvole za clipboard API.
+      // Fallback for pages without permission for the Clipboard API.
       const ta = h('textarea', {}, text) as HTMLTextAreaElement;
       root.append(ta);
       ta.select();
@@ -435,8 +435,8 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
 }
 
 /**
- * Stil panela preko constructable stylesheet-a: stroga CSP (`style-src` bez 'unsafe-inline')
- * blokira <style>, a adoptedStyleSheets ne. Stariji browseri dobijaju <style>.
+ * Panel styles via a constructable stylesheet: a strict CSP (`style-src` without 'unsafe-inline')
+ * blocks <style>, but not adoptedStyleSheets. Older browsers get a <style>.
  */
 function attachStyles(doc: Document, root: ShadowRoot) {
   const view = doc.defaultView ?? window;

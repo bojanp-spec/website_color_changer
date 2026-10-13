@@ -1,10 +1,10 @@
 /**
- * Menja atribute elemenata (inline `style`, SVG `fill`/`stroke`, zastareli `bgcolor`) i pamti
- * originalne vrednosti, da `restore()` vrati DOM bajt-identično.
+ * Changes element attributes (inline `style`, SVG `fill`/`stroke`, legacy `bgcolor`) and remembers
+ * the original values so that `restore()` returns the DOM byte-for-byte.
  */
 export class DomPatcher {
   private readonly originals = new Map<Element, Map<string, string | null>>();
-  /** Inline svojstva koja smo mi postavili, po elementu. */
+  /** Inline properties we have set, per element. */
   private readonly styled = new Map<Element, Set<string>>();
 
   get size(): number {
@@ -24,7 +24,7 @@ export class DomPatcher {
   }
 
   setStyle(el: HTMLElement | SVGElement, prop: string, value: string, important = false) {
-    // Atribut čitamo PRE pristupa `el.style`: Chrome ume da materijalizuje prazan `style=""`.
+    // Read the attribute BEFORE accessing `el.style`: Chrome may materialize an empty `style=""`.
     const attrBefore = el.getAttribute('style');
     const style = el.style;
     if (style.getPropertyValue(prop) === value && (style.getPropertyPriority(prop) === 'important') === important) return;
@@ -39,7 +39,7 @@ export class DomPatcher {
     return this.styled.get(el)?.has(prop) ?? false;
   }
 
-  /** Sajt je sam promenio atribut — nova vrednost postaje „original". */
+  /** The site changed the attribute itself — the new value becomes the "original". */
   forget(el: Element, attr: string) {
     this.originals.get(el)?.delete(attr);
     if (attr === 'style') this.styled.delete(el);

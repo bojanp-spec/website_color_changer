@@ -2,7 +2,7 @@ import { BASE, bg, clickAction, expect, EXTENSION_EN, test } from './fixtures.js
 
 test.use({ extensionDir: EXTENSION_EN });
 
-test('engleska ekstenzija: manifest, panel i podešavanja su na engleskom', async ({ context, sw, extensionId }) => {
+test('English extension: manifest, panel and settings are in English', async ({ context, sw, extensionId }) => {
   const manifest = await sw.evaluate(() => chrome.runtime.getManifest());
   expect(manifest).toMatchObject({ name: 'Website Color Changer', short_name: 'Site colors', action: { default_title: 'Site colors' } });
 

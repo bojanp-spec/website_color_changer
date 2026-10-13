@@ -8,7 +8,7 @@ type Win = Window & { CC: CCModule; engine: ReturnType<CCModule['createEngine']>
 
 const PRESET = 'crveno-sivo';
 
-/** Ubaci bundle, analiziraj, primeni preset; vrati kratak izveštaj. */
+/** Inject the bundle, analyze, apply the preset; return a short report. */
 async function applyPreset(page: Page, preset = PRESET) {
   if (!(await page.evaluate(() => 'CC' in window))) await page.addScriptTag({ path: BUNDLE });
   return page.evaluate(async (name) => {
@@ -33,7 +33,7 @@ const computed = (page: Page, selector: string, prop: string) =>
     return CC.colorKey(getComputedStyle(el).getPropertyValue(p));
   }, prop);
 
-/** Snimak strukture i rasporeda svih elemenata (bez našeg sloja). */
+/** Snapshot of the structure and layout of all elements (excluding our layer). */
 const layout = (page: Page) =>
   page.evaluate(() =>
     Array.from(document.querySelectorAll('body *')).map((el) => {
@@ -42,7 +42,7 @@ const layout = (page: Page) =>
     }),
   );
 
-/** HTML dokumenta bez <script> tagova (test ubacuje bundle kao <script>); opciono i bez `style` atributa. */
+/** Document HTML without <script> tags (the test injects the bundle as a <script>); optionally without `style` attributes too. */
 const outerHTML = (page: Page, withoutStyleAttrs = false) =>
   page.evaluate((noStyle) => {
     const clone = document.documentElement.cloneNode(true) as Element;
@@ -54,19 +54,19 @@ const outerHTML = (page: Page, withoutStyleAttrs = false) =>
 test.describe('blue-gray-vars', () => {
   test.beforeEach(({ page }) => page.goto('/blue-gray-vars/'));
 
-  test('primenjuje paletu, ne menja strukturu ni raspored', async ({ page }) => {
+  test('applies the palette without changing structure or layout',async ({ page }) => {
     const before = { html: await outerHTML(page), layout: await layout(page) };
     const r = await applyPreset(page);
     expect(await computed(page, 'body', 'background-color')).toBe('#fafafa');
     expect(await computed(page, '.btn-cta', 'background-color')).toBe('#d32f2f');
     expect(await computed(page, 'body', 'color')).toBe(r.map['#1e293b']);
     expect(await computed(page, 'header', 'background-color')).toBe(r.map['#1e3a8a']);
-    expect(await outerHTML(page)).toBe(before.html); // DOM netaknut (sloj je u adoptedStyleSheets)
+    expect(await outerHTML(page)).toBe(before.html); // DOM untouched (the layer lives in adoptedStyleSheets)
     expect(await layout(page)).toEqual(before.layout);
     expect(r.patchedElements).toBe(0);
   });
 
-  test(':hover i :focus-visible stanja su mapirana', async ({ page }) => {
+  test(':hover and :focus-visible states are mapped',async ({ page }) => {
     const r = await applyPreset(page);
     await page.hover('.btn-cta');
     await expect.poll(() => computed(page, '.btn-cta', 'background-color')).toBe(r.map['#1d4ed8']);
@@ -74,13 +74,13 @@ test.describe('blue-gray-vars', () => {
     expect(await computed(page, 'header a', 'color')).toBe(r.map['#ffffff'] ?? '#ffffff');
   });
 
-  test('dark mode sajta (prefers-color-scheme) dobija mapiranu tamnu varijantu', async ({ page }) => {
+  test("the site's dark mode (prefers-color-scheme) gets a mapped dark variant",async ({ page }) => {
     const r = await applyPreset(page);
     await page.emulateMedia({ colorScheme: 'dark' });
     expect(await computed(page, 'body', 'background-color')).toBe(r.map['#0f172a']);
   });
 
-  test('disable() vraća original piksel-identično; toggle()', async ({ page }) => {
+  test('disable() restores the original pixel-identically; toggle()',async ({ page }) => {
     const original = await page.screenshot({ fullPage: true });
     await applyPreset(page);
     await page.waitForTimeout(50);
@@ -93,7 +93,7 @@ test.describe('blue-gray-vars', () => {
     expect(await computed(page, 'body', 'background-color')).toBe('#f8fafc');
   });
 
-  test('exportCss daje CSS sa istim selektorima', async ({ page }) => {
+  test('exportCss produces CSS with the same selectors',async ({ page }) => {
     await applyPreset(page);
     const css = await page.evaluate(() => (window as unknown as Win).engine.exportCss());
     expect(css).toContain(':root {\n  --bg: #fafafa;');
@@ -105,7 +105,7 @@ test.describe('blue-gray-vars', () => {
 test.describe('blue-gray-plain', () => {
   test.beforeEach(({ page }) => page.goto('/blue-gray-plain/'));
 
-  test('@layer, nesting, gradijent, @keyframes, url() netaknut', async ({ page }) => {
+  test('@layer, nesting, gradient, @keyframes; url() untouched',async ({ page }) => {
     const r = await applyPreset(page);
     expect(await computed(page, '.panel', 'background-color')).toBe(r.map['#ffffff'] ?? '#ffffff');
     expect(await computed(page, '.panel', 'border-top-color')).toBe(r.map['#cbd5e0']);
@@ -118,13 +118,13 @@ test.describe('blue-gray-plain', () => {
     expect(await computed(page, '.list li', 'color')).toBe(r.map['#2b6cb0']);
   });
 
-  test('@media breakpoint je mapiran', async ({ page }) => {
+  test('@media breakpoint is mapped',async ({ page }) => {
     const r = await applyPreset(page);
     await page.setViewportSize({ width: 500, height: 800 });
     expect(await computed(page, '.topbar', 'background-color')).toBe(r.map['#1a365d']);
   });
 
-  test('inline style i SVG/HTML atributi: mapirani, pa tačno vraćeni', async ({ page }) => {
+  test('inline style and SVG/HTML attributes: mapped, then restored exactly',async ({ page }) => {
     const original = await outerHTML(page);
     const r = await applyPreset(page);
     expect(r.patchedElements).toBe(3); // <p style>, <circle fill stroke>, <td bgcolor>
@@ -135,7 +135,7 @@ test.describe('blue-gray-plain', () => {
     expect(await outerHTML(page)).toBe(original);
   });
 
-  test('dinamički sadržaj: novi elementi i novi <style> dobijaju paletu', async ({ page }) => {
+  test('dynamic content: new elements and new <style> get the palette',async ({ page }) => {
     const r = await applyPreset(page);
     await page.evaluate(() => {
       const p = document.createElement('p');
@@ -154,7 +154,7 @@ test.describe('blue-gray-plain', () => {
   });
 });
 
-test('shadow DOM: sloj se dodaje i u shadow root', async ({ page }) => {
+test('shadow DOM: the layer is added to the shadow root too',async ({ page }) => {
   await page.goto('/shadow-dom/');
   const r = await applyPreset(page);
   const bg = await page.evaluate(() => {
@@ -162,10 +162,10 @@ test('shadow DOM: sloj se dodaje i u shadow root', async ({ page }) => {
     return (window as unknown as Win).CC.colorKey(getComputedStyle(btn).backgroundColor);
   });
   expect(bg).toBe(r.map['#1d4ed8']);
-  expect(await computed(page, '[data-cc]', 'background-color')).toBe('#ff00ff'); // naš UI netaknut
+  expect(await computed(page, '[data-cc]', 'background-color')).toBe('#ff00ff'); // our UI untouched
 });
 
-test('cross-origin bez CORS-a: computed fallback', async ({ page }) => {
+test('cross-origin without CORS: computed fallback',async ({ page }) => {
   await page.goto('/cross-origin/');
   const r = await applyPreset(page);
   expect(r.fallbackPatched).toBeGreaterThan(0);
@@ -173,15 +173,15 @@ test('cross-origin bez CORS-a: computed fallback', async ({ page }) => {
   expect(await computed(page, '.remote-nocors', 'background-color')).toBe(r.map['#4a5568']);
 });
 
-test.describe('drmozgovich.top (snimak) — glavni test sajt', () => {
+test.describe('drmozgovich.top (snapshot) — main test site', () => {
   test.beforeEach(async ({ page }) => {
     await page.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => r.abort());
     await page.goto('/drmozgovich/');
-    // Sajt ima ulazne animacije (motion-ready) — merimo tek kad se završe.
+    // The site has entrance animations (motion-ready) — measure only once they finish.
     await page.evaluate(() => Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished)));
   });
 
-  /** Kontrast svakog vidljivog teksta: posle primene ne sme pasti ispod min(AA, original). */
+  /** Contrast of every visible text: after applying, it must not drop below min(AA, original). */
   async function contrastAudit(page: Page, action: () => Promise<unknown>) {
     await page.addScriptTag({ path: BUNDLE });
     const measure = () =>
@@ -216,35 +216,35 @@ test.describe('drmozgovich.top (snimak) — glavni test sajt', () => {
   }
 
   for (const preset of Object.keys(PRESETS)) {
-    test(`${preset}: nijedan tekst nema lošiji kontrast od min(AA, original)`, async ({ page }) => {
+    test(`${preset}: no text has worse contrast than min(AA, original)`, async ({ page }) => {
       const failing = await contrastAudit(page, () => applyPreset(page, preset));
       expect(failing).toEqual([]);
     });
   }
 
-  test('crveno-sivo: tekst na CTA dugmetu se popravlja lokalno, glavni tekst ostaje', async ({ page }) => {
+  test('crveno-sivo: CTA button text is fixed locally, main text stays',async ({ page }) => {
     const r = await applyPreset(page);
-    // `.btn-primary { color: var(--accent-contrast) }` je na sajtu pobeđeno sa `a { color: inherit }`,
-    // pa varijabla ne bi imala efekta — engine to proverava i boji samo te elemente.
+    // On the site, `.btn-primary { color: var(--accent-contrast) }` is overridden by `a { color: inherit }`,
+    // so the variable would have no effect — the engine checks for this and colors just those elements.
     expect(r.fixes).toEqual([
       expect.objectContaining({ fg: '#10233f', bg: '#3e9fd9', via: expect.objectContaining({ kind: 'inline', selector: expect.stringContaining('a.btn.btn-primary') }) }),
     ]);
     expect(r.fixes[0]!.via).toMatchObject({ elements: r.patchedElements });
     expect(await computed(page, 'a.btn-primary.btn-sm', 'color')).toBe(r.fixes[0]!.to);
-    expect(await computed(page, 'body', 'color')).toBe('#4b4b4f'); // glavni tekst nepromenjen korekcijom
+    expect(await computed(page, 'body', 'color')).toBe('#4b4b4f'); // main text unchanged by the fix
     expect(await computed(page, 'body', 'background-color')).toBe('#fafafa');
   });
 
-  test('struktura i raspored ostaju isti; dark mode sajta se mapira', async ({ page }) => {
+  test("structure and layout stay the same; the site's dark mode is mapped",async ({ page }) => {
     const original = await outerHTML(page);
     const before = { html: await outerHTML(page, true), layout: await layout(page) };
     const r = await applyPreset(page);
-    // Jedina izmena DOM-a: inline `color` na CTA elementima (lokalna korekcija kontrasta).
+    // The only DOM change: inline `color` on CTA elements (local contrast fix).
     expect(await outerHTML(page, true)).toBe(before.html);
     expect(r.patchedElements).toBe(r.fixes.reduce((n, f) => n + (f.via.kind === 'inline' ? f.via.elements : 0), 0));
     expect(await layout(page)).toEqual(before.layout);
     await page.evaluate(() => (window as unknown as Win).engine.disable());
-    expect(await outerHTML(page)).toBe(original); // vraćeno bajt-identično
+    expect(await outerHTML(page)).toBe(original); // restored byte-identically
     await page.evaluate(() => (window as unknown as Win).engine.apply((window as unknown as Win).CC.PRESETS['crveno-sivo']!));
     await page.emulateMedia({ colorScheme: 'dark' });
     expect(await computed(page, 'body', 'background-color')).toBe(r.map['#0b1626']);

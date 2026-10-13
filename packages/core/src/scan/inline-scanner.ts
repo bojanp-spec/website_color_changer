@@ -4,10 +4,10 @@ import type { Usage } from './types.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-/** Inline `style="…"` deklaracije, SVG prezentacioni atributi i zastareli HTML atributi boja. */
+/** Inline `style="…"` declarations, SVG presentation attributes and legacy HTML color attributes. */
 export function scanInline(root: Document | ShadowRoot | Element): Usage[] {
   const out: Usage[] = [];
-  /** Za Element: i sam element, ne samo potomci. */
+  /** For an Element: the element itself too, not just descendants. */
   const all = <T extends Element>(selector: string): T[] => {
     const list = Array.from(root.querySelectorAll<T>(selector));
     return root instanceof Element && root.matches(selector) ? [root as T, ...list] : list;
@@ -46,7 +46,7 @@ export function scanInline(root: Document | ShadowRoot | Element): Usage[] {
   return out;
 }
 
-/** Da li `<svg>` kome element pripada ima ≥ 3 različite boje u fill/stroke atributima (logo, ilustracija). */
+/** Whether the `<svg>` the element belongs to has ≥ 3 distinct colors in fill/stroke attributes (logo, illustration). */
 function isMulticolorSvg(el: Element, cache: Map<Element, boolean>): boolean {
   const svg = el.closest('svg');
   if (!svg) return false;

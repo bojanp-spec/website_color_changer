@@ -1,5 +1,5 @@
-// Izolovani svet (content script): jedini deo koji vidi chrome.* API. Stranica (MAIN svet)
-// mu se obraća preko window.postMessage; odgovara samo na poruke sa iste stranice.
+// Isolated world (content script): the only part that sees the chrome.* API. The page (MAIN world)
+// talks to it via window.postMessage; it only answers messages from the same page.
 import { siteKey } from './shared.js';
 import type { PageRequest, PageResponse, SiteSettings } from './shared.js';
 
@@ -30,7 +30,7 @@ type BridgeWindow = Window & { __ccBridge?: boolean };
         return write({ autoApply: req.payload === true });
       case 'fetch-css': {
         const href = String(req.payload);
-        // Samo stylesheet-ovi koje stranica zaista učitava.
+        // Only stylesheets the page actually loads.
         const known = Array.from(document.styleSheets).some((s) => s.href === href);
         if (!known) throw new Error('nije stylesheet ove stranice');
         const res = (await chrome.runtime.sendMessage({ type: 'fetch-css', href })) as { ok: boolean; value?: string; error?: string };
@@ -51,13 +51,13 @@ type BridgeWindow = Window & { __ccBridge?: boolean };
     );
   });
 
-  // Automatska primena (bridge registrovan za sve sajtove): sačuvana paleta bez otvaranja panela.
+  // Auto-apply (bridge registered for all sites): the saved palette without opening the panel.
   void read().then((s) => {
     if (s.autoApply && s.palette) void chrome.runtime.sendMessage({ type: 'inject-auto' });
   });
 })();
 
-/** Samo poznata polja iz stranice idu u memoriju ekstenzije. */
+/** Only known fields from the page go into the extension's storage. */
 function sanitize(payload: unknown): Partial<SiteSettings> {
   const p = (payload ?? {}) as Record<string, unknown>;
   const out: Partial<SiteSettings> = {};

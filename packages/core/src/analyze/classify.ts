@@ -7,28 +7,28 @@ import type { Classification, Role, RoleAssignment, ScanSummary } from './types.
 
 export interface ClassifyOptions {
   /**
-   * Varijable čije se boje ne menjaju (semantičke: greška/uspeh/upozorenje, boje grafikona).
-   * Podrazumevano: imena sa red/green/good/bad/success/danger/error/warn/amber/info/…, `--c1`, `--chart-*`.
+   * Variables whose colors are never changed (semantic: error/success/warning, chart colors).
+   * Default: names containing red/green/good/bad/success/danger/error/warn/amber/info/…, `--c1`, `--chart-*`.
    */
   protectVariables?: RegExp | null;
-  /** Ručne korekcije: ključ boje → uloga. Imaju prednost nad heuristikom. */
+  /** Manual overrides: color key → role. They take precedence over the heuristic. */
   overrides?: Record<string, Role>;
 }
 
 export const DEFAULT_PROTECTED_VARIABLES =
   /^--(?:[\w-]*-)?(?:red|green|orange|yellow|amber|good|bad|success|danger|error|warn|warning|info|positive|negative|c\d+|chart[\w-]*)(?:-[\w-]*)?$/i;
 
-/** Hroma iznad koje je boja „živa" (kandidat za akcenat). */
+/** Chroma above which a color is "vivid" (an accent candidate). */
 export const VIVID_CHROMA = 0.08;
-/** Hroma ispod koje nijansa praktično nije vidljiva. */
+/** Chroma below which the hue is practically invisible. */
 export const HUE_VISIBLE_CHROMA = 0.012;
-/** Hroma ispod koje bazu tretiramo kao (obojenu) neutralu. */
+/** Chroma below which a base is treated as a (tinted) neutral. */
 export const NEUTRAL_BASE_CHROMA = 0.03;
-/** Maksimalna razlika nijanse da boja pripada porodici akcenta. */
+/** Maximum hue difference for a color to belong to the accent family. */
 const ACCENT_HUE_WINDOW = 35;
-/** Obojena boja čija se nijansa razlikuje od svih baza više od ovoga je „druga" boja → ne dira se. */
+/** A chromatic color whose hue differs from all bases by more than this is a "different" color → left alone. */
 const FOREIGN_HUE = 45;
-/** Ispod ove alfe boja se ne remapira (praktično nevidljiva). */
+/** Colors below this alpha are not remapped (practically invisible). */
 const MIN_ALPHA = 0.05;
 
 export function hueDistance(a: number, b: number): number {
@@ -47,13 +47,13 @@ const opaqueKey = (key: string) => key.slice(0, 7);
 type Entry = ScanSummary['palette'][number];
 
 const TEXT_PROPS = /^(color|fill|stroke|-webkit-text-fill-color|text-decoration-color|caret-color)$/;
-/** Konteksti u kojima boja nije „boja za gledanje": maske (alfa), operand u color-mix(), senke. */
+/** Contexts where a color is not "seen" as paint: masks (alpha), color-mix() operands, shadows. */
 const MASK_PROPS = /^(-webkit-)?mask/;
 const SHADOW_PROPS = /(^|-)shadow($|-)/;
 
 type Usage = ScanSummary['usages'][number];
 
-/** Da li je deklaracija u kontekstu alternativne šeme (dark mode na svetlom sajtu i obrnuto). */
+/** Whether the declaration is in an alternate-scheme context (dark mode on a light site and vice versa). */
 export function isAltContext(u: Pick<Usage, 'selector' | 'conditions'>, siteIsLight: boolean): boolean {
   const alt = siteIsLight ? DARK_CONTEXT : LIGHT_CONTEXT;
   return (u.conditions ?? []).some((c) => alt.cond.test(c)) || alt.sel.test(u.selector ?? '');
@@ -63,13 +63,13 @@ const DARK_CONTEXT = { cond: /prefers-color-scheme:\s*dark/i, sel: /\[data-(?:th
 const LIGHT_CONTEXT = { cond: /prefers-color-scheme:\s*light/i, sel: /\[data-(?:theme|mode|bs-theme|color-scheme)=["']?light|\.light\b|\.theme-light\b/i };
 
 /**
- * Faza 2: dodeljuje svakoj boji sajta ulogu po pravilu 60-30-10.
+ * Phase 2: assigns every site color a role according to the 60-30-10 rule.
  *
- * 1. Dominantna = najveća površina pozadine; sekundarna = najviše teksta; akcenat = živa boja
- *    sa najviše površine na interaktivnim elementima.
- * 2. Vidljive boje: živa boja blizu nijanse akcenta → akcenat; boja „strane" nijanse → zaštićena;
- *    svetla/tamna nijansa akcenta (wash) → akcenat; tekst → sekundarna; ostalo → bliža svetlinom.
- * 3. Nevidljive boje (hover, dark mode) nasleđuju ulogu preko CSS varijable koju dele sa vidljivom bojom.
+ * 1. Dominant = largest background area; secondary = most text; accent = the vivid color
+ *    with the most area on interactive elements.
+ * 2. Visible colors: vivid color near the accent hue → accent; color of a "foreign" hue → protected;
+ *    light/dark tint of the accent (wash) → accent; text → secondary; rest → whichever is closer in lightness.
+ * 3. Invisible colors (hover, dark mode) inherit their role via a CSS variable shared with a visible color.
  */
 export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classification {
   const protect = opts.protectVariables === undefined ? DEFAULT_PROTECTED_VARIABLES : opts.protectVariables;
@@ -83,7 +83,7 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
   const argmax = <T>(list: T[], score: (x: T) => number): T | undefined =>
     list.reduce<T | undefined>((best, x) => (best === undefined || score(x) > score(best) ? x : best), undefined);
 
-  // --- 1. Bazne boje
+  // --- 1. Base colors
   const dominant = argmax(opaque, (x) => (x.e.weight.interactiveArea > x.e.area / 2 ? -1 : x.e.weight.bgArea))!;
   const rest = opaque.filter((x) => x !== dominant);
   const secondary =
@@ -103,7 +103,7 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
     const list = usagesOf.get(key) ?? [];
     return list.length > 0 && list.every((u) => isAltContext(u, light));
   };
-  /** Boja koja se javlja samo kao maska, operand u color-mix() ili (neutralna) senka. */
+  /** A color that appears only as a mask, a color-mix() operand or a (neutral) shadow. */
   const nonPaintOnly = (key: string, o: OKLCH) => {
     const list = usagesOf.get(key) ?? [];
     return (
@@ -117,7 +117,7 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
     );
   };
 
-  /** Boja se javlja samo u višebojnim SVG grafikama (npr. Google/Apple logo na dugmetu za prijavu). */
+  /** The color appears only in multicolor SVG graphics (e.g. a Google/Apple logo on a sign-in button). */
   const inMulticolorGraphicOnly = (key: string) => {
     const list = usagesOf.get(key) ?? [];
     return list.length > 0 && list.every((u) => u.multicolorSvg);
@@ -162,8 +162,8 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
     if (inMulticolorGraphicOnly(e.key)) return ['protected', 'multicolor-svg'];
     if (isProtectedByName(e)) return ['protected', 'protected-variable', e.variables.join(', ')];
     if (accent && o.c >= VIVID_CHROMA && hueDistance(o.h, accent.o.h) <= ACCENT_HUE_WINDOW) {
-      // Akcenat je MALA površina (10%). Velika neinteraktivna površina iste nijanse
-      // (npr. tamnoplavi header uz plavo CTA dugme) je struktura sajta, ne akcenat.
+      // The accent is a SMALL area (10%). A large non-interactive area of the same hue
+      // (e.g. a dark blue header next to a blue CTA button) is site structure, not accent.
       const structural = visible && e.area > 2 * accent.e.area && e.weight.interactiveArea < e.area / 2;
       if (!structural) return ['accent', 'vivid-accent-hue'];
       if (isText(e)) return ['secondary', 'accent-hue-large-text'];
@@ -179,17 +179,17 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
       const toSecondary = hueDistance(o.h, secondary.o.h);
       if (toAccent <= 10 && toAccent + 10 < Math.min(toDominant, toSecondary)) return ['accent', 'accent-tint'];
     }
-    if (!visible) return null; // nevidljive bez jasnog signala → nasleđivanje preko varijabli
+    if (!visible) return null; // invisible with no clear signal → inherit via variables
     if (isText(e)) return ['secondary', 'text'];
     const role = byLightness(o);
     return [role, role === 'dominant' ? 'near-dominant' : 'near-secondary'];
   };
 
-  // --- 2. Vidljive boje
+  // --- 2. Visible colors
   const pending: { e: Entry; o: OKLCH }[] = [];
   for (const x of entries) {
     if (roles.has(x.e.key)) continue;
-    if (x.o.a < 0.99) continue; // providne varijante — posle, po opaknoj verziji
+    if (x.o.a < 0.99) continue; // translucent variants — later, via the opaque version
     if (x.e.area > 0) {
       const r = heuristic(x, true);
       if (r) assign(x.e.key, ...r);
@@ -198,7 +198,7 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
     }
   }
 
-  // --- 3. Nevidljive boje: preko varijabli, pa heuristika, pa svetlina/upotreba
+  // --- 3. Invisible colors: via variables, then heuristic, then lightness/usage
   const varRole = new Map<string, RoleAssignment>();
   for (const x of [...entries].sort((a, b) => b.e.area - a.e.area)) {
     const r = roles.get(x.e.key);
@@ -220,7 +220,7 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
     else assign(x.e.key, byLightness(x.o), 'declared-lightness');
   }
 
-  // --- 4. Providne varijante (`#10233f40` senke itd.) prate opaknu boju
+  // --- 4. Translucent variants (`#10233f40` shadows etc.) follow the opaque color
   for (const x of entries) {
     if (roles.has(x.e.key)) continue;
     if (x.e.area === 0 && nonPaintOnly(x.e.key, x.o)) {
