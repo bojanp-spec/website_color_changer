@@ -73,7 +73,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   if (saved.position) placeAt(saved.position.x, saved.position.y);
   (doc.body ?? doc.documentElement).append(host);
 
-  const engine = createEngine(doc, opts.engine);
+  const engine = createEngine(doc, { ...opts.engine, lang: LANG });
   let scan: ScanResult;
   let classification: Classification;
   let palette: Palette;

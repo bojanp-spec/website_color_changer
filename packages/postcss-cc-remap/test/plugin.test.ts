@@ -8,7 +8,7 @@ import ccRemap, { canHoldColor } from '../src/index.js';
 
 const MAP = { '#1e3a8a': '#c62828', '#ffffff': '#fffdf5', '#3182ce': '#d32f2f' };
 const run = (css: string, opts: Partial<Parameters<typeof ccRemap>[0]> = {}, syntax?: postcss.Syntax) =>
-  postcss([ccRemap({ map: MAP, ...opts })]).process(css, { from: undefined, ...(syntax ? { syntax } : {}) });
+  postcss([ccRemap({ map: MAP, lang: 'sr', ...opts })]).process(css, { from: undefined, ...(syntax ? { syntax } : {}) });
 
 describe('postcss-cc-remap', () => {
   it('menja boje i zadržava zapis originala', async () => {
@@ -50,8 +50,9 @@ describe('postcss-cc-remap', () => {
   });
 
   it('nevalidna mapa i nedostajuća opcija daju jasnu grešku', () => {
-    expect(() => ccRemap({ map: { '#xyz': '#fff' } })).toThrow(/nevalidna boja/);
-    expect(() => ccRemap(undefined as never)).toThrow(/obavezna/);
+    expect(() => ccRemap({ map: { '#xyz': '#fff' }, lang: 'sr' })).toThrow(/nevalidna boja/);
+    expect(() => ccRemap({ map: { '#xyz': '#fff' }, lang: 'en' })).toThrow(/invalid color in the map/);
+    expect(() => ccRemap({ lang: 'en' } as never)).toThrow(/is required/);
   });
 
   it('canHoldColor', () => {
@@ -64,14 +65,24 @@ describe('lokalne korekcije kontrasta iz cc-export mape', () => {
   const exported = { palette: {}, map: MAP, localRules: { 'a.btn.btn-primary': '#f3f3f8' } };
 
   it("localRules: 'append' dodaje pravila na kraj fajla", async () => {
-    const out = await postcss([ccRemap({ map: exported as never, localRules: 'append' })]).process('.a { color: #1e3a8a }', { from: undefined });
+    const out = await postcss([ccRemap({ map: exported as never, localRules: 'append', lang: 'sr' })]).process('.a { color: #1e3a8a }', { from: undefined });
     expect(out.css).toBe('.a { color: #c62828 }\n\n/* cc-export: lokalna korekcija kontrasta */\n\na.btn.btn-primary { color: #f3f3f8 }');
     expect(out.warnings()).toEqual([]);
   });
 
   it('bez opcije: upozorenje, fajl bez dodatih pravila', async () => {
-    const out = await postcss([ccRemap({ map: exported as never })]).process('.a { color: #1e3a8a }', { from: undefined });
+    const out = await postcss([ccRemap({ map: exported as never, lang: 'sr' })]).process('.a { color: #1e3a8a }', { from: undefined });
     expect(out.css).toBe('.a { color: #c62828 }');
     expect(out.warnings()[0]?.text).toContain('lokalnih korekcija');
+  });
+});
+
+describe('engleske poruke', () => {
+  it('komentar i upozorenje na engleskom', async () => {
+    const exported = { palette: {}, map: MAP, localRules: { 'a.btn': '#ffffff' } };
+    const appended = await postcss([ccRemap({ map: exported as never, localRules: 'append', lang: 'en' })]).process('.a{}', { from: undefined });
+    expect(appended.css).toContain('/* cc-export: local contrast fix */');
+    const warned = await postcss([ccRemap({ map: exported as never, lang: 'en' })]).process('.a{}', { from: undefined });
+    expect(warned.warnings()[0]?.text).toContain('local contrast fixes');
   });
 });

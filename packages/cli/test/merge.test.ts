@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { detectLang } from '../src/i18n.js';
 import { crawlable, mergeScans } from '../src/merge.js';
 import type { PageScan, PlainUsage } from '../src/types.js';
 
@@ -76,5 +77,19 @@ describe('crawlable', () => {
     ['nije url', null],
   ])('%s → %s', (href, expected) => {
     expect(crawlable(href, origin)).toBe(expected);
+  });
+});
+
+describe('detectLang', () => {
+  it.each<[string[], Record<string, string>, string]>([
+    [['--lang', 'en'], { LANG: 'sr_RS.UTF-8' }, 'en'],
+    [['--lang=sr'], {}, 'sr'],
+    [[], { CC_LANG: 'sr' }, 'sr'],
+    [[], { CC_LANG: '', LANG: 'sr_RS.UTF-8' }, 'sr'],
+    [[], { LC_ALL: 'sr_Latn_RS' }, 'sr'],
+    [[], { LANG: 'de_DE.UTF-8' }, 'en'],
+    [[], {}, 'en'],
+  ])('%j %j → %s', (argv, env, expected) => {
+    expect(detectLang(argv, env)).toBe(expected);
   });
 });
