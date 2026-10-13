@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 const PANEL = fileURLToPath(new URL('../dist/cc-panel.js', import.meta.url));
 const BOOKMARKLET = fileURLToPath(new URL('../dist/bookmarklet.txt', import.meta.url));
+const PANEL_EN = fileURLToPath(new URL('../dist/cc-panel_en.js', import.meta.url));
+const BOOKMARKLET_EN = fileURLToPath(new URL('../dist/bookmarklet_en.txt', import.meta.url));
 
 const openPanel = async (page: Page) => {
   await page.addScriptTag({ path: PANEL });
@@ -186,4 +188,39 @@ test('drmozgovich.top (snimak): panel prepoznaje paletu i primenjuje preset', as
   await panel.locator('[data-preset="crveno-sivo"]').click();
   expect(await bg(page, 'body')).toBe('rgb(250, 250, 250)');
   expect(await bg(page, 'a.btn-primary.btn-sm', 'color')).toBe('rgb(243, 243, 248)');
+});
+
+test.describe('engleska verzija (_en)', () => {
+  test('panel je na engleskom: naslovi, palete, uloge i razlozi', async ({ page }) => {
+    await page.addScriptTag({ path: PANEL_EN });
+    const panel = page.locator('cc-panel');
+    await expect(panel.getByText('New palette')).toBeVisible();
+    await expect(panel.getByRole('heading', { name: 'Site colors' })).toHaveCount(2); // naslov panela + sekcija
+    await expect(panel.locator('[data-preset="crveno-sivo"]')).toContainText('Red / gray');
+    await expect(panel.locator('[data-preset="ponoc-zlatno"]')).toContainText('Midnight / gold');
+    await expect(panel.locator('[data-role-group="dominant"]').locator('xpath=preceding-sibling::div[1]')).toContainText('Dominant (60%)');
+    await expect(panel.locator('[data-action="toggle"]')).toContainText('Apply palette');
+    await expect(panel.locator('.status')).toHaveText('Pick colors or a ready-made palette.');
+
+    await panel.locator('.chip[data-color="#f8fafc"]').click();
+    await expect(panel.locator('.menu')).toContainText('largest background area');
+    await expect(panel.locator('.menu .hint')).toContainText('The role decides');
+    await panel.getByRole('combobox', { name: 'Role of color #f8fafc' }).press('Escape');
+
+    await panel.locator('[data-preset="tirkiz-okean"]').click();
+    await expect(panel.locator('.status')).toContainText('Applied:');
+    await expect(panel.locator('[data-action="toggle"]')).toContainText('Show original');
+    const download = page.waitForEvent('download');
+    await panel.locator('[data-action="download"]').click();
+    expect((await download).suggestedFilename()).toBe('127.0.0.1-palette.css');
+  });
+
+  test('bookmarklet_en radi i nema srpskog teksta', async ({ page }) => {
+    const code = decodeURIComponent(readFileSync(BOOKMARKLET_EN, 'utf8').slice('javascript:'.length));
+    await page.evaluate(code);
+    const panel = page.locator('cc-panel');
+    await expect(panel.getByText('Ready-made palettes')).toBeVisible();
+    const text = await panel.locator('.panel').innerText();
+    expect(text).not.toMatch(/Nova paleta|Gotove palete|Izvoz|Primeni|Boje sajta/);
+  });
 });

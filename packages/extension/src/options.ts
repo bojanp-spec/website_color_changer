@@ -1,13 +1,32 @@
+import { LANG, t } from './i18n.js';
+import type { OptionsKey } from './i18n.js';
 import type { SiteSettings } from './shared.js';
+
+document.documentElement.lang = LANG;
+document.title = t('pageTitle');
+for (const el of Array.from(document.querySelectorAll<HTMLElement>('[data-i18n]'))) el.textContent = t(el.dataset.i18n as OptionsKey);
+// Tekst sa <kbd>…</kbd> oznakama: delovi se prave kao DOM čvorovi (bez innerHTML).
+for (const el of Array.from(document.querySelectorAll<HTMLElement>('[data-i18n-html]'))) {
+  el.replaceChildren(
+    ...t(el.dataset.i18nHtml as OptionsKey)
+      .split(/(<kbd>.*?<\/kbd>)/)
+      .filter(Boolean)
+      .map((part) => {
+        const m = /^<kbd>(.*)<\/kbd>$/.exec(part);
+        if (!m) return document.createTextNode(part);
+        const kbd = document.createElement('kbd');
+        kbd.textContent = m[1]!;
+        return kbd;
+      }),
+  );
+}
 
 const ALL_URLS = { origins: ['<all_urls>'] };
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
 async function renderPermission() {
   const granted = await chrome.permissions.contains(ALL_URLS);
-  $('perm-status').textContent = granted
-    ? '✓ Dozvoljeno: stilovi sa drugih domena i automatska primena rade na svim sajtovima.'
-    : 'Ekstenzija trenutno radi samo na klik (dozvola „activeTab").';
+  $('perm-status').textContent = granted ? t('granted') : t('notGranted');
   $('perm-grant').hidden = granted;
   $('perm-revoke').hidden = !granted;
 }
@@ -44,15 +63,15 @@ async function renderSites() {
     auto.addEventListener('change', async () => {
       await chrome.storage.local.set({ [key]: { ...s, autoApply: auto.checked, updated: Date.now() } });
       if (auto.checked && !(await chrome.permissions.contains(ALL_URLS))) {
-        $('perm-status').textContent = 'Za automatsku primenu potrebna je dozvola za pristup sajtovima.';
+        $('perm-status').textContent = t('needPermission');
       }
     });
     const label = document.createElement('label');
-    label.append(auto, 'automatski');
+    label.append(auto, t('auto'));
 
     const del = document.createElement('button');
     del.type = 'button';
-    del.textContent = 'Obriši';
+    del.textContent = t('delete');
     del.addEventListener('click', async () => {
       await chrome.storage.local.remove(key);
       void renderSites();

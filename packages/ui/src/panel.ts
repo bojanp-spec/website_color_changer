@@ -1,7 +1,8 @@
-import { createEngine, parseColor, PRESET_LABELS, PRESETS, toHex } from '@cc/core';
+import { createEngine, parseColor, PRESETS, toHex } from '@cc/core';
 import type { ApplyReport, Classification, ColorEngine, EngineOptions, Palette, Role, ScanResult } from '@cc/core';
 import { localStorageAdapter, paletteFromHash, shareUrl } from './state.js';
 import type { PanelStorage, Saved } from './state.js';
+import { LANG, presetLabel, reason, roleName, t } from './i18n.js';
 import { PANEL_CSS } from './styles.js';
 
 export interface PanelHandle {
@@ -27,16 +28,10 @@ export interface PanelOptions {
 }
 
 const ROLES: { role: keyof Palette; label: string; share: string }[] = [
-  { role: 'dominant', label: 'Dominantna', share: '60%' },
-  { role: 'secondary', label: 'Sekundarna', share: '30%' },
-  { role: 'accent', label: 'Akcentna', share: '10%' },
+  { role: 'dominant', label: t('dominant'), share: '60%' },
+  { role: 'secondary', label: t('secondary'), share: '30%' },
+  { role: 'accent', label: t('accent'), share: '10%' },
 ];
-const ROLE_NAMES: Record<Role, string> = {
-  dominant: 'Dominantna (60%)',
-  secondary: 'Sekundarna (30%)',
-  accent: 'Akcentna (10%)',
-  protected: 'Ne menja se',
-};
 const FALLBACK_ACCENT = '#e53935';
 /** Koliko boja po ulozi prikazati pre „još N". */
 const CHIPS_VISIBLE = 10;
@@ -72,7 +67,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   host.setAttribute('data-cc', '');
   // Otvoren shadow root: izolacija stilova je ista kao kod zatvorenog, a testovi mogu da ga čitaju.
   const root = host.attachShadow({ mode: 'open' });
-  const panel = h('div', { class: saved.collapsed ? 'panel collapsed' : 'panel', role: 'dialog', 'aria-label': 'Website Color Changer' });
+  const panel = h('div', { class: saved.collapsed ? 'panel collapsed' : 'panel', role: 'dialog', 'aria-label': 'Website Color Changer', lang: LANG });
   attachStyles(doc, root);
   root.append(panel);
   if (saved.position) placeAt(saved.position.x, saved.position.y);
@@ -105,11 +100,11 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   };
 
   // ---------------------------------------------------------------- zaglavlje
-  const collapseBtn = h('button', { class: 'icon', title: 'Skupi / raširi', 'aria-label': 'Skupi panel', onclick: toggleCollapsed }, '–');
-  const closeBtn = h('button', { class: 'icon', title: 'Zatvori i vrati original', 'aria-label': 'Zatvori', onclick: () => api.destroy() }, '×');
-  const header = h('header', {}, h('h1', {}, '🎨 Boje sajta'), collapseBtn, closeBtn);
+  const collapseBtn = h('button', { class: 'icon', title: t('collapse'), 'aria-label': t('collapseLabel'), onclick: toggleCollapsed }, '–');
+  const closeBtn = h('button', { class: 'icon', title: t('close'), 'aria-label': t('closeLabel'), onclick: () => api.destroy() }, '×');
+  const header = h('header', {}, h('h1', {}, t('title')), collapseBtn, closeBtn);
   header.addEventListener('pointerdown', startDrag);
-  const body = h('div', { class: 'body' }, h('div', { class: 'loading' }, 'Analiziram boje sajta…'));
+  const body = h('div', { class: 'body' }, h('div', { class: 'loading' }, t('loading')));
   panel.append(header, body);
 
   try {
@@ -117,7 +112,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     for (const [key, role] of Object.entries(saved.overrides ?? {})) engine.setRoleOverride(key, role);
     classification = engine.classification ?? classification;
   } catch (e) {
-    body.replaceChildren(h('div', { class: 'status warn' }, `Analiza nije uspela: ${String((e as Error)?.message ?? e)}`));
+    body.replaceChildren(h('div', { class: 'status warn' }, t('analysisFailed', String((e as Error)?.message ?? e))));
     return api;
   }
 
@@ -132,10 +127,10 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   // ---------------------------------------------------------------- sekcije
   const detectedSection = h('section');
   const pickers = new Map<keyof Palette, { color: HTMLInputElement; text: HTMLInputElement }>();
-  const pickerSection = h('section', {}, h('h2', {}, 'Nova paleta'));
+  const pickerSection = h('section', {}, h('h2', {}, t('newPalette')));
   for (const { role, label, share } of ROLES) {
-    const color = h('input', { type: 'color', 'aria-label': `${label} boja`, 'data-role': role }) as HTMLInputElement;
-    const text = h('input', { type: 'text', spellcheck: 'false', 'aria-label': `${label} HEX`, 'data-role': role }) as HTMLInputElement;
+    const color = h('input', { type: 'color', 'aria-label': t('colorLabel', label), 'data-role': role }) as HTMLInputElement;
+    const text = h('input', { type: 'text', spellcheck: 'false', 'aria-label': t('hexLabel', label), 'data-role': role }) as HTMLInputElement;
     color.addEventListener('input', () => setRole(role, color.value, 'color'));
     text.addEventListener('input', () => setRole(role, text.value, 'text'));
     pickers.set(role, { color, text });
@@ -150,18 +145,18 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     presetButtons.set(id, btn);
     presetGrid.append(btn);
   };
-  addPreset('original', 'Original', detected);
-  for (const [id, p] of Object.entries(PRESETS)) addPreset(id, PRESET_LABELS[id] ?? id, p);
-  const presetSection = h('section', {}, h('h2', {}, 'Gotove palete'), presetGrid);
+  addPreset('original', t('original'), detected);
+  for (const [id, p] of Object.entries(PRESETS)) addPreset(id, presetLabel(id), p);
+  const presetSection = h('section', {}, h('h2', {}, t('presets')), presetGrid);
 
   const abBtn = h('button', { class: 'btn primary', 'data-action': 'toggle', onclick: toggleAB }, '') as HTMLButtonElement;
   const status = h('div', { class: 'status', 'aria-live': 'polite' });
   const viewSection = h('section', {}, h('div', { class: 'actions' }, abBtn), status);
 
-  const copyCssBtn = h('button', { class: 'btn', 'data-action': 'copy-css', onclick: copyCss }, 'Kopiraj CSS') as HTMLButtonElement;
-  const downloadBtn = h('button', { class: 'btn', 'data-action': 'download', onclick: downloadCss }, 'Preuzmi .css') as HTMLButtonElement;
-  const linkBtn = h('button', { class: 'btn', 'data-action': 'copy-link', onclick: copyLink }, 'Kopiraj link') as HTMLButtonElement;
-  const exportSection = h('section', {}, h('h2', {}, 'Izvoz'), h('div', { class: 'actions' }, copyCssBtn, downloadBtn, linkBtn));
+  const copyCssBtn = h('button', { class: 'btn', 'data-action': 'copy-css', onclick: copyCss }, t('copyCss')) as HTMLButtonElement;
+  const downloadBtn = h('button', { class: 'btn', 'data-action': 'download', onclick: downloadCss }, t('downloadCss')) as HTMLButtonElement;
+  const linkBtn = h('button', { class: 'btn', 'data-action': 'copy-link', onclick: copyLink }, t('copyLink')) as HTMLButtonElement;
+  const exportSection = h('section', {}, h('h2', {}, t('export')), h('div', { class: 'actions' }, copyCssBtn, downloadBtn, linkBtn));
   if (opts.autoApply) {
     const auto = opts.autoApply;
     const box = h('input', { type: 'checkbox', 'data-action': 'auto-apply' }) as HTMLInputElement;
@@ -170,7 +165,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
       if (box.checked && !engine.palette) applyNow();
       void auto.set(box.checked);
     });
-    viewSection.append(h('label', { class: 'row check' }, box, 'Automatski primeni na ovom sajtu'));
+    viewSection.append(h('label', { class: 'row check' }, box, t('autoApply')));
   }
 
   body.replaceChildren(detectedSection, pickerSection, presetSection, viewSection, exportSection);
@@ -253,28 +248,28 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
 
   function renderView() {
     for (const [id, btn] of presetButtons) btn.setAttribute('aria-pressed', String(id === activePreset || (id === 'original' && !engine.applied && !engine.palette)));
-    abBtn.textContent = engine.applied ? 'Prikaži original' : engine.palette ? 'Prikaži novu paletu' : 'Primeni paletu';
+    abBtn.textContent = engine.applied ? t('showOriginal') : engine.palette ? t('showNew') : t('apply');
     abBtn.append(' ', h('kbd', {}, 'Alt+C'));
     const exportable = !!engine.palette;
     copyCssBtn.disabled = downloadBtn.disabled = linkBtn.disabled = !exportable;
 
     status.className = 'status';
     if (!engine.applied || !lastReport) {
-      status.textContent = engine.palette ? 'Prikazan je original sajta.' : 'Izaberi boje ili gotovu paletu.';
+      status.textContent = engine.palette ? t('originalShown') : t('pickColors');
       return;
     }
     const r = lastReport;
     const fixedLocally = new Set(r.localContrastFixes.map((f) => `${f.fg}|${f.bg}`));
     const open = r.colorMap.failures.filter((f) => !fixedLocally.has(`${f.fg}|${f.bg}`));
     const adjusted = r.colorMap.entries.filter((e) => e.contrast).length + r.localContrastFixes.length;
-    const parts = [`Primenjeno: ${r.colorMap.entries.filter((e) => e.from !== e.to).length} boja`];
-    if (adjusted) parts.push(`${adjusted} korekcija kontrasta`);
+    const parts = [t('applied', r.colorMap.entries.filter((e) => e.from !== e.to).length)];
+    if (adjusted) parts.push(t('contrastFixes', adjusted));
     status.textContent = parts.join(' · ');
     if (open.length) {
       status.classList.add('warn');
       status.append(
-        h('div', {}, `⚠ Kontrast ispod cilja: ${open.length}`),
-        h('ul', {}, ...open.slice(0, 4).map((f) => h('li', {}, `${r.colorMap.map.get(f.fg) ?? f.fg} na ${r.colorMap.map.get(f.bg) ?? f.bg}`))),
+        h('div', {}, t('contrastLow', open.length)),
+        h('ul', {}, ...open.slice(0, 4).map((f) => h('li', {}, t('onBg', r.colorMap.map.get(f.fg) ?? f.fg, r.colorMap.map.get(f.bg) ?? f.bg)))),
       );
     }
   }
@@ -283,7 +278,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     const byRole = new Map<Role, string[]>();
     const order = new Map(scan.palette.map((p, i) => [p.key, i]));
     for (const r of classification.roles.values()) byRole.set(r.role, [...(byRole.get(r.role) ?? []), r.key]);
-    detectedSection.replaceChildren(h('h2', {}, 'Boje sajta'));
+    detectedSection.replaceChildren(h('h2', {}, t('siteColors')));
     for (const role of ['dominant', 'secondary', 'accent', 'protected'] as Role[]) {
       const keys = (byRole.get(role) ?? []).sort((a, b) => (order.get(a) ?? 1e9) - (order.get(b) ?? 1e9));
       if (!keys.length) continue;
@@ -291,9 +286,9 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
       const chips = h('div', { class: 'chips', 'data-role-group': role });
       const make = (key: string) => chip(key, key === base);
       keys.slice(0, CHIPS_VISIBLE).forEach((k) => chips.append(make(k)));
-      const label = h('div', { class: 'role-label' }, ROLE_NAMES[role], ' ', h('small', {}, `· ${keys.length}`));
+      const label = h('div', { class: 'role-label' }, roleName(role), ' ', h('small', {}, `· ${keys.length}`));
       if (keys.length > CHIPS_VISIBLE) {
-        const more = h('details', {}, h('summary', {}, `još ${keys.length - CHIPS_VISIBLE}`));
+        const more = h('details', {}, h('summary', {}, t('more', keys.length - CHIPS_VISIBLE)));
         const rest = h('div', { class: 'chips' });
         keys.slice(CHIPS_VISIBLE).forEach((k) => rest.append(make(k)));
         more.append(rest);
@@ -309,8 +304,8 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     return h('button', {
       class: isBase ? 'chip base' : 'chip',
       style: `background:${key}`,
-      title: `${key} — ${r.reason}`,
-      'aria-label': `${key}, ${ROLE_NAMES[r.role]}`,
+      title: `${key} — ${reason(r)}`,
+      'aria-label': `${key}, ${roleName(r.role)}`,
       'data-color': key,
       onclick: (e) => openRoleMenu(e.currentTarget as HTMLElement, key),
     });
@@ -324,9 +319,9 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     }
     closeMenu();
     const r = classification.roles.get(key)!;
-    const select = h('select', { 'aria-label': `Uloga boje ${key}` }) as HTMLSelectElement;
+    const select = h('select', { 'aria-label': t('roleOf', key) }) as HTMLSelectElement;
     for (const role of ['dominant', 'secondary', 'accent', 'protected'] as Role[]) {
-      select.append(h('option', role === r.role ? { value: role, selected: true } : { value: role }, ROLE_NAMES[role]));
+      select.append(h('option', role === r.role ? { value: role, selected: true } : { value: role }, roleName(role)));
     }
     select.addEventListener('change', () => {
       const role = select.value as Role;
@@ -340,7 +335,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
         applyNow();
       } else {
         renderView();
-        status.textContent = `Uloga boje ${key} je promenjena. Videćeš razliku kad primeniš novu paletu (Alt+C).`;
+        status.textContent = t('roleChanged', key);
       }
     });
     select.addEventListener('keydown', (e) => {
@@ -352,10 +347,10 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     });
     openMenu = h(
       'div',
-      { class: 'menu', role: 'dialog', 'aria-label': `Uloga boje ${key}`, 'data-color': key },
-      h('p', {}, h('code', {}, key), ` — ${r.reason}`),
+      { class: 'menu', role: 'dialog', 'aria-label': t('roleOf', key), 'data-color': key },
+      h('p', {}, h('code', {}, key), ` — ${reason(r)}`),
       select,
-      h('p', { class: 'hint' }, 'Uloga određuje koju boju iz „Nove palete" ova boja dobija kada je paleta primenjena.'),
+      h('p', { class: 'hint' }, t('roleHint')),
     );
     // Meni NE sme biti unutar dugmeta (kvadratića): klik na padajuću listu bi „propao" do
     // dugmeta, koje bi meni zatvorilo i otvorilo ponovo — izbor se nikad ne bi upisao.
@@ -388,12 +383,12 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   }
 
   function copyCss() {
-    void copyText(engine.exportCss(), copyCssBtn, 'Kopirano ✓');
+    void copyText(engine.exportCss(), copyCssBtn, t('copied'));
   }
 
   function downloadCss() {
     const blob = new Blob([engine.exportCss()], { type: 'text/css' });
-    const a = h('a', { href: URL.createObjectURL(blob), download: `${location.hostname || 'sajt'}-paleta.css` }) as HTMLAnchorElement;
+    const a = h('a', { href: URL.createObjectURL(blob), download: `${location.hostname || t('fileFallback')}-${t('fileSuffix')}.css` }) as HTMLAnchorElement;
     root.append(a);
     a.click();
     a.remove();
@@ -401,7 +396,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
   }
 
   function copyLink() {
-    if (engine.palette) void copyText(shareUrl(engine.palette), linkBtn, 'Link kopiran ✓');
+    if (engine.palette) void copyText(shareUrl(engine.palette), linkBtn, t('linkCopied'));
   }
 
   function toggleCollapsed() {

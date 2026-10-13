@@ -1,5 +1,7 @@
 # 🎨 Boje sajta — uputstvo za početnike
 
+🇬🇧 *English version: [USER-GUIDE.md](USER-GUIDE.md)*
+
 Ovo uputstvo objašnjava, korak po korak, kako da instaliraš i koristiš ekstenziju **Boje sajta** (Website Color Changer) u Chrome-u i Firefox-u. Nije potrebno nikakvo programersko znanje.
 
 ---
@@ -29,6 +31,8 @@ Preuzmi fajl za svoj browser:
 - **Chrome, Edge, Brave, Opera:** [`boje-sajta-chrome.zip`](../downloads/boje-sajta-chrome.zip)
 - **Firefox:** [`boje-sajta-firefox.zip`](../downloads/boje-sajta-firefox.zip)
 
+Ovo je verzija na srpskom. Verzija na engleskom ima `_en` u imenu fajla: `website-color-changer-chrome_en.zip`, `website-color-changer-firefox_en.zip`. Obe mogu da budu instalirane istovremeno.
+
 > **Kako se preuzima sa GitHub-a:** klikni na ime fajla, pa na stranici koja se otvori klikni dugme **Download raw file** (ikonica strelice nadole, desno). Fajl će se snimiti u folder *Preuzimanja* (*Downloads*).
 
 ---
@@ -45,9 +49,9 @@ Preuzmi fajl za svoj browser:
 
 ![Stranica chrome://extensions: 1 = Developer mode, 2 = Load unpacked](screenshots/uputstvo/chrome-extensions.png)
 
-Ekstenzija se pojavljuje na spisku kao **Website Color Changer**.
+Ekstenzija se pojavljuje na spisku kao **Boje sajta (Website Color Changer)**.
 
-**Da ikonica bude stalno vidljiva:** klikni na ikonicu slagalice 🧩 desno od adresne trake i klikni na čiodu 📌 pored „Website Color Changer".
+**Da ikonica bude stalno vidljiva:** klikni na ikonicu slagalice 🧩 desno od adresne trake i klikni na čiodu 📌 pored „Boje sajta (Website Color Changer)".
 
 ---
 
@@ -72,7 +76,7 @@ Firefox trajno instalira samo ekstenzije koje je potpisao Mozilla. Potpisivanje 
 3. Pošalji fajl **`boje-sajta-firefox.zip`**.
 4. Kad provera prođe, preuzmi potpisani **`.xpi`** fajl i prevuci ga u prozor Firefox-a, pa potvrdi sa **Add / Dodaj**.
 
-**Da ikonica bude stalno vidljiva:** klikni na ikonicu slagalice 🧩 u traci, pa na zupčanik ⚙ pored „Website Color Changer" i izaberi **Pin to Toolbar**.
+**Da ikonica bude stalno vidljiva:** klikni na ikonicu slagalice 🧩 u traci, pa na zupčanik ⚙ pored „Boje sajta (Website Color Changer)" i izaberi **Pin to Toolbar**.
 
 ---
 
@@ -206,7 +210,7 @@ Ako baš ne može da se popravi, panel to prikaže narandžastim tekstom „⚠ 
 
 Kad u folderu `downloads/` izađe nova verzija:
 
-- **Chrome:** preuzmi novi zip i raspakuj ga **preko starog** foldera `boje-sajta-chrome`, tako da zameni postojeće fajlove. Zatim na `chrome://extensions` klikni ikonicu za ponovno učitavanje ⟳ na kartici „Website Color Changer". Broj verzije na kartici treba da se promeni.
+- **Chrome:** preuzmi novi zip i raspakuj ga **preko starog** foldera `boje-sajta-chrome`, tako da zameni postojeće fajlove. Zatim na `chrome://extensions` klikni ikonicu za ponovno učitavanje ⟳ na kartici „Boje sajta (Website Color Changer)". Broj verzije na kartici treba da se promeni.
 - **Firefox (privremeno učitana):** na `about:debugging#/runtime/this-firefox` klikni **Remove** kod stare verzije, pa ponovo **Load Temporary Add-on…** sa novim zip-om.
 - **Firefox (potpisana):** novi zip ponovo pošalji na potpisivanje, pa instaliraj novi `.xpi`.
 

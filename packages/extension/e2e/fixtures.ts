@@ -7,11 +7,15 @@ import type { SiteSettings } from '../src/shared.js';
 export const EXTENSION = fileURLToPath(new URL('../dist/chrome-test', import.meta.url));
 export const BASE = 'http://127.0.0.1:4173';
 
-export const test = base.extend<{ context: BrowserContext; sw: Worker; extensionId: string }>({
-  context: async ({}, use) => {
+export const EXTENSION_EN = fileURLToPath(new URL('../dist/chrome-test_en', import.meta.url));
+
+export const test = base.extend<{ extensionDir: string; context: BrowserContext; sw: Worker; extensionId: string }>({
+  /** Koja verzija se učitava (srpska podrazumevano; `test.use({ extensionDir: EXTENSION_EN })`). */
+  extensionDir: [EXTENSION, { option: true }],
+  context: async ({ extensionDir }, use) => {
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium', // novi headless režim podržava ekstenzije
-      args: [`--disable-extensions-except=${EXTENSION}`, `--load-extension=${EXTENSION}`],
+      args: [`--disable-extensions-except=${extensionDir}`, `--load-extension=${extensionDir}`],
       permissions: ['clipboard-read', 'clipboard-write'],
     });
     await use(context);

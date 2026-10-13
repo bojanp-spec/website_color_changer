@@ -1,6 +1,8 @@
 import { rgbToOklch } from '../color/convert.js';
 import { parseColor } from '../color/parse.js';
 import type { OKLCH } from '../color/types.js';
+import { reasonText } from './reasons.js';
+import type { ReasonCode } from './reasons.js';
 import type { Classification, Role, RoleAssignment, ScanSummary } from './types.js';
 
 export interface ClassifyOptions {
@@ -122,7 +124,7 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
   };
 
   const roles = new Map<string, RoleAssignment>();
-  const assign = (key: string, role: Role, reason: string) => {
+  const assign = (key: string, role: Role, code: ReasonCode, arg?: string) => {
     const x = byKey.get(key);
     if (x && !roles.has(key)) {
       const w = x.e.weight;
@@ -130,7 +132,9 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
         key,
         role,
         oklch: x.o,
-        reason,
+        reason: reasonText(code, arg),
+        reasonCode: code,
+        ...(arg !== undefined ? { reasonArg: arg } : {}),
         usage: { bg: w.bgArea, text: w.textArea, border: w.borderArea + w.svgArea },
         scheme: x.e.area === 0 && isAltSchemeOnly(key) ? 'alt' : 'main',
         variables: x.e.variables,
@@ -138,10 +142,10 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
     }
   };
 
-  for (const [key, role] of Object.entries(opts.overrides ?? {})) assign(key, role, 'ručno podešeno');
-  assign(dominant.e.key, 'dominant', 'najveća površina pozadine');
-  assign(secondary.e.key, 'secondary', 'najviše teksta');
-  if (accent) assign(accent.e.key, 'accent', 'živa boja na interaktivnim elementima');
+  for (const [key, role] of Object.entries(opts.overrides ?? {})) assign(key, role, 'manual');
+  assign(dominant.e.key, 'dominant', 'largest-background');
+  assign(secondary.e.key, 'secondary', 'most-text');
+  if (accent) assign(accent.e.key, 'accent', 'vivid-interactive');
 
   const baseHues = [secondary, accent, dominant].filter((b) => b && b.o.c >= NEUTRAL_BASE_CHROMA).map((b) => b!.o.h);
   const isProtectedByName = (e: Entry) => !!protect && e.variables.length > 0 && e.variables.every((v) => protect.test(v));
@@ -152,33 +156,33 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
   const byLightness = (o: OKLCH): Role =>
     Math.abs(o.l - dominant.o.l) <= Math.abs(o.l - secondary.o.l) ? 'dominant' : 'secondary';
 
-  const heuristic = (x: { e: Entry; o: OKLCH }, visible: boolean): [Role, string] | null => {
+  const heuristic = (x: { e: Entry; o: OKLCH }, visible: boolean): [Role, ReasonCode, string?] | null => {
     const { e, o } = x;
-    if (e.area === 0 && nonPaintOnly(e.key, o)) return ['protected', 'samo maska / color-mix() / senka'];
-    if (inMulticolorGraphicOnly(e.key)) return ['protected', 'višebojna SVG grafika (logo)'];
-    if (isProtectedByName(e)) return ['protected', `zaštićena varijabla (${e.variables.join(', ')})`];
+    if (e.area === 0 && nonPaintOnly(e.key, o)) return ['protected', 'non-paint'];
+    if (inMulticolorGraphicOnly(e.key)) return ['protected', 'multicolor-svg'];
+    if (isProtectedByName(e)) return ['protected', 'protected-variable', e.variables.join(', ')];
     if (accent && o.c >= VIVID_CHROMA && hueDistance(o.h, accent.o.h) <= ACCENT_HUE_WINDOW) {
       // Akcenat je MALA površina (10%). Velika neinteraktivna površina iste nijanse
       // (npr. tamnoplavi header uz plavo CTA dugme) je struktura sajta, ne akcenat.
       const structural = visible && e.area > 2 * accent.e.area && e.weight.interactiveArea < e.area / 2;
-      if (!structural) return ['accent', 'živa boja u nijansi akcenta'];
-      if (isText(e)) return ['secondary', 'tekst u nijansi akcenta (velika površina)'];
-      return [byLightness(o), 'velika površina u nijansi akcenta → struktura'];
+      if (!structural) return ['accent', 'vivid-accent-hue'];
+      if (isText(e)) return ['secondary', 'accent-hue-large-text'];
+      return [byLightness(o), 'accent-hue-structure'];
     }
     if (o.c >= NEUTRAL_BASE_CHROMA && baseHues.length && baseHues.every((h) => hueDistance(o.h, h) > FOREIGN_HUE)) {
-      return ['protected', 'nijansa van palete sajta (semantička/ostala boja)'];
+      return ['protected', 'foreign-hue'];
     }
-    if (o.c >= VIVID_CHROMA) return ['protected', 'živa boja van akcenta'];
+    if (o.c >= VIVID_CHROMA) return ['protected', 'vivid-other'];
     if (accent && o.c >= HUE_VISIBLE_CHROMA) {
       const toAccent = hueDistance(o.h, accent.o.h);
       const toDominant = dominant.o.c >= HUE_VISIBLE_CHROMA / 2 ? hueDistance(o.h, dominant.o.h) : 180;
       const toSecondary = hueDistance(o.h, secondary.o.h);
-      if (toAccent <= 10 && toAccent + 10 < Math.min(toDominant, toSecondary)) return ['accent', 'svetla/tamna nijansa akcenta'];
+      if (toAccent <= 10 && toAccent + 10 < Math.min(toDominant, toSecondary)) return ['accent', 'accent-tint'];
     }
     if (!visible) return null; // nevidljive bez jasnog signala → nasleđivanje preko varijabli
-    if (isText(e)) return ['secondary', 'tekst'];
+    if (isText(e)) return ['secondary', 'text'];
     const role = byLightness(o);
-    return [role, role === 'dominant' ? 'pozadina/struktura bliska dominantnoj' : 'tamna/struktura bliska sekundarnoj'];
+    return [role, role === 'dominant' ? 'near-dominant' : 'near-secondary'];
   };
 
   // --- 2. Vidljive boje
@@ -209,28 +213,28 @@ export function classify(scan: ScanSummary, opts: ClassifyOptions = {}): Classif
     }
     const inherited = x.e.variables.map((v) => [v, varRole.get(v)] as const).find(([, r]) => r);
     if (inherited) {
-      assign(x.e.key, inherited[1]!.role, `nasleđeno preko ${inherited[0]} (npr. dark mode/hover)`);
+      assign(x.e.key, inherited[1]!.role, 'inherited-variable', inherited[0]);
       continue;
     }
-    if (isText(x.e)) assign(x.e.key, 'secondary', 'tekst (deklarisano)');
-    else assign(x.e.key, byLightness(x.o), 'po svetlini (deklarisano)');
+    if (isText(x.e)) assign(x.e.key, 'secondary', 'declared-text');
+    else assign(x.e.key, byLightness(x.o), 'declared-lightness');
   }
 
   // --- 4. Providne varijante (`#10233f40` senke itd.) prate opaknu boju
   for (const x of entries) {
     if (roles.has(x.e.key)) continue;
     if (x.e.area === 0 && nonPaintOnly(x.e.key, x.o)) {
-      assign(x.e.key, 'protected', 'samo maska / color-mix() / senka');
+      assign(x.e.key, 'protected', 'non-paint');
       continue;
     }
     const base = roles.get(opaqueKey(x.e.key));
     if (base) {
-      assign(x.e.key, base.role, `providna varijanta ${opaqueKey(x.e.key)}`);
+      assign(x.e.key, base.role, 'translucent-variant', opaqueKey(x.e.key));
       continue;
     }
     const h = heuristic(x, x.e.area > 0);
     if (h) assign(x.e.key, ...h);
-    else assign(x.e.key, byLightness(x.o), 'providna, po svetlini');
+    else assign(x.e.key, byLightness(x.o), 'translucent-lightness');
   }
 
   const altBaseFor = (baseKey: string | undefined): string | null => {
