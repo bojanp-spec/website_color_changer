@@ -1,4 +1,4 @@
-import { createEngine, parseColor, PRESETS, toHex } from '@cc/core';
+import { createEngine, parseColor, PRESET_LABELS, PRESETS, toHex } from '@cc/core';
 import type { ApplyReport, Classification, ColorEngine, EngineOptions, Palette, Role, ScanResult } from '@cc/core';
 import { localStorageAdapter, paletteFromHash, shareUrl } from './state.js';
 import type { PanelStorage, Saved } from './state.js';
@@ -36,12 +36,6 @@ const ROLE_NAMES: Record<Role, string> = {
   secondary: 'Sekundarna (30%)',
   accent: 'Akcentna (10%)',
   protected: 'Ne menja se',
-};
-const PRESET_NAMES: Record<string, string> = {
-  'crveno-sivo': 'Crveno / sivo',
-  'zuto-zeleno': 'Žuto / zeleno',
-  'zeleno-krem': 'Zeleno / krem',
-  'narandzasto-tamno': 'Narandžasto / tamno',
 };
 const FALLBACK_ACCENT = '#e53935';
 /** Koliko boja po ulozi prikazati pre „još N". */
@@ -157,7 +151,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     presetGrid.append(btn);
   };
   addPreset('original', 'Original', detected);
-  for (const [id, p] of Object.entries(PRESETS)) addPreset(id, PRESET_NAMES[id] ?? id, p);
+  for (const [id, p] of Object.entries(PRESETS)) addPreset(id, PRESET_LABELS[id] ?? id, p);
   const presetSection = h('section', {}, h('h2', {}, 'Gotove palete'), presetGrid);
 
   const abBtn = h('button', { class: 'btn primary', 'data-action': 'toggle', onclick: toggleAB }, '') as HTMLButtonElement;

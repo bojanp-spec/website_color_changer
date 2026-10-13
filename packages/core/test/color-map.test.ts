@@ -8,6 +8,8 @@ const c = classify(site);
 const L = (hex: string) => rgbToOklch(parseColor(hex)!.rgba).l;
 const H = (hex: string) => rgbToOklch(parseColor(hex)!.rgba).h;
 const rgba = (hex: string) => parseColor(hex)!.rgba;
+const LIGHT = Object.keys(PRESETS).filter((k) => L(PRESETS[k]!.dominant) > 0.5);
+const DARK = Object.keys(PRESETS).filter((k) => !LIGHT.includes(k));
 
 /** Parovi koji ne dostižu min(AA, original) posle mapiranja. */
 function failingPairs(map: Map<string, string>) {
@@ -37,7 +39,13 @@ describe('buildColorMap — drmozgovich.top', () => {
     expect([...a.map]).toEqual([...b.map]);
   });
 
-  it.each(['crveno-sivo', 'zuto-zeleno', 'zeleno-krem'])('%s: čuva hijerarhiju svetline i popravlja kontrast', (name) => {
+  it('ima 9 gotovih paleta (uz Original — 10 u panelu), svaka različita', () => {
+    expect(Object.keys(PRESETS)).toHaveLength(9);
+    expect(new Set(Object.values(PRESETS).map((p) => `${p.dominant}${p.secondary}${p.accent}`.toLowerCase())).size).toBe(9);
+    expect(DARK).toEqual(['narandzasto-tamno', 'ponoc-zlatno']);
+  });
+
+  it.each(LIGHT)('%s: čuva hijerarhiju svetline i popravlja kontrast', (name) => {
     const m = buildColorMap(c, PRESETS[name]!, site.pairs);
     const to = (k: string) => m.map.get(k)!;
     // pozadine ostaju svetle, tekst tamniji od pozadine, sporedni tekst svetliji od glavnog
@@ -80,8 +88,19 @@ describe('buildColorMap — drmozgovich.top', () => {
     expect(failing.filter((f) => !f.endsWith('|#3e9fd9'))).toEqual([]);
   });
 
+  it.each(DARK)('%s: tamna paleta — pozadine tamne, tekst svetao, kontrast u redu', (name) => {
+    const m = buildColorMap(c, PRESETS[name]!, site.pairs);
+    const to = (k: string) => m.map.get(k)!;
+    expect(L(to('#f4f6fa'))).toBeLessThan(0.3);
+    expect(L(to('#10233f'))).toBeGreaterThan(0.75);
+    expect(L(to('#4c5975'))).toBeLessThan(L(to('#10233f')));
+    expect(L(to('#0b1626'))).toBeLessThan(0.3);
+    const failing = failingPairs(m.map).map((p) => `${p.fg}|${p.bg}`);
+    expect(failing.filter((f) => !f.endsWith('|#3e9fd9'))).toEqual([]);
+  });
+
   it('korekcija ne obrće smer: glavni tekst ostaje taman', () => {
-    for (const name of ['crveno-sivo', 'zuto-zeleno', 'zeleno-krem']) {
+    for (const name of LIGHT) {
       const m = buildColorMap(c, PRESETS[name]!, site.pairs);
       expect(L(m.map.get('#10233f')!), name).toBeLessThan(0.5);
       expect(L(m.map.get('#f4f6fa')!), name).toBeGreaterThan(0.9);

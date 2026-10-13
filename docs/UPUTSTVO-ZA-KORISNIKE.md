@@ -114,7 +114,21 @@ Tri boje koje biraš: **Dominantna**, **Sekundarna** i **Akcentna**.
 Sajt se menja dok biraš. Ako upišeš nešto što nije boja, polje postaje crveno i ništa se ne menja.
 
 ### ④ Gotove palete
-Kombinacije za brzo isprobavanje: **Crveno / sivo**, **Žuto / zeleno**, **Zeleno / krem**, **Narandžasto / tamno**. **Original** vraća prave boje sajta.
+Deset dugmadi za brzo isprobavanje. **Original** vraća prave boje sajta, a ostalih devet su gotove kombinacije:
+
+| Paleta | Dominantna (60%) | Sekundarna (30%) | Akcentna (10%) |
+|---|---|---|---|
+| Crveno / sivo | skoro bela | tamnosiva | crvena |
+| Žuto / zeleno | topla bela | tamnozelena | žuta |
+| Zeleno / krem | krem | sivozelena | zelena |
+| Narandžasto / tamno | skoro crna | svetlosiva | narandžasta |
+| Ljubičasto / roze | lavanda-bela | tamnoljubičasta | roze |
+| Tirkiz / okean | ledeno bela | petrolej plava | tirkiz |
+| Terakota / pesak | pesak | braon | terakota |
+| Grafit / električno plava | hladno bela | grafit | električno plava |
+| Ponoć / zlatno | ponoćno plava | svetla | zlatna |
+
+**Narandžasto / tamno** i **Ponoć / zlatno** su tamne palete: svetao sajt postaje taman, a tekst svetao.
 
 ### ⑤ Prikaži original / Prikaži novu paletu
 Prebacivanje između originala i nove palete, da lako uporediš. Isto radi i prečica na tastaturi:

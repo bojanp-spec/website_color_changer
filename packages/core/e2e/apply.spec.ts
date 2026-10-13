@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { BUNDLE } from './helpers.js';
+import { PRESETS } from '../src/analyze/presets.js';
 
 type CCModule = typeof import('../src/index.js');
 type Win = Window & { CC: CCModule; engine: ReturnType<CCModule['createEngine']> };
@@ -214,7 +215,7 @@ test.describe('drmozgovich.top (snimak) — glavni test sajt', () => {
       .filter((b) => b.after < Math.min(b.large ? 3 : 4.5, b.ratio) - 0.05);
   }
 
-  for (const preset of ['crveno-sivo', 'zuto-zeleno', 'zeleno-krem', 'narandzasto-tamno']) {
+  for (const preset of Object.keys(PRESETS)) {
     test(`${preset}: nijedan tekst nema lošiji kontrast od min(AA, original)`, async ({ page }) => {
       const failing = await contrastAudit(page, () => applyPreset(page, preset));
       expect(failing).toEqual([]);
