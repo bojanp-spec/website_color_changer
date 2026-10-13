@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { buildColorMap, classify, contrastRatio, findPreset, formatColorMap, parseColor, PRESET_IDS_EN, PRESETS, rgbToOklch } from '../src/index.js';
+import { adjustLightness, buildColorMap, clampAdjustment, classify, contrastRatio, findPreset, formatColorMap, parseColor, PRESET_IDS_EN, PRESETS, rgbToOklch } from '../src/index.js';
 import type { ScanSummary } from '../src/index.js';
 
 const site = JSON.parse(readFileSync(new URL('./fixtures/drmozgovich.scan.json', import.meta.url), 'utf8')) as ScanSummary;
@@ -150,5 +150,49 @@ describe('English output (lang: en)', () => {
     expect(findPreset('red-gray')).toBe(PRESETS['crveno-sivo']);
     expect(findPreset('crveno-sivo')).toBe(PRESETS['crveno-sivo']);
     expect(findPreset('nope')).toBeUndefined();
+  });
+});
+
+describe('brightness and contrast sliders', () => {
+  const base = PRESETS['crveno-sivo']!;
+  const plain = buildColorMap(c, base, site.pairs);
+
+  it('0 / 0 is the same as no sliders', () => {
+    expect([...buildColorMap(c, { ...base, brightness: 0, contrast: 0 }, site.pairs).map]).toEqual([...plain.map]);
+    expect(adjustLightness({ l: 0.3, c: 0.1, h: 20, a: 1 })).toEqual({ l: 0.3, c: 0.1, h: 20, a: 1 });
+  });
+
+  it('brightness moves lightness toward white or black, at most halfway', () => {
+    const c0 = { l: 0.4, c: 0.1, h: 20, a: 1 };
+    expect(adjustLightness(c0, 100).l).toBeCloseTo(0.7);
+    expect(adjustLightness(c0, -100).l).toBeCloseTo(0.2);
+    expect(adjustLightness(c0, 30, 0).h).toBe(20);
+  });
+
+  it('contrast spreads or compresses lightness around the middle', () => {
+    expect(adjustLightness({ l: 0.3, c: 0, h: 0, a: 1 }, 0, 100).l).toBeCloseTo(0.1);
+    expect(adjustLightness({ l: 0.3, c: 0, h: 0, a: 1 }, 0, -100).l).toBeCloseTo(0.4);
+    expect(adjustLightness({ l: 0.9, c: 0, h: 0, a: 1 }, 0, 100).l).toBe(1);
+  });
+
+  it('a darker palette darkens the background; protected colors stay', () => {
+    const dark = buildColorMap(c, { ...base, brightness: -60 }, site.pairs);
+    expect(L(dark.map.get('#f4f6fa')!)).toBeLessThan(L(plain.map.get('#f4f6fa')!) - 0.15);
+    for (const e of dark.entries.filter((x) => x.role === 'protected')) expect(e.to).toBe(plain.map.get(e.from));
+  });
+
+  it('more contrast: darker text; less contrast never drops text below the target', () => {
+    const more = buildColorMap(c, { ...base, contrast: 60 }, site.pairs);
+    expect(L(more.map.get('#10233f')!)).toBeLessThan(L(plain.map.get('#10233f')!));
+    const less = buildColorMap(c, { ...base, contrast: -100 }, site.pairs);
+    const fixedOrWarned = new Set(less.failures.map((f) => `${f.fg}|${f.bg}`));
+    expect(failingPairs(less.map).filter((p) => !fixedOrWarned.has(`${p.fg}|${p.bg}`))).toEqual([]);
+  });
+
+  it('slider values are clamped to -100…100', () => {
+    expect(clampAdjustment(250)).toBe(100);
+    expect(clampAdjustment('-7.4')).toBe(-7);
+    expect(clampAdjustment('x')).toBe(0);
+    expect(clampAdjustment(undefined)).toBe(0);
   });
 });

@@ -11,6 +11,7 @@ import { toHex } from './color/serialize.js';
 import { coreText } from './i18n.js';
 import type { Lang } from './i18n.js';
 import { buildColorMap } from './map/color-map.js';
+import { clampAdjustment } from './map/remap.js';
 import type { ColorMapOptions, ColorMapResult } from './map/color-map.js';
 import { scanStylesheets } from './scan/cssom-scanner.js';
 import { scanInline } from './scan/inline-scanner.js';
@@ -78,6 +79,8 @@ export interface ColorEngine {
 const EXPORT_TEXT = {
   sr: {
     palette: 'paleta',
+    brightness: 'svetlina',
+    contrast: 'kontrast',
     after: 'Dodati POSLE postojećih stilova sajta.',
     inline: (n: number) => `Napomena: ${n} boja je u inline style/SVG atributima — njih CSS fajl ne pokriva.`,
     manual: (fg: string, bg: string, to: string, n: number) =>
@@ -86,6 +89,8 @@ const EXPORT_TEXT = {
   },
   en: {
     palette: 'palette',
+    brightness: 'brightness',
+    contrast: 'contrast',
     after: "Include AFTER the site's existing styles.",
     inline: (n: number) => `Note: ${n} colors are in inline style/SVG attributes — this CSS file does not cover them.`,
     manual: (fg: string, bg: string, to: string, n: number) =>
@@ -93,6 +98,15 @@ const EXPORT_TEXT = {
     local: 'Local contrast fix (e.g. text on CTA buttons)',
   },
 } as const;
+
+const signed = (n: number) => (n > 0 ? `+${n}` : String(n));
+
+/** ` · brightness +10 · contrast -20` for non-zero sliders, otherwise an empty string. */
+export function adjustmentNote(p: Palette, L: { brightness: string; contrast: string }): string {
+  const b = clampAdjustment(p.brightness);
+  const c = clampAdjustment(p.contrast);
+  return `${b ? ` · ${L.brightness} ${signed(b)}` : ''}${c ? ` · ${L.contrast} ${signed(c)}` : ''}`;
+}
 
 const MARK = '__cc';
 type MarkedSheet = CSSStyleSheet & { [MARK]?: boolean };
@@ -501,7 +515,7 @@ export function createEngine(doc: Document = document, opts: EngineOptions = {})
       const inline = scan.usages.filter((u) => u.element).length;
       const L = EXPORT_TEXT[opts.lang ?? 'sr'];
       const header = [
-        `/* Website Color Changer — ${L.palette} ${palette.dominant} / ${palette.secondary} / ${palette.accent}`,
+        `/* Website Color Changer — ${L.palette} ${palette.dominant} / ${palette.secondary} / ${palette.accent}${adjustmentNote(palette, L)}`,
         `   ${L.after} */`,
         inline ? `/* ${L.inline(inline)} */` : '',
         ...lastLocalFixes

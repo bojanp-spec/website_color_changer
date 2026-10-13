@@ -1,5 +1,5 @@
-import { createEngine, parseColor, PRESETS, toHex } from '@cc/core';
-import type { ApplyReport, Classification, ColorEngine, EngineOptions, Palette, Role, ScanResult } from '@cc/core';
+import { clampAdjustment, createEngine, parseColor, PRESETS, toHex } from '@cc/core';
+import type { ApplyReport, Classification, ColorEngine, EngineOptions, Palette, PaletteColor, Role, ScanResult } from '@cc/core';
 import { localStorageAdapter, paletteFromHash, shareUrl } from './state.js';
 import type { PanelStorage, Saved } from './state.js';
 import { LANG, presetLabel, reason, roleName, t } from './i18n.js';
@@ -27,12 +27,13 @@ export interface PanelOptions {
   onClose?: () => void;
 }
 
-const ROLES: { role: keyof Palette; label: string; share: string }[] = [
+const ROLES: { role: PaletteColor; label: string; share: string }[] = [
   { role: 'dominant', label: t('dominant'), share: '60%' },
   { role: 'secondary', label: t('secondary'), share: '30%' },
   { role: 'accent', label: t('accent'), share: '10%' },
 ];
 const FALLBACK_ACCENT = '#e53935';
+type Adjustment = 'brightness' | 'contrast';
 /** How many colors per role to show before "N more". */
 const CHIPS_VISIBLE = 10;
 
@@ -126,7 +127,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
 
   // ---------------------------------------------------------------- sections
   const detectedSection = h('section');
-  const pickers = new Map<keyof Palette, { color: HTMLInputElement; text: HTMLInputElement }>();
+  const pickers = new Map<PaletteColor, { color: HTMLInputElement; text: HTMLInputElement }>();
   const pickerSection = h('section', {}, h('h2', {}, t('newPalette')));
   for (const { role, label, share } of ROLES) {
     const color = h('input', { type: 'color', 'aria-label': t('colorLabel', label), 'data-role': role }) as HTMLInputElement;
@@ -136,6 +137,17 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     pickers.set(role, { color, text });
     pickerSection.append(h('div', { class: 'row' }, h('label', {}, `${label} `, h('small', {}, share)), color, text));
   }
+  const sliders = new Map<Adjustment, { range: HTMLInputElement; value: HTMLOutputElement }>();
+  for (const adj of ['brightness', 'contrast'] as const) {
+    const range = h('input', { type: 'range', min: '-100', max: '100', step: '1', 'aria-label': t(adj), 'data-adjust': adj }) as HTMLInputElement;
+    const value = h('output', {}) as HTMLOutputElement;
+    const reset = h('button', { class: 'icon reset', title: t('resetSlider'), 'aria-label': `${t(adj)}: ${t('resetSlider')}`, onclick: () => setAdjustment(adj, 0) }, '↺');
+    range.addEventListener('input', () => setAdjustment(adj, range.valueAsNumber));
+    range.addEventListener('dblclick', () => setAdjustment(adj, 0));
+    sliders.set(adj, { range, value });
+    pickerSection.append(h('div', { class: 'row slider' }, h('label', {}, t(adj)), range, value, reset));
+  }
+  pickerSection.append(h('p', { class: 'hint' }, t('slidersHint')));
 
   const presetGrid = h('div', { class: 'presets' });
   const presetButtons = new Map<string, HTMLButtonElement>();
@@ -192,7 +204,7 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
 
   // ================================================================= logic
 
-  function setRole(role: keyof Palette, value: string, from: 'color' | 'text') {
+  function setRole(role: PaletteColor, value: string, from: 'color' | 'text') {
     const hex = normalize(value);
     const { color, text } = pickers.get(role)!;
     text.setAttribute('aria-invalid', hex ? 'false' : 'true');
@@ -204,7 +216,23 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
     scheduleApply();
   }
 
+  function setAdjustment(adj: Adjustment, v: number) {
+    const n = clampAdjustment(v);
+    palette = { ...palette, [adj]: n };
+    syncSliders();
+    scheduleApply();
+  }
+
+  function syncSliders() {
+    for (const [adj, { range, value }] of sliders) {
+      const n = clampAdjustment(palette[adj]);
+      range.value = String(n);
+      value.textContent = n > 0 ? `+${n}` : String(n);
+    }
+  }
+
   function syncPickers() {
+    syncSliders();
     for (const { role } of ROLES) {
       const hex = normalize(palette[role]) ?? '#000000';
       const { color, text } = pickers.get(role)!;
@@ -228,7 +256,8 @@ export async function mountPanel(doc: Document = document, opts: PanelOptions = 
 
   function choosePreset(id: string, p: Palette) {
     activePreset = id;
-    palette = { ...p };
+    // The sliders stay as they are when switching palettes.
+    palette = { ...p, brightness: clampAdjustment(palette.brightness), contrast: clampAdjustment(palette.contrast) };
     syncPickers();
     if (id === 'original') {
       engine.disable();

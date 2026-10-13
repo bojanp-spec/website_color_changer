@@ -127,3 +127,17 @@ test('English output and CSS comments; language from the environment', async () 
   expect(en.stdout).toContain('Usage:');
   expect(en.stdout).toMatch(/teal-ocean +Teal \/ ocean \(= tirkiz-okean\)/);
 });
+
+test('--brightness / --contrast: in the CSS header and the map; invalid values are rejected', async () => {
+  const o = outDir();
+  const r = await cli([`${BASE}/multi/`, '--palette', 'red-gray', '--brightness', '-20', '--contrast', '+30', '--viewports', '1440', '--out', o.css, '--map', o.map, '--lang', 'en']);
+  expect(r.code, r.stderr || r.stdout).toBe(0);
+  expect(readFileSync(o.css, 'utf8')).toContain('#D32F2F (10%) · brightness -20 · contrast +30');
+  const map = JSON.parse(readFileSync(o.map, 'utf8'));
+  expect(map.palette).toMatchObject({ brightness: -20, contrast: 30 });
+  expect(Object.keys(map.map).length).toBeGreaterThan(0);
+
+  const bad = await cli([`${BASE}/multi/`, '--palette', 'red-gray', '--contrast', '500', '--lang', 'en']);
+  expect(bad.code).toBe(1);
+  expect(bad.stderr).toContain('--contrast expects a number from -100 to 100, not "500"');
+});

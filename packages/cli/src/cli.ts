@@ -30,7 +30,7 @@ function parseArgs(argv: string[]) {
 
 function parsePalette(input: string): Palette {
   const preset = findPreset(input);
-  if (preset) return preset;
+  if (preset) return { ...preset };
   const parts = input.split(',').map((x) => x.trim());
   const hex = parts.map((p) => {
     const c = parseColor(p);
@@ -66,6 +66,12 @@ async function main() {
     process.exit(positional[0] ? 0 : 1);
   }
   const palette = parsePalette(one('palette') ?? '');
+  for (const adj of ['brightness', 'contrast'] as const) {
+    const v = one(adj);
+    if (v === undefined) continue;
+    if (!/^[+-]?\d+$/.test(v) || Math.abs(Number(v)) > 100) throw new Error(M.badAdjustment(adj, v));
+    palette[adj] = Number(v);
+  }
   const screenshots = one('screenshots');
   if (screenshots) mkdirSync(screenshots, { recursive: true });
   const out = one('out') ?? 'theme-override.css';

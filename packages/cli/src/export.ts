@@ -1,5 +1,5 @@
 import { chromium } from '@playwright/test';
-import { buildColorMap, buildOverrideCss, classify, contrastRatio, createColorMapper, isAltContext, parseColor } from '@cc/core';
+import { adjustmentNote, buildColorMap, buildOverrideCss, classify, contrastRatio, createColorMapper, isAltContext, parseColor } from '@cc/core';
 import type { Classification, ColorMapResult, LocalContrastFix, Palette, Role, Usage } from '@cc/core';
 import { openPage, localFixes, scanPage, verifyPage } from './browser.js';
 import { messages } from './i18n.js';
@@ -142,7 +142,7 @@ export async function exportSite(opts: ExportOptions): Promise<ExportResult> {
     const css = [
       '/*',
       ' * Website Color Changer — theme-override.css',
-      ` * ${M.cssPalette} ${opts.palette.dominant} (60%) / ${opts.palette.secondary} (30%) / ${opts.palette.accent} (10%)`,
+      ` * ${M.cssPalette} ${opts.palette.dominant} (60%) / ${opts.palette.secondary} (30%) / ${opts.palette.accent} (10%)${adjustmentNote(opts.palette, M.sliders)}`,
       ` * ${M.cssSite} ${classification.bases.dominant} / ${classification.bases.secondary} / ${classification.bases.accent ?? '—'}`,
       ` * ${M.cssPages(urls.length)} ${urls.join(', ')}`,
       ` * ${M.cssAfter}`,

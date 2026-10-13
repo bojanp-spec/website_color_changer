@@ -1,5 +1,6 @@
 // Isolated world (content script): the only part that sees the chrome.* API. The page (MAIN world)
 // talks to it via window.postMessage; it only answers messages from the same page.
+import { clampAdjustment } from '@cc/core';
 import { text as T } from './i18n.js';
 import { siteKey } from './shared.js';
 import type { PageRequest, PageResponse, SiteSettings } from './shared.js';
@@ -66,6 +67,10 @@ function sanitize(payload: unknown): Partial<SiteSettings> {
   const pal = p.palette as Record<string, unknown> | undefined;
   if (pal && hex(pal.dominant) && hex(pal.secondary) && hex(pal.accent)) {
     out.palette = { dominant: pal.dominant as string, secondary: pal.secondary as string, accent: pal.accent as string };
+    for (const adj of ['brightness', 'contrast'] as const) {
+      const n = clampAdjustment(pal[adj]);
+      if (n) out.palette[adj] = n;
+    }
   }
   if (p.overrides && typeof p.overrides === 'object') {
     out.overrides = Object.fromEntries(

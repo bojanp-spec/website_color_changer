@@ -1,3 +1,4 @@
+import { clampAdjustment } from '@cc/core';
 import type { Palette, Role } from '@cc/core';
 
 export interface Saved {
@@ -37,19 +38,28 @@ export function save(patch: Partial<Saved>): void {
   }
 }
 
-const HASH_RE = /(^#|&)cc=([0-9a-f]{6}),([0-9a-f]{6}),([0-9a-f]{6})/i;
+const HASH_RE = /(^#|&)cc=([0-9a-f]{6}),([0-9a-f]{6}),([0-9a-f]{6})(?:,(-?\d{1,3}),(-?\d{1,3}))?/i;
 
-/** Palette from the URL hash: `#cc=fafafa,4b4b4f,d32f2f` (also works alongside an existing hash: `#section&cc=…`). */
+/**
+ * Palette from the URL hash: `#cc=fafafa,4b4b4f,d32f2f` or, with the brightness/contrast sliders,
+ * `#cc=fafafa,4b4b4f,d32f2f,10,-20` (also works alongside an existing hash: `#section&cc=…`).
+ */
 export function paletteFromHash(hash: string = location.hash): Palette | null {
   const m = HASH_RE.exec(hash);
-  return m ? { dominant: `#${m[2]}`, secondary: `#${m[3]}`, accent: `#${m[4]}` } : null;
+  if (!m) return null;
+  const p: Palette = { dominant: `#${m[2]}`, secondary: `#${m[3]}`, accent: `#${m[4]}` };
+  const brightness = clampAdjustment(m[5]);
+  const contrast = clampAdjustment(m[6]);
+  return brightness || contrast ? { ...p, brightness, contrast } : p;
 }
 
 /** Link to the current page with the palette in the hash (the site's existing hash is preserved). */
 export function shareUrl(p: Palette, href: string = location.href): string {
   const url = new URL(href);
   const hex = (c: string) => c.replace('#', '').toLowerCase();
-  const param = `cc=${hex(p.dominant)},${hex(p.secondary)},${hex(p.accent)}`;
+  const b = clampAdjustment(p.brightness);
+  const c = clampAdjustment(p.contrast);
+  const param = `cc=${hex(p.dominant)},${hex(p.secondary)},${hex(p.accent)}${b || c ? `,${b},${c}` : ''}`;
   const rest = url.hash.replace(/^#/, '').split('&').filter((part) => part && !part.startsWith('cc=')).join('&');
   url.hash = rest ? `${rest}&${param}` : param;
   return url.toString();

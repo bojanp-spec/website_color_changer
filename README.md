@@ -38,12 +38,12 @@ npm run build -w @cc/ui        # → packages/ui/dist/install_en.html (English),
 Open `packages/ui/dist/install_en.html` (or [`downloads/bookmarklet_en.html`](downloads/bookmarklet_en.html)) and drag the “🎨 Site colors” button to your bookmarks bar. On any website, clicking it opens the panel:
 
 - **Site colors** — the detected palette grouped by role (60 / 30 / 10 / unchanged); click a color to change its role (remembered per domain).
-- **New palette** — three color pickers (color picker + HEX) with a live preview.
+- **New palette** — three color pickers (color picker + HEX) with a live preview, plus **Brightness** and **Contrast** sliders. The sliders change only the new colors (in OKLCH lightness, so images stay untouched); text contrast never drops below WCAG AA.
 - **Ready-made palettes** — Original and 9 combinations: Red/gray, Yellow/green, Green/cream, Orange/dark, Purple/pink, Teal/ocean, Terracotta/sand, Graphite/electric blue, Midnight/gold.
 - **Show original / new palette** — A/B comparison, shortcut <kbd>Alt+C</kbd>.
-- **Export** — copy or download the CSS for permanent use; “Copy link” gives a URL with the palette (`#cc=fafafa,4b4b4f,d32f2f`).
+- **Export** — copy or download the CSS for permanent use; “Copy link” gives a URL with the palette (`#cc=fafafa,4b4b4f,d32f2f`, with the sliders `#cc=fafafa,4b4b4f,d32f2f,10,-20`).
 
-Closing the panel (×) restores the original site. The whole tool is inside the link (~94 KB); nothing is loaded from the internet.
+Closing the panel (×) restores the original site. The whole tool is inside the link (~100 KB); nothing is loaded from the internet.
 
 On your own site (dev/staging) it can also run as a snippet that visitors don't see — the panel only appears with `?cc=1` or `#cc=…` in the URL:
 
@@ -89,7 +89,7 @@ node packages/cli/dist/cli.mjs https://drmozgovich.top --palette red-gray \
 4. Writes one `theme-override.css` (HEX colors, the same selectors, `@layer`, `@media` and dark mode as the site).
 5. **Verification:** the CSS is added to every page as a plain stylesheet, without the tool, and the contrast of every visible text is measured. Elements that kept an old color (e.g. because of inline styles) are reported too. If any text loses contrast, the command exits with code 2, so it can be used in CI.
 
-Other options: `--override "#e7f2fa=dominant"`, `--all-colors` (also changes semantic and chart colors), `--no-verify`, `--wait <ms>`. Colors in multicolor SVG graphics (e.g. the Google logo) are never changed. Palette names on the command line: `red-gray`, `yellow-green`, `green-cream`, `orange-dark`, `purple-pink`, `teal-ocean`, `terracotta-sand`, `graphite-blue`, `midnight-gold` (the Serbian names such as `crveno-sivo` work too). Messages and the comments in the generated CSS follow `--lang en|sr` (default: the system language).
+Other options: `--brightness <-100…100>` and `--contrast <-100…100>` (the panel's sliders), `--override "#e7f2fa=dominant"`, `--all-colors` (also changes semantic and chart colors), `--no-verify`, `--wait <ms>`. Colors in multicolor SVG graphics (e.g. the Google logo) are never changed. Palette names on the command line: `red-gray`, `yellow-green`, `green-cream`, `orange-dark`, `purple-pink`, `teal-ocean`, `terracotta-sand`, `graphite-blue`, `midnight-gold` (the Serbian names such as `crveno-sivo` work too). Messages and the comments in the generated CSS follow `--lang en|sr` (default: the system language).
 
 #### Directly in the source files (PostCSS)
 
@@ -165,12 +165,12 @@ npm run build -w @cc/ui        # → packages/ui/dist/install.html (srpski), ins
 Otvori `packages/ui/dist/install.html` i prevuci dugme „🎨 Boje sajta" u traku sa obeleživačima. Na bilo kom sajtu klik otvara panel:
 
 - **Boje sajta** — detektovana paleta po ulogama (60 / 30 / 10 / ne menja se); klik na boju menja njenu ulogu (pamti se za domen).
-- **Nova paleta** — tri izbornika boja (color picker + HEX) sa živim pregledom.
+- **Nova paleta** — tri izbornika boja (color picker + HEX) sa živim pregledom, i klizači **Svetlina** i **Kontrast**. Klizači menjaju samo nove boje (svetlinu u OKLCH, pa slike ostaju netaknute); kontrast teksta nikad ne pada ispod WCAG AA.
 - **Gotove palete** — Original i 9 kombinacija: Crveno/sivo, Žuto/zeleno, Zeleno/krem, Narandžasto/tamno, Ljubičasto/roze, Tirkiz/okean, Terakota/pesak, Grafit/električno plava, Ponoć/zlatno.
 - **Prikaži original / novu paletu** — A/B poređenje, prečica <kbd>Alt+C</kbd>.
-- **Izvoz** — kopiraj ili preuzmi CSS za trajnu primenu; „Kopiraj link" daje URL sa paletom (`#cc=fafafa,4b4b4f,d32f2f`).
+- **Izvoz** — kopiraj ili preuzmi CSS za trajnu primenu; „Kopiraj link" daje URL sa paletom (`#cc=fafafa,4b4b4f,d32f2f`, sa klizačima `#cc=fafafa,4b4b4f,d32f2f,10,-20`).
 
-Zatvaranje panela (×) vraća sajt u original. Ceo alat je u samom linku (~94 KB), ništa se ne učitava sa interneta.
+Zatvaranje panela (×) vraća sajt u original. Ceo alat je u samom linku (~100 KB), ništa se ne učitava sa interneta.
 
 Na sopstvenom sajtu (dev/staging) može i kao snippet koji je nevidljiv posetiocima — panel se pojavljuje samo uz `?cc=1` ili `#cc=…` u URL-u:
 
@@ -216,7 +216,7 @@ node packages/cli/dist/cli.mjs https://drmozgovich.top --palette crveno-sivo \
 4. Piše jedan `theme-override.css` (HEX boje, isti selektori, `@layer`, `@media` i dark mode kao na sajtu).
 5. **Provera:** CSS se ubacuje u svaku stranicu kao običan stylesheet, bez alata, i meri se kontrast svakog vidljivog teksta. Prijavljuju se i elementi koji su ostali u staroj boji, npr. zbog inline stilova. Ako kontrast nekog teksta padne, komanda izlazi sa kodom 2, pa može da se koristi u CI-ju.
 
-Ostale opcije: `--override "#e7f2fa=dominant"`, `--all-colors` (menja i semantičke boje i grafikone), `--no-verify`, `--wait <ms>`, `--lang sr|en` (jezik poruka i komentara u CSS-u; podrazumevano jezik sistema). Boje iz višebojnih SVG grafika (npr. Google logo) se nikad ne menjaju.
+Ostale opcije: `--brightness <-100…100>` i `--contrast <-100…100>` (klizači iz panela), `--override "#e7f2fa=dominant"`, `--all-colors` (menja i semantičke boje i grafikone), `--no-verify`, `--wait <ms>`, `--lang sr|en` (jezik poruka i komentara u CSS-u; podrazumevano jezik sistema). Boje iz višebojnih SVG grafika (npr. Google logo) se nikad ne menjaju.
 
 #### Direktno u izvornim fajlovima (PostCSS)
 

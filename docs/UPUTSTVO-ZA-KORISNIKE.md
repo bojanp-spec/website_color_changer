@@ -117,6 +117,12 @@ Tri boje koje biraš: **Dominantna**, **Sekundarna** i **Akcentna**.
 
 Sajt se menja dok biraš. Ako upišeš nešto što nije boja, polje postaje crveno i ništa se ne menja.
 
+Ispod boja su dva klizača:
+- **Svetlina** čini sve nove boje svetlijim (udesno) ili tamnijim (ulevo).
+- **Kontrast** razmiče svetle i tamne boje (udesno) ili ih približava (ulevo).
+
+Menjaju samo nove boje, pa fotografije i logotipi ostaju isti. Ostaju gde su i kad izabereš drugu paletu. Klik na **↺**, ili dupli klik na klizač, vraća ga na 0. Tekst uvek ostaje čitljiv: i sa Kontrastom skroz ulevo tekst ne pada ispod nivoa WCAG AA (vidi „Kontrast" niže).
+
 ### ④ Gotove palete
 Deset dugmadi za brzo isprobavanje. **Original** vraća prave boje sajta, a ostalih devet su gotove kombinacije:
 
@@ -155,6 +161,7 @@ Kad je uključeno, izabrana paleta se primenjuje **svaki put kad otvoriš ovaj s
 ## 4. Šta ekstenzija pamti
 
 - **Poslednju paletu za svaki sajt.** Kad sledeći put otvoriš panel na tom sajtu, izbornici već imaju tvoje boje. Na sajt se primenjuju kad klikneš **Primeni paletu** ili pritisneš <kbd>Alt</kbd>+<kbd>C</kbd>.
+- **Klizače Svetlina i Kontrast** (korak ③), zajedno sa paletom.
 - **Tvoje ispravke uloga boja** (korak ②).
 - **Položaj panela** i da li je skupljen.
 
@@ -239,6 +246,7 @@ Sačuvane palete ostaju posle ažuriranja.
 | Otvori/sakrij panel | klik na ikonicu 🎨 |
 | Isprobaj gotovu paletu | klik na paletu u delu ④ |
 | Svoje boje | kvadratići ili HEX polja u delu ③ |
+| Sve svetlije/tamnije ili oštrije/mekše | klizači **Svetlina** i **Kontrast** u delu ③ |
 | Uporedi sa originalom | <kbd>Alt</kbd>+<kbd>C</kbd> (Mac: <kbd>⌥</kbd>+<kbd>C</kbd>) |
 | Ispravi ulogu boje | klik na boju u delu ② |
 | Sačuvaj za ovaj sajt | pamti se samo; za automatsku primenu uključi ⑥ |

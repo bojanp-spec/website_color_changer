@@ -3,12 +3,12 @@ import type { WcagLevel } from '../color/contrast.js';
 import { oklchToRgbInGamut, rgbToOklch } from '../color/convert.js';
 import { parseColor } from '../color/parse.js';
 import { toHex } from '../color/serialize.js';
-import type { RGBA } from '../color/types.js';
-import type { Classification, Palette, Role, RoleAssignment, ScanSummary } from '../analyze/types.js';
+import type { OKLCH, RGBA } from '../color/types.js';
+import type { Classification, Palette, PaletteColor, Role, RoleAssignment, ScanSummary } from '../analyze/types.js';
 import { reasonText } from '../analyze/reasons.js';
 import { coreText } from '../i18n.js';
 import type { Lang } from '../i18n.js';
-import { remap } from './remap.js';
+import { adjustLightness, remap } from './remap.js';
 import type { LightnessMode } from './remap.js';
 
 export interface ContrastAdjustment {
@@ -67,7 +67,7 @@ function altCounterpart(classification: Classification, key: string): string | n
   return null;
 }
 
-const ROLE_LABEL: Record<Exclude<Role, 'protected'>, keyof Palette> = {
+const ROLE_LABEL: Record<Exclude<Role, 'protected'>, PaletteColor> = {
   dominant: 'dominant',
   secondary: 'secondary',
   accent: 'accent',
@@ -92,6 +92,8 @@ export function buildColorMap(
     secondary: rgbToOklch(rgbaOf(palette.secondary, T.paletteColor.secondary, lang)),
     accent: rgbToOklch(rgbaOf(palette.accent, T.paletteColor.accent, lang)),
   };
+  // Brightness/contrast sliders: applied to every color that changes (never to protected ones).
+  const tune = (c: OKLCH) => adjustLightness(c, palette.brightness, palette.contrast);
   const reasonOf = (r: RoleAssignment) =>
     lang === 'sr' ? r.reason : reasonText(r.reasonCode, r.reasonArg, lang);
   const oldBase = (role: keyof typeof newBases) => {
@@ -131,9 +133,9 @@ export function buildColorMap(
         // The alternate scheme has its own base. If the new palette has that scheme's polarity,
         // it is applied directly; otherwise the alternate scheme's base is translated first.
         const newAltBase = flip ? newBases[role] : remap(altBase, base, newBases[role]);
-        rgba = oklchToRgbInGamut(remap(r.oklch, altBase, newAltBase));
+        rgba = oklchToRgbInGamut(tune(remap(r.oklch, altBase, newAltBase)));
       } else {
-        rgba = oklchToRgbInGamut(remap(r.oklch, base, newBases[role], modeFor(role, r.scheme)));
+        rgba = oklchToRgbInGamut(tune(remap(r.oklch, base, newBases[role], modeFor(role, r.scheme))));
       }
     }
     newRgba.set(r.key, rgba);
