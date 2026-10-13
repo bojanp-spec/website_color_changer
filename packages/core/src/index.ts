@@ -35,3 +35,4 @@ export {
   relativeLuminance,
   requiredContrast,
 } from './color/contrast.js';
+export * from './scan/index.js';

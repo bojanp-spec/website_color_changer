@@ -1,0 +1,27 @@
+@import url("base.css");
+
+.topbar { background: linear-gradient(90deg, #1E3A5F 0%, #2C5282 100%); color: #EDF2F7; padding: 20px; }
+.topbar a { color: #BEE3F8; }
+
+@layer components {
+  .panel { background-color: #ffffff; border: 2px solid #CBD5E0; padding: 20px; margin: 20px; }
+}
+
+@supports (display: grid) {
+  .grid { display: grid; grid-template-columns: 1fr 1fr; }
+}
+
+.list {
+  color: #4a5568;
+  & li:hover { color: #2b6cb0; }
+}
+
+@media (max-width: 600px) {
+  .topbar { background: #1a365d; }
+}
+
+@keyframes pulse { from { background-color: #3182ce; } to { background-color: #2c5282; } }
+
+.cta { background: #3182CE url("data:image/png;base64,iVBORw0KGgo=") no-repeat right 8px center; color: white;
+       border: none; padding: 10px 20px; font-size: 15px; }
+.cta:hover { background-color: #2B6CB0; animation: pulse 1s; }
