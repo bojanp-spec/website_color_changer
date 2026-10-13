@@ -9,21 +9,20 @@
 <body>
 <main>
   <h1>🎨 Website Color Changer</h1>
-  <p class="muted">Klik na ikonicu ekstenzije otvara panel na trenutnom sajtu. <kbd>Alt+C</kbd> u panelu prebacuje original ↔ nova paleta.</p>
+  <!-- Tekstove popunjava options.js na jeziku build-a (data-i18n / data-i18n-html). -->
+  <p class="muted" data-i18n-html="intro"></p>
 
   <section>
-    <h2>Pristup sajtovima</h2>
+    <h2 data-i18n="accessTitle"></h2>
     <p id="perm-status" class="muted">…</p>
-    <p class="muted">Bez ove dozvole ekstenzija radi samo kad klikneš ikonicu, i samo na tom tabu.
-      Sa njom: (1) čita stilove sa drugih domena (CDN) koje sajt ne deli preko CORS-a, i
-      (2) automatski primenjuje sačuvanu paletu na sajtovima gde to uključiš.</p>
-    <button id="perm-grant" type="button">Dozvoli pristup svim sajtovima</button>
-    <button id="perm-revoke" type="button" hidden>Ukloni dozvolu</button>
+    <p class="muted" data-i18n="accessExplain"></p>
+    <button id="perm-grant" type="button" data-i18n="grant"></button>
+    <button id="perm-revoke" type="button" data-i18n="revoke" hidden></button>
   </section>
 
   <section>
-    <h2>Sačuvane palete</h2>
-    <p id="empty" class="muted" hidden>Još nema sačuvanih paleta. Otvori panel na nekom sajtu i izaberi boje.</p>
+    <h2 data-i18n="savedTitle"></h2>
+    <p id="empty" class="muted" data-i18n="empty" hidden></p>
     <ul id="sites"></ul>
   </section>
 </main>

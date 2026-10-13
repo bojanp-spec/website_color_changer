@@ -25,3 +25,16 @@ export const PRESET_LABELS: Record<string, string> = {
   'grafit-plavo': 'Grafit / električno plava',
   'ponoc-zlatno': 'Ponoć / zlatno',
 };
+
+/** Nazivi za prikaz na engleskom. */
+export const PRESET_LABELS_EN: Record<string, string> = {
+  'crveno-sivo': 'Red / gray',
+  'zuto-zeleno': 'Yellow / green',
+  'zeleno-krem': 'Green / cream',
+  'narandzasto-tamno': 'Orange / dark',
+  'ljubicasto-roze': 'Purple / pink',
+  'tirkiz-okean': 'Teal / ocean',
+  'terakota-pesak': 'Terracotta / sand',
+  'grafit-plavo': 'Graphite / electric blue',
+  'ponoc-zlatno': 'Midnight / gold',
+};

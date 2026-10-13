@@ -14,8 +14,11 @@ export interface RoleAssignment {
   key: string;
   role: Role;
   oklch: OKLCH;
-  /** Kratko objašnjenje zašto je boja dobila ulogu — prikazuje se u UI/CLI. */
+  /** Kratko objašnjenje zašto je boja dobila ulogu (srpski) — prikazuje se u CLI-ju. */
   reason: string;
+  /** Šifra razloga — UI je prevodi (`reasonText(code, arg, 'en')`). */
+  reasonCode: import('./reasons.js').ReasonCode;
+  reasonArg?: string;
   /** Izmerena vidljiva površina po vrsti upotrebe (0 za boje koje se trenutno ne vide). */
   usage: { bg: number; text: number; border: number };
   /**
