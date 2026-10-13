@@ -72,6 +72,32 @@ test('ručna promena uloge boje (header u akcenat)', async ({ page }) => {
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('cc:127.0.0.1')!).overrides)).toEqual({ '#1e3a8a': 'accent' });
 });
 
+test('meni uloge radi pravim klikovima: klik na listu ne zatvara meni; Esc i drugi klik ga zatvaraju', async ({ page }) => {
+  const panel = await openPanel(page);
+  const chip = panel.locator('.chip[data-color="#1e3a8a"]');
+  await chip.click();
+  const select = panel.getByRole('combobox', { name: 'Uloga boje #1e3a8a' });
+  // Regresija: meni je bio unutar dugmeta (kvadratića), pa ga je klik na listu zamenjivao novim.
+  expect(await select.evaluate((el) => !!el.closest('button'))).toBe(false);
+  await select.evaluate((el) => (el.dataset.mark = 'isti'));
+  await select.click();
+  expect(await select.evaluate((el) => el.dataset.mark)).toBe('isti');
+  await page.keyboard.press('Escape'); // zatvara sistemsku listu
+  await select.selectOption('accent');
+  await expect(panel.locator('[data-role-group="accent"] .chip[data-color="#1e3a8a"]')).toBeVisible();
+  await expect(panel.locator('.status')).toContainText('Videćeš razliku kad primeniš novu paletu');
+
+  // drugi klik na istu boju zatvara meni
+  await panel.locator('.chip[data-color="#64748b"]').click();
+  await expect(panel.locator('.menu')).toHaveCount(1);
+  await panel.locator('.chip[data-color="#64748b"]').click();
+  await expect(panel.locator('.menu')).toHaveCount(0);
+  // Esc u meniju ga zatvara
+  await panel.locator('.chip[data-color="#64748b"]').click();
+  await panel.getByRole('combobox', { name: 'Uloga boje #64748b' }).press('Escape');
+  await expect(panel.locator('.menu')).toHaveCount(0);
+});
+
 test('panel je izolovan: paleta sajta ga ne menja, skener ga ne vidi', async ({ page }) => {
   const panel = await openPanel(page);
   const panelBg = () => panel.locator('.panel').evaluate((el) => getComputedStyle(el).backgroundColor);

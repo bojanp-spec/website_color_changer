@@ -105,12 +105,14 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .status { font-size: 12px; color: var(--muted); margin-top: 8px; min-height: 1.4em; }
 .status.warn { color: var(--warn); }
 .status ul { margin: 4px 0 0; padding-left: 16px; }
+section { position: relative; }
 .menu {
-  position: absolute; z-index: 1; top: 26px; left: 0; min-width: 190px; padding: 6px;
+  position: absolute; z-index: 1; width: 230px; padding: 8px;
   background: var(--bg); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow);
 }
 .menu p { margin: 0 0 6px; font-size: 12px; }
 .menu p code { font: 11px ui-monospace, monospace; }
+.menu p.hint { margin: 6px 0 0; color: var(--muted); font-size: 11px; }
 .menu select { width: 100%; font: inherit; padding: 4px; border-radius: 6px; border: 1px solid var(--line); background: var(--soft); color: var(--fg); }
 .row.check { justify-content: flex-start; font-size: 12px; margin-top: 10px; cursor: pointer; }
 .row.check input { margin: 0; }
