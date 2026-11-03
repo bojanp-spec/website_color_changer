@@ -131,4 +131,4 @@ console.log(engine.exportCss());                     // CSS for permanent use
 | `packages/cli` | `cc-export`: multi-page production export with verification |
 | `packages/postcss-cc-remap` | PostCSS plugin that applies the color map to source CSS/SCSS |
 
-Technical specification: [docs/TECHNICAL-SPEC.md](docs/TECHNICAL-SPEC.md) (Serbian: [UPUTSTVO-ZA-KODIRANJE.md](docs/UPUTSTVO-ZA-KODIRANJE.md)).
+Technical specification: [docs/TECHNICAL-SPEC.md](docs/TECHNICAL-SPEC.md).
